@@ -1,0 +1,7 @@
+dagster==1.7.16
+dagster-cloud==1.7.16
+dagster-cloud-cli==1.7.16
+dagster-duckdb==0.23.16
+dagster-graphql==1.7.16
+dagster-university==0.0.0
+dagster-webserver==1.7.16

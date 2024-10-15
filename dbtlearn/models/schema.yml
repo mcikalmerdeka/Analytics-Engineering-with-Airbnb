@@ -1,0 +1,166 @@
+version: 2
+
+models:
+
+# Dimension Models
+  - name: dim_listings_cleansed
+    description: >
+      Cleansed dimension table for Airbnb listings. This table contains verified,
+      cleaned data about individual property listings, ensuring data quality and
+      consistency for downstream analysis.
+    columns:
+      - name: listing_id
+        description: Primary key for the listing. Unique identifier for each property listing.
+        tests:
+          - unique
+          - not_null
+        
+      - name: host_id
+        description: Foreign key to the host dimension table. Identifies the host who owns or manages the listing.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_hosts_cleansed')
+              field: host_id
+
+      - name: room_type
+        description: >
+          Categorizes the type of space offered. This is a standardized field with
+          four possible values representing different accommodation types.
+        tests:
+          - accepted_values:
+              values: ['Entire home/apt', 'Private room', 'Shared room', 'Hotel room']
+
+      - name: minimum_nights
+        description: '{{ doc("dim_listing_cleansed__minimum_nights") }}'
+        tests:
+          - positive_value
+
+  - name: dim_hosts_cleansed
+    description: >
+      Cleansed dimension table for Airbnb hosts. Contains verified information about
+      property hosts, including their superhost status and identity details.
+    columns:
+      - name: host_id
+        description: Primary key for the host. Unique identifier for each Airbnb host.
+        tests:
+          - not_null
+          - unique
+      
+      - name: host_name
+        description: The display name of the host on the Airbnb platform.
+        tests:
+          - not_null
+      
+      - name: is_superhost
+        description: >
+          Boolean flag indicating the host's superhost status. 't' for superhosts,
+          'f' for regular hosts.
+        tests:
+          - accepted_values:
+              values: ['t', 'f']
+ 
+  - name: dim_listings_w_hosts
+    description: >
+      Enhanced dimension table that combines listing and host information. This table
+      provides a denormalized view of listings with their corresponding host details.
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          compare_model: source('airbnb', 'listings')
+
+    columns:
+      - name: price
+        description: >
+          The nightly price for the listing in the local currency. Expected to be
+          a numeric value within reasonable bounds for Airbnb pricing.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: number
+          - dbt_expectations.expect_column_quantile_values_to_be_between:
+              quantile: .99
+              min_value: 50
+              max_value: 500
+          - dbt_expectations.expect_column_max_to_be_between:
+              max_value: 5000
+              config:
+                severity: warn
+
+      - name: host_is_superhost
+        description: Indicates whether the host of this listing has achieved superhost status.
+        test:
+          - not null
+
+# Fact Models
+  - name: fct_reviews
+    description: >
+      Incremental fact table containing Airbnb reviews. This table generates a surrogate key
+      for each review and incrementally processes new reviews. It filters out reviews with
+      null text and can be loaded based on specific date parameters or automatically
+      detect and load all missing dates.
+    columns:
+      - name: review_id
+        description: >
+          Surrogate key generated from listing_id, review_date, reviewer_name, and review_text
+          using dbt_utils.generate_surrogate_key function.
+        tests:
+          - unique
+          - not_null
+
+      - name: listing_id
+        description: Foreign key to the listings dimension table. Identifies which listing the review is for.
+        tests:
+          - relationships:
+              to: ref('dim_listings_cleansed')
+              field: listing_id
+
+      - name: review_date
+        description: >
+          The date when the review was submitted. Used for incremental processing:
+          - If start_date and end_date variables are provided, loads reviews within that range
+          - Otherwise, loads all reviews after the latest existing review_date
+        tests:
+          - not_null
+
+      - name: reviewer_name
+        description: The name of the guest who submitted the review.
+        tests:
+          - not_null
+      
+      - name: review_text
+        description: >
+          The full text content of the review. Reviews with null text are excluded from
+          this table.
+        tests:
+          - not_null
+
+      - name: review_sentiment
+        description: >
+          Calculated sentiment of the review, categorized into three possible values.
+          This helps in quick analysis of customer satisfaction.
+        tests:
+          - accepted_values:
+              values: ['positive', 'neutral', 'negative']
+
+    notes:
+      - "Incremental load behavior can be controlled via 'start_date' and 'end_date' variables"
+      - "When variables are not provided, loads all reviews newer than existing data"
+      - "Model logs its incremental loading strategy at runtime"
+
+  - name: mart_fullmoon_reviews
+    description: >
+      A mart table that enriches review data with information about whether the review was written the day after a full moon. This allows for analysis of potential
+      correlations between customer review patterns and lunar cycles.
+    columns:
+      # Columns are inherited from fct_reviews except 1 column
+      - name: is_full_moon
+        description: >
+          Indicates whether the review was written the day after a full moon.
+          Values are 'full moon' if the review date is one day after a full moon,
+          and 'not full moon' otherwise.
+        tests:
+          - accepted_values:
+              values: ['full moon', 'not full moon']
+    notes:
+      - "This mart joins review data with full moon dates from the seed_full_moon_dates reference table"
+      - "Full moon correlation is checked for the day after each full moon date"
+      - "Useful for analyzing if lunar cycles have any impact on review patterns or sentiment"
