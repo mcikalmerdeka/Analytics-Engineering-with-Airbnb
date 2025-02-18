@@ -12,9 +12,17 @@ SET ROLE transform;
 SET SESSION AUTHORIZATION transform;
 
 -- Create database and schema
-CREATE DATABASE IF NOT EXISTS airbnb;
+CREATE DATABASE airbnb;
+SELECT * FROM pg_database WHERE datname = 'airbnb';
+
+-- Grant Superuser Privileges to transform
+ALTER ROLE transform WITH SUPERUSER;
+
+-- Allow the transform Role to Log In
+ALTER ROLE transform WITH LOGIN;
+
 \c airbnb  -- Connect to database
-CREATE SCHEMA IF NOT EXISTS raw;
+CREATE SCHEMA raw;
 
 -- Grant privileges to transform role
 GRANT CONNECT ON DATABASE airbnb TO transform;
