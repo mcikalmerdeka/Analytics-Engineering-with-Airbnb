@@ -1,0 +1,66 @@
+Source : https://chatgpt.com/c/67b49653-b68c-800a-ad62-a69ada5a50a3
+
+---------------------------------------------------------------------------------------------------
+
+if i am using snowflake for personal use for small projects, what does the pricing looks like? because currently my free trial is over (one month) and i want to continue using it by using my card number
+
+
+As your Snowflake free trial has concluded, transitioning to a paid plan involves understanding their consumption-based pricing model, which charges based on the resources you utilize. Here's a breakdown tailored for personal use and small projects:
+
+**1. Compute Resources (Virtual Warehouses):**
+- **Standard Edition:** This entry-level plan provides core functionalities suitable for individual users.
+- **Pricing:** Compute costs are measured in "credits," with rates varying by region. For deployments in AWS Asia Pacific (Singapore), the rates are:
+  - **Standard:** $2.50 per credit
+  - **Enterprise:** $3.70 per credit
+  - **Business Critical:** $5.00 per credit
+  citeturn0search0
+
+**2. Storage:**
+- **On-Demand Storage:** Charges are based on the average monthly data storage after compression.
+- **Pricing:** In the AWS Asia Pacific (Singapore) region, the rate is $25 per terabyte per month. citeturn0search0
+
+**3. Data Transfer:**
+- **Internal Transfers:** Data movement within the same region is typically free.
+- **External Transfers:** Transferring data across regions or out of Snowflake may incur additional fees.
+
+**4. Payment Options:**
+- **On-Demand:** Pay-as-you-go model, offering flexibility without long-term commitments.
+- **Capacity Pre-Purchase:** Commit to a specific usage level for discounted rates, which might be more than necessary for small projects.
+
+**Considerations for Personal Use:**
+- **Cost Management:** To keep expenses low, opt for smaller virtual warehouse sizes and monitor your usage closely.
+- **Region Selection:** Deploying in regions like AWS Asia Pacific (Singapore) can offer competitive pricing.
+- **Billing:** Ensure your credit card details are updated in your Snowflake account to continue services without interruption.
+
+For the most accurate and personalized pricing details, it's advisable to consult Snowflake's official pricing guide or contact their sales team directly. citeturn0search0 
+
+---------------------------------------------------------------------------------------------------
+
+if i am only using it to make a dbt project with source data only like 50 mb, how much does i have to pay here
+
+
+Snowflake charges compute costs based on how long your virtual warehouse runs—and it does so in “credits.” Here’s a simplified breakdown for a single `dbt run` on one model:
+
+1. **Virtual Warehouse Size & Credit Consumption:**  
+   - For example, an **X-Small warehouse** typically consumes about **1 credit per hour**.
+
+2. **Billing Granularity:**  
+   - Snowflake bills by the second once your warehouse is running, but with a **60-second minimum**. So even if your query takes 30 seconds, you’ll be charged for a full minute.
+
+3. **Cost Calculation Example:**  
+   - **If your model runs for 30 seconds:**  
+     - You’re billed for 1 minute (because of the 60-second minimum).  
+     - For an X-Small warehouse (1 credit/hour), that’s 1 minute out of 60 minutes, or **1/60th of a credit**.
+   - **Credit Cost:**  
+     - At approximately **$2.50 per credit**, the cost is:  
+       \[
+       \text{Cost} = \frac{1}{60} \times \$2.50 \approx \$0.04
+       \]
+
+So, running a single dbt model that takes 30 seconds would cost roughly **4 cents**—assuming you’re using an X-Small warehouse and that’s the only compute time charged.
+
+Keep in mind that:
+- If you run additional queries or models, the compute time (and thus the cost) will add up.
+- Different warehouse sizes consume more credits per hour. For example, a Small warehouse might use 2 credits per hour, doubling the cost.
+
+This should give you a ballpark idea of the cost for your specific use case.
