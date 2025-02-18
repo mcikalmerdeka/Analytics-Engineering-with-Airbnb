@@ -1,0 +1,17 @@
+The previous approach of downloading the data is through snowflake directly by creating a new account, but I just found out the better way to do that by directly accessing the s3 bucket location:
+
+RAW DATA 
+
+Listings Table
+https://dbtlearn.s3.us-east-2.amazonaws.com/listings.csv
+
+Reviews Table
+https://dbtlearn.s3.us-east-2.amazonaws.com/reviews.csv
+
+Hosts Table
+https://dbtlearn.s3.us-east-2.amazonaws.com/hosts.csv
+
+SEEDS DATA
+https://dbtlearn.s3.us-east-2.amazonaws.com/seed_full_moon_dates.csv
+
+curl https://dbtlearn.s3.us-east-2.amazonaws.com/seed_full_moon_dates.csv -o seeds\seed_full_moon_dates.csv
