@@ -3,3 +3,116 @@ Source : https://chat.deepseek.com/a/chat/s/d29b024b-6bbc-4a48-8264-1809c92967c4
 The main point is that I wanted to make it as similar as possible with the snowflake version.
 
 ---------------------------------------------------------------------------------------------------
+
+As for the dbt init configuration: https://chatgpt.com/c/67b8be15-e150-800a-b0a0-e699c831ab91
+
+[1] postgres
+
+(Don't see the one you want? https://docs.getdbt.com/docs/available-adapters)
+
+Enter a number: 1
+host (hostname for the instance): localhost
+port [5432]: 5432
+user (dev username): postgres
+pass (dev password): cikalmerdeka
+dbname (default database that dbt will build objects in): airbnb
+schema (default schema that dbt will build objects in): staging
+threads (1 or more) [1]: 4
+
+---------------------------------------------------------------------------------------------------
+
+Source to check yml file:
+C:\Users\Cikal Merdeka\.dbt
+
+---------------------------------------------------------------------------------------------------
+
+Since your **raw tables exist** and **dbt connection is working**, the issue likely comes from a mismatch in how the source is referenced. Let's troubleshoot step by step.
+
+---
+
+### **Step 1: Verify `sources.yml` Naming**
+Your `sources.yml` file defines:
+```yaml
+version: 2
+
+sources:
+  - name: airbnb_source   # This is the correct source name
+    schema: raw 
+    tables:
+      - name: listings
+        identifier: raw_listings
+```
+That means the correct reference in `src_listings.sql` should be:
+
+```sql
+SELECT * FROM {{ source('airbnb_source', 'listings') }}
+```
+✅ **Make sure you are using `airbnb_source` and not `airbnb` in `source()` calls.**
+
+---
+
+### **Step 2: Clear and Rebuild dbt State**
+Try running:
+```sh
+dbt clean
+dbt deps
+dbt parse
+dbt run --select src_listings
+```
+- `dbt clean`: Removes temporary files and old artifacts.
+- `dbt deps`: Ensures dependencies are installed.
+- `dbt parse`: Checks for syntax and dependency issues.
+- `dbt run --select src_listings`: Runs only `src_listings.sql`.
+
+---
+
+### **Step 3: Check dbt Source Listing**
+Before running the model, check if dbt recognizes your sources:
+
+```sh
+dbt source freshness
+```
+or
+```sh
+dbt list --resource-type source
+```
+If your `airbnb_source.listings` **does not show up**, dbt isn't recognizing it.
+
+---
+
+### **Step 4: Check the dbt Project Schema**
+Your **dbt debug output** says:
+
+```
+database: airbnb
+schema: staging
+```
+That means dbt **expects to write models into `airbnb.staging`**, while your **source data is in `airbnb.raw`**.
+
+Try explicitly setting the **database in `sources.yml`**:
+
+```yaml
+sources:
+  - name: airbnb_source
+    database: airbnb   # Add this if missing
+    schema: raw
+    tables:
+      - name: listings
+        identifier: raw_listings
+```
+
+Then run:
+```sh
+dbt clean && dbt parse
+```
+
+---
+
+### **Step 5: Run dbt Debug for Sources**
+To check source configurations, run:
+```sh
+dbt debug --config-source
+```
+This will show if dbt is able to locate `airbnb_source.listings`.
+
+---
