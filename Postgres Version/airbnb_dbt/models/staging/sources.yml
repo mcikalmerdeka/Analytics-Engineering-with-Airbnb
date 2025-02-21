@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: airbnb_source
+    database: airbnb # Explicitly define database
+    schema: raw # Define the correct schema
+    tables:
+      - name: listings
+        identifier: raw_listings
+
+      - name: reviews
+        identifier: raw_reviews
+
+      - name: hosts
+        identifier: raw_hosts
