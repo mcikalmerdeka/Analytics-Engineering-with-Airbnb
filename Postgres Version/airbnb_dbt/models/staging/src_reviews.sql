@@ -1,6 +1,7 @@
 WITH raw_reviews AS (
     SELECT *
     FROM {{ source('airbnb_source', 'reviews') }}
+    -- FROM airbnb.staging.raw_reviews  -- Direct database reference
 )
 SELECT
     listing_id,
