@@ -1,8 +1,7 @@
 version: 2
 
 models:
-
-# Dimension Models
+  # Dimension Models
   - name: dim_listings_cleansed
     description: >
       Cleansed dimension table for Airbnb listings. This table contains verified,
@@ -14,7 +13,7 @@ models:
         tests:
           - unique
           - not_null
-        
+
       - name: host_id
         description: Foreign key to the host dimension table. Identifies the host who owns or manages the listing.
         tests:
@@ -29,7 +28,8 @@ models:
           four possible values representing different accommodation types.
         tests:
           - accepted_values:
-              values: ['Entire home/apt', 'Private room', 'Shared room', 'Hotel room']
+              values:
+                ["Entire home/apt", "Private room", "Shared room", "Hotel room"]
 
       - name: minimum_nights
         description: '{{ doc("dim_listing_cleansed__minimum_nights") }}'
@@ -46,20 +46,20 @@ models:
         tests:
           - not_null
           - unique
-      
+
       - name: host_name
         description: The display name of the host on the Airbnb platform.
         tests:
           - not_null
-      
+
       - name: is_superhost
         description: >
           Boolean flag indicating the host's superhost status. 't' for superhosts,
           'f' for regular hosts.
         tests:
           - accepted_values:
-              values: ['t', 'f']
- 
+              values: ["t", "f"]
+
   - name: dim_listings_w_hosts
     description: >
       Enhanced dimension table that combines listing and host information. This table
@@ -90,7 +90,7 @@ models:
         test:
           - not null
 
-# Fact Models
+  # Fact Models
   - name: fct_reviews
     description: >
       Incremental fact table containing Airbnb reviews. This table generates a surrogate key
@@ -125,7 +125,7 @@ models:
         description: The name of the guest who submitted the review.
         tests:
           - not_null
-      
+
       - name: review_text
         description: >
           The full text content of the review. Reviews with null text are excluded from
@@ -139,7 +139,7 @@ models:
           This helps in quick analysis of customer satisfaction.
         tests:
           - accepted_values:
-              values: ['positive', 'neutral', 'negative']
+              values: ["positive", "neutral", "negative"]
 
     notes:
       - "Incremental load behavior can be controlled via 'start_date' and 'end_date' variables"
@@ -159,7 +159,7 @@ models:
           and 'not full moon' otherwise.
         tests:
           - accepted_values:
-              values: ['full moon', 'not full moon']
+              values: ["full moon", "not full moon"]
     notes:
       - "This mart joins review data with full moon dates from the seed_full_moon_dates reference table"
       - "Full moon correlation is checked for the day after each full moon date"
