@@ -1,0 +1,5 @@
+Fix dbt_expectations installation error
+Source: https://chat.deepseek.com/a/chat/s/db26ef3f-55ca-4554-9ca3-5290590cca35
+
+---------------------------------------------------------------------------------------------------
+
