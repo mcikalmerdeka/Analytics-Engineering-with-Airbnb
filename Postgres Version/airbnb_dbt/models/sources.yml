@@ -1,0 +1,122 @@
+version: 2
+
+sources:
+  - name: airbnb_source
+    description: >
+      Raw data ingested from Airbnb's platform. This source contains primary datasets
+      related to property listings, hosts, and customer reviews.
+    database: airbnb
+    schema: staging
+    tables:
+      - name: listings
+        identifier: raw_listings
+        description: >
+          Contains detailed information about individual Airbnb property listings,
+          including pricing, room types, and other property characteristics.
+        columns:
+          - name: id
+            description: Primary key for the listings table. Unique identifier for each listing.
+            data_type: integer
+
+          - name: listing_url
+            description: The URL path component for the listing on Airbnb's website.
+            data_type: string
+
+          - name: name
+            description: The title or name of the listing as it appears on Airbnb.
+            data_type: string
+
+          - name: room_type
+            description: >
+              Categorizes the type of space being offered. Expected to have exactly
+              four distinct values (e.g., Entire home/apt, Private room, Shared room,
+              Hotel room).
+            data_type: string
+            tests:
+              - dbt_expectations.expect_column_distinct_count_to_equal:
+                  value: 4
+
+          - name: minimum_nights
+            description: The minimum number of nights a guest can book the listing.
+            data_type: integer
+
+          - name: host_id
+            description: Foreign key referencing the hosts table. Identifies the host of the listing.
+            data_type: integer
+
+          - name: price
+            description: >
+              The nightly price for the listing. Must be in USD format starting with
+              a dollar sign, followed by digits and optional decimal places.
+            data_type: string
+            tests:
+              - dbt_expectations.expect_column_values_to_match_regex:
+                  # regex: "^\\\\$[0-9][0-9\\\\.]+$"
+                  regex: "^\\$?[0-9]+(\\.[0-9]+)?$" # Double backslashes
+                  # OR:
+                  # regex: '^\$?[0-9]+(\.[0-9]+)?$'  # Single quotes
+
+          - name: created_at
+            description: Timestamp indicating when the listing was created.
+            data_type: timestamp
+
+          - name: updated_at
+            description: Timestamp indicating when the listing was last updated.
+            data_type: timestamp
+
+      - name: hosts
+        identifier: raw_hosts
+        description: >
+          Contains information about Airbnb hosts, including their profiles,
+          hosting history, and performance metrics.
+        columns:
+          - name: id
+            description: Primary key for the hosts table. Unique identifier for each host.
+            data_type: integer
+
+          - name: name
+            description: The display name of the host on the Airbnb platform.
+            data_type: string
+
+          - name: host_is_superhost
+            description: Boolean flag indicating if the host has achieved Superhost status.
+            data_type: string
+
+          - name: created_at
+            description: Timestamp indicating when the host profile was created.
+            data_type: timestamp
+
+          - name: updated_at
+            description: Timestamp indicating when the host profile was last updated.
+            data_type: timestamp
+
+      - name: reviews
+        identifier: raw_reviews
+        description: >
+          Stores customer reviews for Airbnb listings. This table is time-sensitive
+          and requires regular updates.
+        columns:
+          - name: listing_id
+            description: Foreign key referencing the listings table. Identifies which listing the review is for.
+            data_type: integer
+
+          - name: date
+            description: The date when the review was submitted.
+            data_type: datetime
+
+          - name: reviewer_name
+            description: The name of the guest who submitted the review.
+            data_type: string
+
+          - name: comments
+            description: The actual text content of the review.
+            data_type: string
+
+          - name: sentiment
+            description: A classification of the review sentiment (e.g., positive, negative, neutral).
+            data_type: string
+
+        loaded_at_field: date
+        freshness:
+          warn_after: { count: 1, period: hour }
+          error_after: { count: 24, period: hour }
