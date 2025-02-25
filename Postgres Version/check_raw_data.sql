@@ -1,11 +1,11 @@
 -- Check listings table
 SELECT *
-FROM raw.raw_listings;
+FROM staging.raw_listings;
 
 -- Check reviews table
 SELECT *
-FROM raw.raw_hosts;
+FROM staging.raw_hosts;
 
 -- Check hosts table
 SELECT *
-FROM raw.raw_reviews;
+FROM staging.raw_reviews;
