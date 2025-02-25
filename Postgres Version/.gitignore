@@ -1,2 +1,3 @@
 *.csv
 dbt-env/
+logs/
