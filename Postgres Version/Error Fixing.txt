@@ -1,5 +1,11 @@
+Configuring dbt sources.yml for Airbnb database
+Source: https://chat.deepseek.com/a/chat/s/c5dd85b4-7102-4178-bd5b-684069c95fbc
+
+---------------------------------------------------------------------------------------------------
+
 Fix dbt_expectations installation error
 Source: https://chat.deepseek.com/a/chat/s/db26ef3f-55ca-4554-9ca3-5290590cca35
 
 ---------------------------------------------------------------------------------------------------
+
 
