@@ -8,4 +8,21 @@ Source: https://chat.deepseek.com/a/chat/s/db26ef3f-55ca-4554-9ca3-5290590cca35
 
 ---------------------------------------------------------------------------------------------------
 
+Fix Dagster Dbt Integration Error Guide
+https://chat.deepseek.com/a/chat/s/e3b59d38-13c0-450e-ace9-f0dfe59d35bd
+https://claude.ai/chat/d0d1d469-cf49-4ca5-b51e-7c8ebeddba8e
+
+---------------------------------------------------------------------------------------------------
+
+Update Dagster PostgreSQL Integration Requirements
+https://chat.deepseek.com/a/chat/s/a9fd955c-56aa-48e5-9792-f1f4ce94982e
+
+Note: in the end resolved using the latest version
+dbt-core==1.9.2
+dbt-postgres==1.9.0
+dagster-dbt==0.26.2
+dagster-webserver==1.10.2
+
+---------------------------------------------------------------------------------------------------
+
 
