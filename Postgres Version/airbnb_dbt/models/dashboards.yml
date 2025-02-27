@@ -1,0 +1,17 @@
+# version: 2
+
+# exposures:
+#   - name: executive_dashboard
+#     label: Executive Dashboard
+#     type: dashboard
+#     maturity: low
+#     url: http://localhost:3100/dashboard/1 # Update with actual dashboard ID that will be created/hosted on a server later
+#     description: Executive Dashboard about Airbnb listings and hosts
+
+#     depends_on:
+#       - ref('dim_listings_w_hosts')
+#       - ref('full_moon_reviews')
+
+#     owner:
+#       name: Muhammad Cikal Merdeka
+#       email: mcikalmerdeka@gmail.com
