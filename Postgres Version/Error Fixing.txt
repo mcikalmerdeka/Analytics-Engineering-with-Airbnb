@@ -29,3 +29,9 @@ Persisting Dagster and PostgreSQL Across Restarts
 https://chat.deepseek.com/a/chat/s/c3d51dd5-82b5-4189-8e4f-7463e126aa85
 
 ---------------------------------------------------------------------------------------------------
+
+Metabase Docker PostgreSQL Setup (Choice for Host naming)
+https://chatgpt.com/c/67c0d5bf-6b18-800a-aa91-89f78e2a2015
+
+---------------------------------------------------------------------------------------------------
+
