@@ -32,3 +32,8 @@ models:
     +materialized: view
     dimension:
       +materialized: table
+    staging:
+      +materialized: ephemeral
+
+vars:
+  user_name: default_user_name_for_this_project
