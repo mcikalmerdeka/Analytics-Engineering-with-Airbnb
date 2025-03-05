@@ -35,3 +35,6 @@ https://chatgpt.com/c/67c0d5bf-6b18-800a-aa91-89f78e2a2015
 
 ---------------------------------------------------------------------------------------------------
 
+Metabase Variables (Filter) Usage Tutorial
+https://www.youtube.com/watch?v=itNp4cHktlw
+
