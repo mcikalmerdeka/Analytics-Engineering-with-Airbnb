@@ -1,3 +1,15 @@
 **/profiles.yml
 **/.user.yml
 .vscode/
+
+# Postgres Version patterns
+*.csv
+dbt-env/
+logs/
+Postgres Version/logs/
+**/airbnb_dagster_project/.tmp_dagster_home_*
+**/__pycache__/
+
+# Snowflake Version patterns
+venv/
+Snowflake Version/logs/

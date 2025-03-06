@@ -1,5 +1,0 @@
-*.csv
-dbt-env/
-logs/
-airbnb_dagster_project/.tmp_dagster_home_dhw2iv7l
-airbnb_dagster_project/airbnb_dagster_project/__pycache__/
