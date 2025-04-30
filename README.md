@@ -1,6 +1,7 @@
 # Analytics Engineering with Airbnb
 
-**Update 16/02/2025**: 
+**Update 16/02/2025**:
+
 > - Previously I made this using Snowflake as the data warehouse and Preset as the BI tools. Since I was using the free-tier of Snowflake that only lasted for 1 month, all of the created pipelines has been suspended.
 
 > - So I decided to recreate the project using the open source tools such as PostgreSQL and Metabase (running local through Docker).
@@ -129,12 +130,28 @@ The project uses Dagster to orchestrate the dbt transformations. The Dagster pip
 
 ## Data Visualization
 
-Metabase is used to create interactive dashboards for analyzing:
+![Airbnb Executive Dashboard](https://raw.githubusercontent.com/mcikalmerdeka/Analytics-Engineering-with-Airbnb/refs/heads/main/assets/Metabase%20Dashboard.png)
 
-- Listing prices by neighborhood
-- Host performance metrics
-- Review sentiment analysis
-- Seasonal booking trends
+The project uses Metabase to create an interactive executive dashboard that includes:
+
+- **KPI Metrics**:
+
+  - Number of Hosts (290)
+  - New Listings (331)
+- **Interactive Filters**:
+
+  - Room Type (Entire home, Private room, Other)
+  - Superhost Indicator (True/False)
+  - Price Range
+  - Review Sentiment
+  - Fullmoon Indicator
+  - Month and Year selection
+- **Data Visualizations**:
+
+  - Superhosts Distribution (pie chart showing percentage of superhosts)
+  - Room Type Distribution (breakdown of listing types)
+  - Sentiment vs Full Moon Analysis (comparing review sentiment during full moon periods)
+  - Price Distribution (histogram of listing prices)
 
 ## Project Workflow
 
