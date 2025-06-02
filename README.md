@@ -1,5 +1,7 @@
 # Analytics Engineering with Airbnb
 
+![Project Header](assets/Project%20Header.jpg)
+
 **Update 16/02/2025**:
 
 > - Previously I made this using Snowflake as the data warehouse and Preset as the BI tools. Since I was using the free-tier of Snowflake that only lasted for 1 month, all of the created pipelines has been suspended.
