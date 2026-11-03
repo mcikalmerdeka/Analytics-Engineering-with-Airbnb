@@ -13,3 +13,8 @@ Postgres Version/logs/
 # Snowflake Version patterns
 venv/
 Snowflake Version/logs/
+
+# AXIOM coding agent
+.env.axiom
+.agents/
+opencode.json
