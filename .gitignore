@@ -2,8 +2,14 @@
 **/.user.yml
 .vscode/
 
+# Python / uv
+.venv/
+.env
+*.egg-info/
+
 # Postgres Version patterns
 *.csv
+!Postgres Version/airbnb_dbt/seeds/seed_full_moon_dates.csv
 dbt-env/
 logs/
 Postgres Version/logs/

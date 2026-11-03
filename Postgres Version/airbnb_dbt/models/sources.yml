@@ -6,7 +6,7 @@ sources:
       Raw data ingested from Airbnb's platform. This source contains primary datasets
       related to property listings, hosts, and customer reviews.
     database: airbnb
-    schema: staging
+    schema: raw
     tables:
       - name: listings
         identifier: raw_listings
@@ -34,7 +34,8 @@ sources:
             data_type: string
             tests:
               - dbt_expectations.expect_column_distinct_count_to_equal:
-                  value: 4
+                  arguments:
+                    value: 4
 
           - name: minimum_nights
             description: The minimum number of nights a guest can book the listing.
@@ -51,10 +52,11 @@ sources:
             data_type: string
             tests:
               - dbt_expectations.expect_column_values_to_match_regex:
-                  # regex: "^\\\\$[0-9][0-9\\\\.]+$"
-                  regex: "^\\$?[0-9]+(\\.[0-9]+)?$" # Double backslashes
-                  # OR:
-                  # regex: '^\$?[0-9]+(\.[0-9]+)?$'  # Single quotes
+                  arguments:
+                    # regex: "^\\\\$[0-9][0-9\\\\.]+$"
+                    regex: "^\\$?[0-9]+(\\.[0-9]+)?$" # Double backslashes
+                    # OR:
+                    # regex: '^\$?[0-9]+(\.[0-9]+)?$'  # Single quotes
 
           - name: created_at
             description: Timestamp indicating when the listing was created.
@@ -78,7 +80,7 @@ sources:
             description: The display name of the host on the Airbnb platform.
             data_type: string
 
-          - name: host_is_superhost
+          - name: is_superhost
             description: Boolean flag indicating if the host has achieved Superhost status.
             data_type: string
 

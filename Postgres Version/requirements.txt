@@ -1,7 +1,0 @@
-# dbt packages
-dbt-core
-dbt-postgres
-
-# dagster packages
-dagster-dbt
-dagster-webserver

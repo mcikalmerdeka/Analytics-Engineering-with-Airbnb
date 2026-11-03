@@ -1,0 +1,16 @@
+[project]
+name = "airbnb-postgres-analytics"
+version = "0.1.0"
+description = "Local Airbnb analytics stack: Dockerized PostgreSQL, dbt, and Dagster."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "airbnb-dagster-project",
+    "dbt-core>=1.12,<2",
+    "dbt-postgres>=1.11,<2",
+]
+
+[tool.uv.workspace]
+members = ["airbnb_dagster_project"]
+
+[tool.uv.sources]
+airbnb-dagster-project = { workspace = true }

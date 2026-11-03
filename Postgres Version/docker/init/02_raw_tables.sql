@@ -1,7 +1,8 @@
--- Set search path (similar to USE SCHEMA)
+-- Load the Airbnb raw CSVs into the `raw` schema.
+-- The CSVs are mounted read-only at /data by compose.yaml.
+
 SET search_path TO raw;
 
--- Create listings table
 DROP TABLE IF EXISTS raw_listings;
 CREATE TABLE raw_listings (
     id integer,
@@ -15,12 +16,11 @@ CREATE TABLE raw_listings (
     updated_at timestamp
 );
 
-COPY raw_listings(id, listing_url, name, room_type, minimum_nights, 
-                 host_id, price, created_at, updated_at)
-FROM 'E:/Personal Projects/Analytics Engineering with Airbnb/Analytics-Engineering-with-Airbnb/Postgres Version/raw_csv_snowflake/raw_listings.csv'
+COPY raw_listings(id, listing_url, name, room_type, minimum_nights,
+                  host_id, price, created_at, updated_at)
+FROM '/data/raw/raw_listings.csv'
 WITH (FORMAT CSV, HEADER true, QUOTE '"');
 
--- Create reviews table
 DROP TABLE IF EXISTS raw_reviews;
 CREATE TABLE raw_reviews (
     listing_id integer,
@@ -31,10 +31,9 @@ CREATE TABLE raw_reviews (
 );
 
 COPY raw_reviews(listing_id, date, reviewer_name, comments, sentiment)
-FROM 'E:/Personal Projects/Analytics Engineering with Airbnb/Analytics-Engineering-with-Airbnb/Postgres Version/raw_csv_snowflake/raw_reviews.csv'
+FROM '/data/raw/raw_reviews.csv'
 WITH (FORMAT CSV, HEADER true, QUOTE '"');
 
--- Create hosts table
 DROP TABLE IF EXISTS raw_hosts;
 CREATE TABLE raw_hosts (
     id integer,
@@ -45,5 +44,9 @@ CREATE TABLE raw_hosts (
 );
 
 COPY raw_hosts(id, name, is_superhost, created_at, updated_at)
-FROM 'E:/Personal Projects/Analytics Engineering with Airbnb/Analytics-Engineering-with-Airbnb/Postgres Version/raw_csv_snowflake/raw_hosts.csv'
+FROM '/data/raw/raw_hosts.csv'
 WITH (FORMAT CSV, HEADER true, QUOTE '"');
+
+ANALYZE raw_listings;
+ANALYZE raw_reviews;
+ANALYZE raw_hosts;

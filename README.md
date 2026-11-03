@@ -8,6 +8,11 @@
 
 > - So I decided to recreate the project using the open source tools such as PostgreSQL and Metabase (running local through Docker).
 
+**Update 03/11/2026**:
+
+> - Revamped the `Postgres Version` project to use `uv` (Python 3.13, managed by uv), a Dockerized PostgreSQL 17 instance on port `5433`, dbt v1.12, and Dagster 1.13. The local PostgreSQL 18 service is not used by this project.
+> - dbt v2 (Fusion) is not yet supported for Postgres, so the project stays on dbt v1 until the Postgres adapter is available.
+
 This project demonstrates a modern data stack implementation using Airbnb data. It includes data transformation pipelines using dbt (data build tool), workflow orchestration with Dagster, and visualization with Metabase.
 
 ## Project Overview
@@ -31,18 +36,25 @@ This project showcases the end-to-end process of building a data analytics pipel
 
 ```
 Postgres Version/
-├── airbnb_dbt/                    # dbt project for data transformations
-│   ├── models/                    # Data models organized in layers
-│   │   ├── staging/               # Source-aligned raw data models
-│   │   ├── dimension/             # Dimension tables (hosts, listings)
-│   │   ├── fact/                  # Fact tables (reviews)
-│   │   └── mart/                  # Business-specific aggregations
-│   ├── dbt_project.yml            # dbt project configuration
-│   └── packages.yml               # dbt dependencies
-├── airbnb_dagster_project/        # Dagster project for workflow orchestration
-├── setup_database.sql             # SQL scripts to set up the database
-├── setup_metabase_dashboard.sql   # SQL scripts for Metabase setup
-└── requirements.txt               # Python dependencies
+├── pyproject.toml                # uv workspace + dbt dependencies
+├── uv.lock                       # Locked Python dependencies
+├── compose.yaml                  # Dockerized PostgreSQL (host port 5433)
+├── docker/init/                  # Schema, raw CSV bootstrap, reporting grants
+├── docker/pgadmin/               # pgAdmin server configuration
+├── scripts/                      # Local helper scripts (live row-count watcher)
+├── profiles.yml                  # Local dbt connection (gitignored)
+├── airbnb_dbt/                   # dbt project for data transformations
+│   ├── models/                   # Data models organized in layers
+│   │   ├── staging/              # Source-aligned raw data models
+│   │   ├── dimension/            # Dimension tables (hosts, listings)
+│   │   ├── fact/                 # Fact tables (reviews)
+│   │   └── mart/                 # Business-specific aggregations
+│   ├── dbt_project.yml           # dbt project configuration
+│   └── packages.yml              # dbt dependencies
+├── airbnb_dagster_project/       # Dagster project for workflow orchestration
+├── sql/                          # Ad-hoc SQL data checks
+├── docs/                         # Historical setup notes
+└── data/raw/                     # Raw CSVs (gitignored; see data/raw/README.md)
 ```
 
 ## Data Models
@@ -71,56 +83,87 @@ The data models are organized into the following layers:
 
 ## Getting Started
 
+For the full command reference, setup order, database browsing, and troubleshooting, see [`Postgres Version/docs/RUNBOOK.md`](Postgres%20Version/docs/RUNBOOK.md).
+
 ### Prerequisites
 
-- Docker and Docker Compose
-- Python 3.9+
-- PostgreSQL client (optional, for direct database access)
+- [uv](https://docs.astral.sh/uv/)
+- Docker Desktop
+- Metabase (optional, for visualization)
 
 ### Installation
 
-1. Clone the repository:
+1. Clone the repository and enter the Postgres project:
 
+   ```powershell
+   git clone https://github.com/mcikalmerdeka/Analytics-Engineering-with-Airbnb.git
+   cd "Analytics-Engineering-with-Airbnb/Postgres Version"
    ```
-   git clone https://github.com/yourusername/Analytics-Engineering-with-Airbnb.git
-   cd Analytics-Engineering-with-Airbnb/Postgres\ Version/
-   ```
-2. Set up the Python environment:
 
-   ```
-   python -m venv dbt-env
-   source dbt-env/bin/activate  # On Windows: dbt-env\Scripts\activate
-   pip install -r requirements.txt
-   ```
-3. Set up the database:
+2. Install the Python environment. `uv` reads `.python-version` and uses its own managed Python 3.13:
 
+   ```powershell
+   uv sync
    ```
-   psql -U postgres -f setup_database.sql
-   ```
-4. Initialize dbt:
 
+3. Start the Dockerized PostgreSQL. The first start loads the raw CSVs into the `raw` schema:
+
+   ```powershell
+   docker compose up -d
+   docker compose exec postgres psql -U postgres -d airbnb -c "select count(*) from raw.raw_listings;"
    ```
+
+4. Install dbt packages and build/test the models:
+
+   ```powershell
    cd airbnb_dbt
-   dbt deps
-   dbt seed
+   uv run dbt deps
+   uv run dbt build --profiles-dir ..
    ```
-5. Run the dbt models:
 
-   ```
-   dbt run
-   ```
-6. Set up Dagster for orchestration:
+5. Start Dagster (UI on port `3001`):
 
-   ```
+   ```powershell
    cd ../airbnb_dagster_project
-   pip install -e .
-   dagster dev
+   uv run dagster dev -p 3001
    ```
-7. Set up Metabase for visualization:
 
+6. (Optional) Browse the database with pgAdmin at `http://localhost:5050`:
+
+   - Login: `admin@example.com` / `admin123`
+   - Server: `Airbnb Postgres` (pre-configured)
+   - Database: `airbnb`
+   - User: `postgres`
+   - Password: `cikalmerdeka`
+
+   To watch row counts from the terminal while Dagster runs:
+
+   ```powershell
+   .\scripts\watch_db.ps1
    ```
-   docker run -d -p 3000:3000 --name metabase metabase/metabase
+
+7. (Optional) Start Metabase and connect it to the local database:
+
+   ```powershell
+   docker run -d -p 3000:3000 --name airbnb-metabase metabase/metabase
    ```
+
+   - Host: `host.docker.internal` (or `localhost` if Metabase runs on the host)
+   - Port: `5433`
+   - Database: `airbnb`
+   - User: `metabase`
+   - Password: `metabasePassword123`
+
+### Reset the local database
+
+The Docker init scripts only run when the database volume is empty. To reload the raw data from scratch:
+
+```powershell
+docker compose down -v
+docker compose up -d
+```
+
+> **dbt v2 note:** dbt v2 (formerly Fusion) does not yet support Postgres. This project therefore uses dbt v1 (`dbt-core` 1.12 + `dbt-postgres` 1.11). Once the Postgres adapter ships for dbt v2, the switch is `dagster-dbt[dbt]` + the `dbt` package, with the `dbt-core`/`dbt-postgres` dependencies removed.
 
 ## Workflow Orchestration
 
