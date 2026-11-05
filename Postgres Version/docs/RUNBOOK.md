@@ -31,11 +31,22 @@ Postgres Version/
 ├── docker/init/                # schema, raw-table loader, reporting grants
 ├── docker/pgadmin/             # pgAdmin server configuration
 ├── scripts/watch_db.ps1        # live row-count watcher
-├── airbnb_dbt/                 # dbt project
+├── airbnb_dbt/                 # dbt project (staging → analytics)
 ├── airbnb_dagster_project/     # Dagster project
 ├── sql/                        # ad-hoc data checks
 └── docs/                       # notes and this runbook
 ```
+
+### Schema map
+
+| Schema | Purpose | Visible to Metabase |
+| --- | --- | --- |
+| `raw` | CSV-loaded source tables | No |
+| `staging` | Ephemeral sources, intermediate views, seeds | No |
+| `analytics` | Dimensions, review fact, and dashboard marts | Yes |
+| `snapshots` | SCD example snapshots | No |
+
+`analytics` is the reporting contract. `staging` is internal and the `reporter` role is explicitly denied access to it.
 
 ## Prerequisites
 
@@ -128,7 +139,7 @@ uv run dbt deps --profiles-dir ..
 uv run dbt debug --profiles-dir ..
 ```
 
-Expected: `All checks passed!` with host `localhost`, port `5433`, database `airbnb`, schema `staging`.
+Expected: `All checks passed!` with host `localhost`, port `5433`, and database `airbnb`. The profile's default schema is `staging`; model schema routing is defined in `airbnb_dbt/dbt_project.yml` and `generate_schema_name`.
 
 ### 7. Build and test the dbt project
 
@@ -136,14 +147,21 @@ Expected: `All checks passed!` with host `localhost`, port `5433`, database `air
 uv run dbt build --profiles-dir ..
 ```
 
-This runs the seed, snapshots, models, and tests in dependency order. The current project finishes with:
+This runs the seeds, snapshots, models, and tests in dependency order. The project should finish with:
 
 ```text
 Completed successfully
-Done. PASS=28 WARN=0 ERROR=0 SKIP=0
+Done. PASS=125 WARN=0 ERROR=0 SKIP=0 NO-OP=5 REUSED=0 TOTAL=130
 ```
 
-The final models are created in the `staging` schema. Raw tables stay in `raw`.
+The five `NO-OP` nodes are the dashboard exposures (dbt reports exposures, not builds, in a `build` run). `uv run dbt test --profiles-dir ..` runs the 106 data tests and finishes with `PASS=106`.
+
+Where the objects land:
+
+- `raw` — CSV-loaded source tables.
+- `staging` — ephemeral `src_*` models, `int_*` views, and seeds.
+- `analytics` — `dim_*`, `fct_reviews`, and `mart_*` tables; this is what Metabase reads.
+- `snapshots` — `scd_raw_hosts` and `scd_raw_listings`.
 
 ### 8. Start Dagster
 
@@ -175,8 +193,10 @@ Useful pgAdmin paths:
 
 ```text
 Servers → Airbnb Postgres → Databases → airbnb → Schemas
-  ├── raw      → raw_listings, raw_hosts, raw_reviews
-  └── staging  → dim_*, fct_reviews, full_moon_reviews, snapshots
+  ├── raw        → raw_listings, raw_hosts, raw_reviews
+  ├── staging    → int_* views and seed_* tables (internal)
+  ├── analytics  → dim_*, fct_reviews, mart_* (BI-facing)
+  └── snapshots  → scd_raw_hosts, scd_raw_listings
 ```
 
 Right-click a table → **View/Edit Data** → **First 100 Rows**. Use the refresh button after running dbt or Dagster.
@@ -198,6 +218,8 @@ Create a Postgres connection in Metabase with:
 | Database | `airbnb` |
 | User | `metabase` |
 | Password | `metabasePassword123` |
+
+Query the `analytics` schema, not `staging`. `analytics` contains `dim_*`, `fct_reviews`, and `mart_*`; `staging` is internal and the `reporter` role has no `USAGE` on it.
 
 Dagster uses `3001` and Metabase uses `3000`, so they can run at the same time.
 
@@ -232,7 +254,7 @@ From `Postgres Version/`:
 .\scripts\watch_db.ps1
 ```
 
-The script shows exact row counts for the three raw tables and lists staging tables/views as they appear (staging table counts are PostgreSQL estimates). It works even before the first `dbt build`, so it is useful during the step-by-step walkthrough below. Press `Ctrl+C` to stop.
+The script shows exact row counts for the three raw tables and lists staging views plus analytics and snapshot tables as they appear (non-raw counts are PostgreSQL estimates). It works even before the first `dbt build`, so it is useful during the step-by-step walkthrough below. Press `Ctrl+C` to stop.
 
 If PowerShell blocks the script:
 
@@ -278,20 +300,50 @@ docker/init/02_raw_tables.sql   (COPY into raw schema)
 raw.raw_listings / raw.raw_hosts / raw.raw_reviews
         │
         ▼
-airbnb_dbt/models/sources.yml   (source schema: raw)
+airbnb_dbt/models/staging       (ephemeral src_* models)
         │
         ▼
-dbt staging → dimension → fact → mart models in staging
+airbnb_dbt/models/intermediate  (int_* views in staging)
+        │
+        ▼
+airbnb_dbt/models/analytics     (dim_*, fct_reviews, mart_* in analytics)
         │
         ▼
 Dagster assets / dbt build
         │
         ├── pgAdmin (browse tables)
         ├── watch_db.ps1 (live row counts)
-        └── Metabase (dashboards)
+        └── Metabase (dashboards on analytics)
 ```
 
-Raw CSV sources and download links are documented in `data/raw/README.md`. The small `seed_full_moon_dates.csv` seed is tracked in `airbnb_dbt/seeds/`.
+Raw CSV sources and download links are documented in `data/raw/README.md`. The tracked seeds are `seed_full_moon_dates.csv` and `seed_review_topics.csv`.
+
+## Analytics model map
+
+| Model | Grain | Expected rows |
+| --- | --- | ---: |
+| `dim_date` | One row per day (2009-01-01 → 2021-12-31) | 4,748 |
+| `dim_listings` | One row per listing | 17,499 |
+| `dim_hosts` | One row per host | 14,111 |
+| `fct_reviews` | One row per distinct review | 410,283 |
+| `mart_listing_performance` | One row per listing | 17,499 |
+| `mart_host_performance` | One row per host | 14,111 |
+| `mart_market_monthly` | Month × room type | 620 |
+| `mart_price_bands` | Price band × room type | 28 |
+| `mart_room_type_benchmark` | One row per room type | 4 |
+| `mart_review_topics` | Month × keyword topic (months with comments) | 1,573 |
+| `mart_executive_kpis` | One row per month | 155 |
+| `mart_full_moon_reviews` | Full-moon group × sentiment | 8 |
+
+The five dbt exposures map to the intended Metabase dashboards:
+
+| Exposure | Primary models |
+| --- | --- |
+| `executive_overview` | `mart_executive_kpis`, `mart_market_monthly`, `dim_listings` |
+| `supply_pricing` | `mart_price_bands`, `mart_room_type_benchmark`, `dim_listings` |
+| `guest_experience` | `mart_review_topics`, `mart_market_monthly`, `fct_reviews` |
+| `host_portfolio` | `mart_host_performance`, `dim_hosts` |
+| `listing_explorer` | `mart_listing_performance` |
 
 ## How dbt and Dagster fit together
 
@@ -309,7 +361,7 @@ Dagster: "Run the pipeline now / at midnight / retry the failed asset."
 dbt CLI: "I will build the seed, snapshots, models, and tests in dependency order."
    │
    ▼
-Postgres: "I store the raw data and the resulting staging tables."
+Postgres: "I store the raw data and the resulting analytics tables."
 ```
 
 ### dbt's role
@@ -319,10 +371,10 @@ dbt owns everything that happens **inside** the transformation:
 - reads the raw tables from `raw.raw_listings`, `raw.raw_hosts`, and `raw.raw_reviews`;
 - compiles and runs the SQL models in `airbnb_dbt/models/`;
 - applies materializations (`view`, `table`, `incremental`, `ephemeral`);
-- runs the seed `seed_full_moon_dates`;
+- runs the seeds `seed_full_moon_dates` and `seed_review_topics`;
 - manages the snapshots `scd_raw_hosts` and `scd_raw_listings`;
 - runs the data tests defined in `schema.yml`, `sources.yml`, and `tests/`;
-- writes the final models into the `staging` schema;
+- writes intermediate views and seeds into `staging`, dimensions/fact/marts into `analytics`, and snapshots into `snapshots`;
 - generates `target/manifest.json`, which describes the model graph, columns, tests, and dependencies.
 
 dbt is fully usable on its own:
@@ -377,7 +429,7 @@ Dagster **does not**:
 | Capability | dbt CLI | Dagster |
 | --- | --- | --- |
 | Run everything | `dbt build` | **Materialize all** |
-| Run a specific model | `dbt run --select dim_listings_cleansed` | Select the asset → **Materialize selected** |
+| Run a specific model | `dbt run --select dim_listings` | Select the asset → **Materialize selected** |
 | Run tests | `dbt test` (or included in `dbt build`) | dbt tests appear as **asset checks** |
 | Schedule | External cron/script | Built-in schedule |
 | Retries/backfills | Manual | UI/API driven |
@@ -392,7 +444,7 @@ Examples from `airbnb_dbt/`:
 uv run dbt build --profiles-dir ..
 
 # Run only one model
-uv run dbt run --select dim_listings_cleansed --profiles-dir ..
+uv run dbt run --select dim_listings --profiles-dir ..
 
 # Run one model and its upstream parents
 uv run dbt build --select +fct_reviews --profiles-dir ..
@@ -563,21 +615,33 @@ In the Dagster UI, open **Assets** and materialize the assets one at a time in t
 
 | Step | Dagster asset | Object created in Postgres | Expected rows | Type |
 | --- | --- | --- | --- | --- |
-| 1 | `seed_full_moon_dates` | `staging.seed_full_moon_dates` | 272 | table |
-| 2 | `scd_raw_hosts` | `staging.scd_raw_hosts` | 14,111 | snapshot table |
-| 3 | `scd_raw_listings` | `staging.scd_raw_listings` | 17,499 | snapshot table |
-| 4 | `dim_hosts_cleansed` | `staging.dim_hosts_cleansed` | 14,111 | view |
-| 5 | `dim_listings_cleansed` | `staging.dim_listings_cleansed` | 17,499 | view |
-| 6 | `dim_listings_w_hosts` | `staging.dim_listings_w_hosts` | 17,499 | table |
-| 7 | `fct_reviews` | `staging.fct_reviews` | 409,697 | incremental table |
-| 8 | `full_moon_reviews` | `staging.full_moon_reviews` | 409,697 | table |
+| 1 | `seed_full_moon_dates` | `staging.seed_full_moon_dates` | 272 | seed table |
+| 2 | `seed_review_topics` | `staging.seed_review_topics` | 11 | seed table |
+| 3 | `scd_raw_hosts` | `snapshots.scd_raw_hosts` | 14,111 | snapshot table |
+| 4 | `scd_raw_listings` | `snapshots.scd_raw_listings` | 17,499 | snapshot table |
+| 5 | `int_listings_enriched` | `staging.int_listings_enriched` | — | view |
+| 6 | `dim_date` | `analytics.dim_date` | 4,748 | table |
+| 7 | `dim_hosts` | `analytics.dim_hosts` | 14,111 | table |
+| 8 | `dim_listings` | `analytics.dim_listings` | 17,499 | table |
+| 9 | `int_reviews_deduped` | `staging.int_reviews_deduped` | — | view |
+| 10 | `fct_reviews` | `analytics.fct_reviews` | 410,283 | incremental table |
+| 11 | `mart_listing_performance` | `analytics.mart_listing_performance` | 17,499 | table |
+| 12 | `mart_host_performance` | `analytics.mart_host_performance` | 14,111 | table |
+| 13 | `mart_market_monthly` | `analytics.mart_market_monthly` | 620 | table |
+| 14 | `mart_price_bands` | `analytics.mart_price_bands` | 28 | table |
+| 15 | `mart_room_type_benchmark` | `analytics.mart_room_type_benchmark` | 4 | table |
+| 16 | `int_review_topics` | `staging.int_review_topics` | — | view |
+| 17 | `mart_review_topics` | `analytics.mart_review_topics` | 1,573 | table |
+| 18 | `mart_executive_kpis` | `analytics.mart_executive_kpis` | 155 | table |
+| 19 | `mart_full_moon_reviews` | `analytics.mart_full_moon_reviews` | 8 | table |
 
 Notes:
 
 - The ephemeral `src_*` staging models do **not** create separate tables. They are compiled into the downstream models.
-- `dim_hosts_cleansed` and `dim_listings_cleansed` are **views**, so they do not store rows and do not appear in `pg_stat_user_tables`. pgAdmin shows them under **Views**.
-- `full_moon_reviews` needs both `fct_reviews` and `seed_full_moon_dates`.
-- `dim_listings_w_hosts` needs both dimension views.
+- The `int_*` intermediate models are **views** in `staging`. They do not store rows, but they are still dbt/Dagster assets and **must exist before their dependents**. In the Dagster UI, materialize them or use an upstream/ancestor selection.
+- `mart_review_topics` needs `fct_reviews`, `int_review_topics`, and `seed_review_topics`.
+- `mart_full_moon_reviews` needs `fct_reviews` and `seed_full_moon_dates`.
+- The marts depend on the dimensions and `fct_reviews`; materialize dimensions and the fact first.
 - If you materialize a downstream asset before its upstream dependency, dbt can fail because the upstream table/view does not exist yet. Follow the table order, or use **Materialize all**.
 - Dagster may include upstream dependencies automatically in a run depending on the selection. Extra assets in the run are fine; the table above is the expected creation order.
 
@@ -594,17 +658,18 @@ Notes:
 The watcher shows:
 
 - exact row counts for the three `raw.*` tables;
-- staging tables as they appear (row count is PostgreSQL's `n_live_tup` estimate);
-- staging views as they appear (blank row count).
+- staging tables and views as they appear (`n_live_tup` estimates for tables, blank counts for views);
+- analytics and snapshot tables as they appear (`n_live_tup` estimates).
 
 Press `Ctrl+C` to stop it.
 
 **psql checks:**
 
 ```powershell
-docker compose exec postgres psql -U postgres -d airbnb -c "\dt staging.*"
+docker compose exec postgres psql -U postgres -d airbnb -c "\dt analytics.*"
 docker compose exec postgres psql -U postgres -d airbnb -c "\dv staging.*"
-docker compose exec postgres psql -U postgres -d airbnb -c "SELECT count(*) FROM staging.fct_reviews;"
+docker compose exec postgres psql -U postgres -d airbnb -c "SELECT count(*) FROM analytics.fct_reviews;"
+docker compose exec postgres psql -U postgres -d airbnb -c "\dt snapshots.*"
 ```
 
 `\dt` lists tables and `\dv` lists views.
@@ -616,17 +681,16 @@ If you prefer the terminal, run the same steps from `airbnb_dbt/`:
 ```powershell
 cd airbnb_dbt
 
-uv run dbt build --select seed_full_moon_dates --profiles-dir ..
-uv run dbt build --select scd_raw_hosts --profiles-dir ..
-uv run dbt build --select scd_raw_listings --profiles-dir ..
-uv run dbt build --select dim_hosts_cleansed --profiles-dir ..
-uv run dbt build --select dim_listings_cleansed --profiles-dir ..
-uv run dbt build --select dim_listings_w_hosts --profiles-dir ..
-uv run dbt build --select fct_reviews --profiles-dir ..
-uv run dbt build --select full_moon_reviews --profiles-dir ..
+uv run dbt build --select seed_full_moon_dates seed_review_topics --profiles-dir ..
+uv run dbt build --select scd_raw_hosts scd_raw_listings --profiles-dir ..
+uv run dbt build --select +dim_date +dim_hosts +dim_listings --profiles-dir ..
+uv run dbt build --select +fct_reviews --profiles-dir ..
+uv run dbt build --select +mart_listing_performance +mart_host_performance --profiles-dir ..
+uv run dbt build --select +mart_market_monthly +mart_price_bands +mart_room_type_benchmark --profiles-dir ..
+uv run dbt build --select +mart_executive_kpis +mart_review_topics +mart_full_moon_reviews --profiles-dir ..
 ```
 
-`dbt build --select <node>` runs that node plus its tests. It does not automatically run every ancestor, so keep the order. Use `dbt run --select <node>` if you want to skip tests.
+`dbt build --select +<node>` includes the node, its tests, and all ancestors (including the `int_*` views and dimensions). Without the leading `+`, dbt does not run ancestors, which is why the intermediate views must be built first. Use `dbt run --select <node>` if you want to skip tests.
 
 To run the whole pipeline at once instead:
 
@@ -687,17 +751,19 @@ Useful psql commands:
 
 ```sql
 \dt raw.*
-\dt staging.*
-\d staging.fct_reviews
-SELECT count(*) FROM staging.fct_reviews;
-SELECT * FROM staging.full_moon_reviews LIMIT 10;
+\dt analytics.*
+\dv staging.*
+\d analytics.fct_reviews
+SELECT count(*) FROM analytics.fct_reviews;
+SELECT * FROM analytics.mart_market_monthly ORDER BY month_start DESC LIMIT 10;
+\dt snapshots.*
 \q
 ```
 
 One-line query:
 
 ```powershell
-docker compose exec postgres psql -U postgres -d airbnb -c "SELECT count(*) FROM staging.dim_listings_w_hosts;"
+docker compose exec postgres psql -U postgres -d airbnb -c "SELECT count(*) FROM analytics.dim_listings;"
 ```
 
 From a host tool such as DBeaver, pgAdmin (desktop), or psql, connect to:
@@ -794,9 +860,24 @@ docker compose down -v
 docker compose up -d
 ```
 
-### `seed_full_moon_dates.csv` is missing after a fresh clone
+### Metabase cannot see the `analytics` tables
 
-The seed file is tracked in `airbnb_dbt/seeds/`. The root `.gitignore` ignores `*.csv` but explicitly unignores this seed. If you copy the repo manually, make sure that file is included.
+The reporting grants are applied by `docker/init/03_reporting.sql` on a fresh volume. On an existing database, run them once manually from `Postgres Version/`:
+
+```powershell
+Get-Content -Raw .\docker\init\03_reporting.sql | docker compose exec -T postgres psql -U postgres -d airbnb
+```
+
+Verify the `metabase` user can read `analytics` but not `staging`:
+
+```powershell
+docker compose exec -T -e PGPASSWORD=metabasePassword123 postgres psql -U metabase -d airbnb -c "select count(*) from analytics.dim_listings;"
+docker compose exec -T -e PGPASSWORD=metabasePassword123 postgres psql -U metabase -d airbnb -c "select count(*) from staging.int_listings_enriched;"
+```
+
+### `seed_full_moon_dates.csv` or `seed_review_topics.csv` is missing after a fresh clone
+
+Both seed files are tracked in `airbnb_dbt/seeds/`. The root `.gitignore` ignores `*.csv` but explicitly unignores these two seeds. If you copy the repo manually, make sure both files are included.
 
 ### Python 3.14 is being used instead of 3.13
 
@@ -836,7 +917,11 @@ After setup, these should all be true:
 - `.venv/pyvenv.cfg` references uv's Python 3.13
 - `docker compose ps` → Postgres healthy, pgAdmin up
 - Raw table counts: 17,499 / 14,111 / 410,284
-- `uv run dbt build --profiles-dir ..` → 28 PASS, 0 errors
+- `uv run dbt build --profiles-dir ..` → all nodes PASS, 0 errors
+- `analytics.dim_listings` = 17,499; `dim_hosts` = 14,111; `fct_reviews` = 410,283
+- `analytics` contains only `dim_*`, `fct_reviews`, and `mart_*` objects
+- `reporter` can `SELECT` from `analytics` and cannot use `staging`
+- `uv run dbt docs generate --profiles-dir ..` → five exposures in the docs
 - `http://localhost:3001` → Dagster UI loads
 - `http://localhost:5050` → pgAdmin login page loads
-- `.\scripts\watch_db.ps1` → prints the raw/staging table inventory and counts
+- `.\scripts\watch_db.ps1` → prints the raw/staging/analytics/snapshots inventory and counts

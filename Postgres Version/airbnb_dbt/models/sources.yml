@@ -92,6 +92,8 @@ sources:
             description: Timestamp indicating when the host profile was last updated.
             data_type: timestamp
 
+      # Freshness is not applicable: the raw CSV is a static 2021 snapshot.
+      # Add a freshness contract when a real ingestion layer exists.
       - name: reviews
         identifier: raw_reviews
         description: >
@@ -117,8 +119,3 @@ sources:
           - name: sentiment
             description: A classification of the review sentiment (e.g., positive, negative, neutral).
             data_type: string
-
-        loaded_at_field: date
-        freshness:
-          warn_after: { count: 1, period: hour }
-          error_after: { count: 24, period: hour }

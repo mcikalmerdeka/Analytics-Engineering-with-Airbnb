@@ -74,7 +74,7 @@ To watch table counts change while Dagster or dbt runs:
 .\scripts\watch_db.ps1
 ```
 
-The script shows exact row counts for the raw tables and lists staging tables/views as they appear (staging table counts are PostgreSQL estimates). It works even before the first `dbt build`. Press `Ctrl+C` to stop. If PowerShell blocks the script, run:
+The script shows exact row counts for the raw tables and lists staging views plus analytics and snapshot tables as they appear (non-raw counts are PostgreSQL estimates). It works even before the first `dbt build`. Press `Ctrl+C` to stop. If PowerShell blocks the script, run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\watch_db.ps1
@@ -89,6 +89,8 @@ Use these values in Metabase's database connection form:
 - Database: `airbnb`
 - User: `metabase`
 - Password: `metabasePassword123`
+
+Query the `analytics` schema. `staging` is internal and the `reporter` role has no access to it.
 
 ## Reset the local database
 

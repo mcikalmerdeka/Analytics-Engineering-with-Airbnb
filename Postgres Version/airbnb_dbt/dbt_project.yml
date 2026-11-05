@@ -29,13 +29,19 @@ clean-targets: # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   airbnb_dbt:
-    +materialized: view
-    # +post-hook:
-    #   - "GRANT SELECT ON {{ this }} TO ROLE reporter"
-    dimension:
-      +materialized: table
     staging:
       +materialized: ephemeral
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: staging
+    analytics:
+      +materialized: table
+      +schema: analytics
+
+snapshots:
+  airbnb_dbt:
+    +target_schema: snapshots
 
 vars:
   user_name: default_user_name_for_this_project

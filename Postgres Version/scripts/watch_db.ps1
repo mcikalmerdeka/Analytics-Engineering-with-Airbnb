@@ -29,6 +29,14 @@ FROM (
     FROM pg_class c
     JOIN pg_namespace n ON n.oid = c.relnamespace
     WHERE n.nspname = 'staging' AND c.relkind = 'v'
+    UNION ALL
+    SELECT 'analytics.' || relname, n_live_tup, 'table'
+    FROM pg_stat_user_tables
+    WHERE schemaname = 'analytics'
+    UNION ALL
+    SELECT 'snapshots.' || relname, n_live_tup, 'table'
+    FROM pg_stat_user_tables
+    WHERE schemaname = 'snapshots'
 ) AS objects
 ORDER BY kind, object_name
 \watch $Seconds

@@ -1,16 +1,8 @@
-WITH mart_fullmoon_reviews AS (
-    SELECT *
-    FROM {{ ref('full_moon_reviews') }}
-)
 SELECT
     is_full_moon,
     review_sentiment,
-    COUNT(*) AS reviews
-FROM
-    mart_fullmoon_reviews
-GROUP BY
-    is_full_moon,
-    review_sentiment
+    reviews
+FROM {{ ref('mart_full_moon_reviews') }}
 ORDER BY
     is_full_moon,
     review_sentiment

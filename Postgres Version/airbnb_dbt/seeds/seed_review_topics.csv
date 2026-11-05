@@ -1,0 +1,12 @@
+topic,keywords_regex
+cleanliness,sauber|\yclean\y|hygien|schmutz|\ydirty\y
+location,\ylage\y|\ylocation\y|\yzentral\y|\ycentral\y|\ynahe\y|close to|\ynear\y
+host,gastgeber|\yhost\y|\ykommunikation\y|\ycommunication\y
+check-in,check.?in|check.?out|ankunft|arrival|schlüssel|\ykey\y
+noise,\yruhig\y|\yquiet\y|\ylaut\y|\ynoisy\y|\ylärm\y|\ynoise\y
+bed,\ybett\y|\ybed\y|\ymatratze\y|\ymattress\y
+bathroom,badezimmer|\ybathroom\y|\ydusche\y|\yshower\y|\ywc\y
+kitchen,küche|\ykitchen\y
+wifi,wlan|\ywifi\y|\yinternet\y
+transport,u.?bahn|s.?bahn|\ybahn\y|\ymetro\y|\ysubway\y|\ybus\y|\ytransport\y
+breakfast,frühstück|\ybreakfast\y

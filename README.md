@@ -45,10 +45,10 @@ Postgres Version/
 ├── profiles.yml                  # Local dbt connection (gitignored)
 ├── airbnb_dbt/                   # dbt project for data transformations
 │   ├── models/                   # Data models organized in layers
-│   │   ├── staging/              # Source-aligned raw data models
-│   │   ├── dimension/            # Dimension tables (hosts, listings)
-│   │   ├── fact/                 # Fact tables (reviews)
-│   │   └── mart/                 # Business-specific aggregations
+│   │   ├── staging/              # Ephemeral source-aligned models
+│   │   ├── intermediate/         # Joins, dedupe, and topic matching (views)
+│   │   └── analytics/            # Dimensions, review fact, and marts
+│   ├── seeds/                    # Full-moon and review-topic seeds
 │   ├── dbt_project.yml           # dbt project configuration
 │   └── packages.yml              # dbt dependencies
 ├── airbnb_dagster_project/       # Dagster project for workflow orchestration
@@ -59,27 +59,40 @@ Postgres Version/
 
 ## Data Models
 
-The data models are organized into the following layers:
+`analytics` is the only BI-facing schema. `staging` holds ephemeral source models, intermediate views, and seeds; `snapshots` holds the SCD examples.
 
-### Source Layer (Staging)
+### Staging Layer (ephemeral)
 
 - `src_listings`: Raw listings data from Airbnb
 - `src_hosts`: Raw hosts data from Airbnb
 - `src_reviews`: Raw reviews data from Airbnb
 
-### Dimensions Layer
+### Intermediate Layer (views in `staging`)
 
-- `dim_listings_cleansed`: Cleaned listings data with proper data types
-- `dim_hosts_cleansed`: Cleaned hosts data with proper data types
-- `dim_listings_w_hosts`: Joint dimension table with listings and hosts data
+- `int_listings_enriched`: Listings joined to hosts with price, age, minimum-night, and portfolio segments
+- `int_reviews_deduped`: Exact-deduplicated reviews with sentiment scoring
+- `int_review_topics`: One row per review and matched keyword topic
+
+### Analytics Dimensions
+
+- `dim_date`: Calendar spine for 2009-01-01 → 2021-12-31
+- `dim_listings`: One row per listing with host attributes and derived segments
+- `dim_hosts`: One row per host with host age and portfolio segment
 
 ### Fact Layer
 
-- `fct_reviews`: Fact table containing reviews data with incremental loading capability
+- `fct_reviews`: Incremental review fact with a deterministic review key and 3-day lookback
 
 ### Mart Layer
 
-- `full_moon_reviews`: Analysis of reviews that occurred during full moon periods
+- `mart_listing_performance`: One row per listing with review volume, recency, and sentiment
+- `mart_host_performance`: One row per host with portfolio, price, and sentiment rollups
+- `mart_market_monthly`: Month × room type supply and review activity
+- `mart_price_bands`: Price band × room type distribution
+- `mart_room_type_benchmark`: Room-type price and review benchmarks
+- `mart_review_topics`: Month × keyword topic mentions
+- `mart_executive_kpis`: Monthly KPI cards
+- `mart_full_moon_reviews`: Full-moon sentiment novelty mart
 
 ## Getting Started
 
@@ -177,26 +190,15 @@ The project uses Dagster to orchestrate the dbt transformations. The Dagster pip
 
 ![Airbnb Executive Dashboard](https://raw.githubusercontent.com/mcikalmerdeka/Analytics-Engineering-with-Airbnb/refs/heads/main/assets/Metabase%20Dashboard.png)
 
-The project uses Metabase to create an interactive executive dashboard that includes:
+Metabase reads only the `analytics` schema. Five dashboards are modeled as dbt exposures:
 
-- **KPI Metrics**:
+- **Executive Overview** (`executive_overview`): KPI cards, supply and host growth, review volume, room mix, and sentiment trend.
+- **Supply and Pricing** (`supply_pricing`): price distribution, room-type benchmarks, minimum-night segments, and superhost pricing.
+- **Guest Experience** (`guest_experience`): review volume and seasonality, sentiment, and keyword topic mentions.
+- **Host Portfolio** (`host_portfolio`): portfolio concentration, professional host segments, and superhost performance.
+- **Listing Explorer** (`listing_explorer`): one-row-per-listing drill-down table.
 
-  - Number of Hosts (290)
-  - New Listings (331)
-- **Interactive Filters**:
-
-  - Room Type (Entire home, Private room, Other)
-  - Superhost Indicator (True/False)
-  - Price Range
-  - Review Sentiment
-  - Fullmoon Indicator
-  - Month and Year selection
-- **Data Visualizations**:
-
-  - Superhosts Distribution (pie chart showing percentage of superhosts)
-  - Room Type Distribution (breakdown of listing types)
-  - Sentiment vs Full Moon Analysis (comparing review sentiment during full moon periods)
-  - Price Distribution (histogram of listing prices)
+Questions built against the old `staging` schema are intentionally not carried forward. Rebuild them against `analytics` after a database reset.
 
 ## Project Workflow
 

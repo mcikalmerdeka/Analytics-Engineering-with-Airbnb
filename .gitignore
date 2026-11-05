@@ -10,6 +10,7 @@
 # Postgres Version patterns
 *.csv
 !Postgres Version/airbnb_dbt/seeds/seed_full_moon_dates.csv
+!Postgres Version/airbnb_dbt/seeds/seed_review_topics.csv
 dbt-env/
 logs/
 Postgres Version/logs/
