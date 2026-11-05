@@ -25,6 +25,7 @@ SELECT
     l.price_band,
     l.is_price_outlier,
     l.minimum_nights,
+    l.minimum_nights_band,
     l.host_id,
     l.host_name,
     l.is_superhost,

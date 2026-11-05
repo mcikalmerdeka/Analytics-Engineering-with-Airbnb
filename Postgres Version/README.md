@@ -5,7 +5,7 @@ Local Airbnb analytics stack:
 - **PostgreSQL 17** in Docker (host port `5433`; the local PostgreSQL 18 service is left untouched)
 - **dbt v1** (`dbt-core` 1.12 + `dbt-postgres` 1.11)
 - **Dagster** 1.13 for orchestration
-- **Metabase** for visualization (optional)
+- **Metabase** in Docker (host port `3000`), with its application data stored in Postgres
 
 Full command reference and troubleshooting: [`docs/RUNBOOK.md`](docs/RUNBOOK.md). The older setup notes are in `docs/` as well.
 
@@ -22,7 +22,7 @@ cd "Postgres Version"
 # 1. Create/use the uv-managed Python 3.13 environment
 uv sync
 
-# 2. Start Postgres and load the raw CSVs into the raw schema
+# 2. Start Postgres, Metabase, and pgAdmin, and load the raw CSVs into the raw schema
 docker compose up -d
 docker compose exec postgres psql -U postgres -d airbnb -c "select count(*) from raw.raw_listings;"
 
@@ -36,18 +36,19 @@ cd ../airbnb_dagster_project
 uv run dagster dev -p 3001
 ```
 
-The raw CSVs must exist in `data/raw/` (the CSV files are gitignored; see `data/raw/README.md`). The Docker init scripts load `raw_listings.csv`, `raw_hosts.csv`, and `raw_reviews.csv` into the `raw` schema on the first container start.
+The raw CSVs must exist in `data/raw/` (the CSV files are gitignored; see `data/raw/README.md`). The Docker init scripts load `raw_listings.csv`, `raw_hosts.csv`, and `raw_reviews.csv` into the `raw` schema and create the `metabase` application database on the first container start.
 
 ## Daily commands
 
 | Task | Command |
 | --- | --- |
 | Sync Python environment | `uv sync` |
-| Start Postgres | `docker compose up -d` |
-| Stop Postgres | `docker compose stop` |
+| Start stack | `docker compose up -d` |
+| Stop stack | `docker compose stop` |
 | dbt build + test | `cd airbnb_dbt; uv run dbt build --profiles-dir ..` |
 | dbt docs | `cd airbnb_dbt; uv run dbt docs generate --profiles-dir ..` |
 | Dagster UI | `cd airbnb_dagster_project; uv run dagster dev -p 3001` |
+| Metabase | http://localhost:3000 |
 | pgAdmin | http://localhost:5050 |
 | Live row counts | `.\scripts\watch_db.ps1` |
 | Run a dbt command directly | `cd airbnb_dbt; uv run dbt <command> --profiles-dir ..` |
@@ -82,15 +83,26 @@ powershell -ExecutionPolicy Bypass -File .\scripts\watch_db.ps1
 
 ## Connecting Metabase
 
-Use these values in Metabase's database connection form:
+Metabase runs in the Compose stack at http://localhost:3000. Its application
+data (users, questions, dashboards) lives in the separate `metabase` database
+inside the same Postgres container, not in the container filesystem.
 
-- Host: `host.docker.internal` (from a Metabase container) or `localhost` (from the host)
-- Port: `5433`
+On the first start, complete the setup wizard and create the admin account.
+Then add the analytics database with these values:
+
+- Display name: `Airbnb Analytics`
+- Host: `postgres` (the Compose service name; `localhost` only works from the host)
+- Port: `5432` (inside the Docker network; `5433` is the host mapping)
 - Database: `airbnb`
 - User: `metabase`
 - Password: `metabasePassword123`
+- SSL: off (local Docker network)
 
-Query the `analytics` schema. `staging` is internal and the `reporter` role has no access to it.
+Query the `analytics` schema. `staging` is internal and the `reporter` role has
+no access to it. The full dashboard build guide is in
+[`docs/METABASE_DASHBOARDS.md`](docs/METABASE_DASHBOARDS.md). If you build the
+questions as native SQL, use the matching
+[`docs/METABASE_SQL_WITH_FILTERS.md`](docs/METABASE_SQL_WITH_FILTERS.md).
 
 ## Reset the local database
 
@@ -100,6 +112,12 @@ The init scripts run only when the Docker volume is empty. To reload the raw dat
 docker compose down -v
 docker compose up -d
 ```
+
+`down -v` also removes the Metabase application database and its volume, so
+saved questions and dashboards are lost. Re-run the Metabase setup wizard after
+the reset. This is the supported full reset; dropping only the `airbnb`
+database keeps Metabase settings but requires re-running the init scripts and a
+full `dbt build` manually.
 
 ## Notes
 

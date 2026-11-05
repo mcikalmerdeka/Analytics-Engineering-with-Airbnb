@@ -272,6 +272,11 @@ models:
         tests:
           - not_null
 
+      - name: minimum_nights_band
+        description: Derived minimum-night band, carried from dim_listings for dashboard filters.
+        tests:
+          - not_null
+
       - name: has_reviews
         description: TRUE when the listing has at least one review.
         tests:
