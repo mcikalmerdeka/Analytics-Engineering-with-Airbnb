@@ -1,0 +1,10 @@
+# Metabase application-database dumps contain account data and secrets.
+# Keep them out of Git. The JSON export in ../export/ is safe to commit.
+*.dump
+*.backup
+*.sql
+*.tar
+*.tgz
+
+# Keep the folder itself.
+!.gitkeep

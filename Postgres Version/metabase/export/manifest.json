@@ -1,0 +1,38 @@
+{
+  "exported_at": "2026-11-06T06:34:16+00:00",
+  "metabase_url": "http://localhost:3000",
+  "metabase_version": "v0.64.3.5",
+  "root_collection_id": 5,
+  "root_collection_name": "Airbnb Analytics",
+  "include_archived": false,
+  "counts": {
+    "collections": 2,
+    "cards": 14,
+    "dashboards": 1
+  },
+  "files": {
+    "collections": [
+      "collections/000005-airbnb-analytics.json",
+      "collections/000006-executive-overview-collection.json"
+    ],
+    "cards": [
+      "cards/000040-kpi-total-listings.json",
+      "cards/000041-kpi-total-hosts.json",
+      "cards/000042-kpi-total-reviews.json",
+      "cards/000043-kpi-active-listings-12m.json",
+      "cards/000044-kpi-avg-nightly-price.json",
+      "cards/000045-chart-supply-and-host-growth.json",
+      "cards/000046-chart-new-listings-per-month.json",
+      "cards/000047-chart-monthly-reviews.json",
+      "cards/000048-chart-room-type-mix.json",
+      "cards/000049-chart-sentiment-mix.json",
+      "cards/000050-chart-avg-sentiment-trend.json",
+      "cards/000051-chart-superhost-share-trend.json",
+      "cards/000052-chart-review-volume-by-room-type.json",
+      "cards/000053-chart-listing-age-cohorts.json"
+    ],
+    "dashboards": [
+      "dashboards/000002-executive-overview-dashboard.json"
+    ]
+  }
+}

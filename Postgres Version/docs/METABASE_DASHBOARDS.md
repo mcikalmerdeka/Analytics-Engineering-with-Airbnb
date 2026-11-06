@@ -781,3 +781,6 @@ dashboard. If you want it on Guest Experience, add:
 9. Update `airbnb_dbt/models/dashboards.yml` with the real dashboard URLs
    (`http://localhost:3000/dashboard/<id>`) if they differ from the
    placeholders.
+10. Save the definitions for Git: `uv run python scripts\export_metabase.py`,
+    then commit `metabase/export/`. The full workflow is in
+    [`../metabase/README.md`](../metabase/README.md).

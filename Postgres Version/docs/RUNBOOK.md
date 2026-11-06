@@ -31,6 +31,10 @@ Postgres Version/
 ├── docker/init/                # schema, raw-table loader, reporting grants, Metabase app DB
 ├── docker/pgadmin/             # pgAdmin server configuration
 ├── scripts/watch_db.ps1        # live row-count watcher
+├── scripts/export_metabase.py  # Git-friendly Metabase definition export
+├── scripts/backup_metabase.ps1 # Metabase app DB backup
+├── scripts/restore_metabase.ps1# Metabase app DB restore
+├── metabase/                   # JSON export (committed) + private app DB dumps (ignored)
 ├── airbnb_dbt/                 # dbt project (staging → analytics)
 ├── airbnb_dagster_project/     # Dagster project
 ├── sql/                        # ad-hoc data checks
@@ -242,6 +246,64 @@ with Field Filter variables are in
 [`METABASE_SQL_WITH_FILTERS.md`](METABASE_SQL_WITH_FILTERS.md).
 
 Dagster uses `3001` and Metabase uses `3000`, so they can run at the same time.
+
+### 11. Save and version the Metabase content
+
+The `metabase/` folder holds two different artifacts:
+
+| Artifact | Purpose | Size | Git |
+| --- | --- | ---: | --- |
+| `metabase/export/**/*.json` | Collections, questions/models, dashboards, SQL, visualization settings, filter mappings | 26.5 KB for 14 cards + 1 dashboard; under 1 MB for the full set | Commit |
+| `metabase/backups/*.dump` | Exact `.dump` of the Metabase application database, including users and settings | ~1.1 MB per dump | **Do not commit** |
+
+Export the definitions after adding or changing dashboards:
+
+```powershell
+uv run python scripts\export_metabase.py
+```
+
+The exporter reads `METABASE_URL` and `METABASE_API_KEY` from `.env` and walks
+the `Airbnb Analytics` collection (`id=5`) and its subcollections. It is
+read-only. The output is cleaned of timestamps, view counts, last-editor
+identity, public-sharing tokens, and permission flags.
+
+Back up the full application database before an upgrade or a reset:
+
+```powershell
+.\scripts\backup_metabase.ps1
+```
+
+Restore it (destructive; replaces the current Metabase app DB):
+
+```powershell
+.\scripts\restore_metabase.ps1 -DumpFile .\metabase\backups\metabase_20261106_133517.dump
+```
+
+The restore script stops Metabase, recreates the `metabase` database, runs
+`pg_restore`, and waits for `/api/health`. The analytics `airbnb` database is
+not touched.
+
+What to commit:
+
+```text
+metabase/export/
+scripts/export_metabase.py
+scripts/backup_metabase.ps1
+scripts/restore_metabase.ps1
+metabase/README.md
+metabase/.gitignore
+```
+
+Never commit:
+
+```text
+.env
+metabase/backups/*.dump
+```
+
+`metabase/.gitignore` excludes the dumps. The full guide, including the API-key
+setup and the Pro serialization alternative, is in
+[`../metabase/README.md`](../metabase/README.md).
 
 ## Daily workflow
 
@@ -764,6 +826,15 @@ uv run dbt build --profiles-dir ..
 | `docker compose down -v` | Remove containers and data volumes |
 | `docker compose restart postgres` | Restart Postgres, keep data |
 
+### Metabase content
+
+| Command | Purpose |
+| --- | --- |
+| `uv run python scripts\export_metabase.py` | Export collections, questions/models, and dashboards to `metabase/export/` |
+| `uv run python scripts\export_metabase.py --include-archived` | Include archived items in the JSON export |
+| `.\scripts\backup_metabase.ps1` | Write a `pg_dump` of the `metabase` app DB to `metabase/backups/` |
+| `.\scripts\restore_metabase.ps1 -DumpFile <path>` | Restore the `metabase` app DB from a dump (destructive) |
+
 ### Database inspection
 
 Use the container shell:
@@ -975,6 +1046,8 @@ After setup, these should all be true:
 - `reporter` can `SELECT` from `analytics` and cannot use `staging`
 - `uv run dbt docs generate --profiles-dir ..` → five exposures in the docs
 - `http://localhost:3000` → Metabase setup page or login loads
+- `uv run python scripts\export_metabase.py` → `metabase/export/manifest.json` lists the expected collections, cards, and dashboards
+- `.\scripts\backup_metabase.ps1` → writes a `.dump` under `metabase/backups/` that Git ignores
 - `http://localhost:3001` → Dagster UI loads
 - `http://localhost:5050` → pgAdmin login page loads
 - `.\scripts\watch_db.ps1` → prints the raw/staging/analytics/snapshots inventory and counts

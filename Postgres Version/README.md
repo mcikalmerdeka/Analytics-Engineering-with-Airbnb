@@ -49,6 +49,8 @@ The raw CSVs must exist in `data/raw/` (the CSV files are gitignored; see `data/
 | dbt docs | `cd airbnb_dbt; uv run dbt docs generate --profiles-dir ..` |
 | Dagster UI | `cd airbnb_dagster_project; uv run dagster dev -p 3001` |
 | Metabase | http://localhost:3000 |
+| Export Metabase definitions | `uv run python scripts\export_metabase.py` |
+| Backup Metabase app DB | `.\scripts\backup_metabase.ps1` |
 | pgAdmin | http://localhost:5050 |
 | Live row counts | `.\scripts\watch_db.ps1` |
 | Run a dbt command directly | `cd airbnb_dbt; uv run dbt <command> --profiles-dir ..` |
@@ -103,6 +105,30 @@ no access to it. The full dashboard build guide is in
 [`docs/METABASE_DASHBOARDS.md`](docs/METABASE_DASHBOARDS.md). If you build the
 questions as native SQL, use the matching
 [`docs/METABASE_SQL_WITH_FILTERS.md`](docs/METABASE_SQL_WITH_FILTERS.md).
+
+## Saving and publishing Metabase content
+
+Metabase stores everything in the `metabase` application database, so it
+survives container restarts. To keep a reviewable copy in Git and a private
+restore point, use the `metabase/` folder:
+
+```powershell
+# Export collections, questions/models, and dashboards to JSON
+uv run python scripts\export_metabase.py
+
+# Full application-database backup (keep private; gitignored)
+.\scripts\backup_metabase.ps1
+```
+
+- Commit `metabase/export/` — it contains the dashboard definitions, SQL,
+  visualization settings, and filter mappings.
+- Do **not** commit `.env` or `metabase/backups/*.dump`; both are gitignored.
+- Restore a dump with `.\scripts\restore_metabase.ps1 -DumpFile <path>`.
+- Full details, sizes, and security notes: [`metabase/README.md`](metabase/README.md).
+
+Metabase's native YAML serialization is a Pro/Enterprise feature. The OSS image
+uses the JSON export above for versioning; the `.dump` is the exact restore
+path.
 
 ## Reset the local database
 

@@ -1,0 +1,67 @@
+{
+  "id": 45,
+  "entity_id": "CNj0sIfYH1aHZjEpy17_k",
+  "name": "Chart - Supply and Host Growth",
+  "description": "Monthly cumulative listing and host counts from the dbt month spine. One row per month; values are cumulative, not new additions.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "line",
+  "dataset_query": {
+    "stages": [
+      {
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT\n    month_start,\n    'Cumulative listings' AS metric,\n    cumulative_listings::numeric AS value\nFROM analytics.mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nUNION ALL\n\nSELECT\n    month_start,\n    'Cumulative hosts' AS metric,\n    cumulative_hosts::numeric AS value\nFROM analytics.mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nORDER BY month_start, metric;",
+        "template-tags": [
+          {
+            "id": "7c6b25ec-e39f-48b5-b28f-e3f4d75cfcee",
+            "type": "dimension",
+            "widget-type": "date/month-year",
+            "name": "month_start",
+            "display-name": "Month Start",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "f45c2da9-88ff-4a7f-9aa3-59916d5c6ca8"
+              },
+              122
+            ]
+          }
+        ]
+      }
+    ],
+    "lib/type": "mbql/query",
+    "database": 2
+  },
+  "visualization_settings": {
+    "graph.x_axis.scale": "timeseries",
+    "graph.dimensions": [
+      "month_start",
+      "metric"
+    ],
+    "graph.metrics": [
+      "value"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "7c6b25ec-e39f-48b5-b28f-e3f4d75cfcee",
+      "type": "date/month-year",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "month_start"
+        ]
+      ],
+      "name": "Month Start",
+      "slug": "month_start",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}
