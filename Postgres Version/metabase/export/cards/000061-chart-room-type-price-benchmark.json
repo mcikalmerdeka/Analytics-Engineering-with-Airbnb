@@ -1,0 +1,66 @@
+{
+  "id": 61,
+  "entity_id": "4mygIPIQqq4P34ldDdA3g",
+  "name": "Chart - Room Type Price Benchmark",
+  "description": "Median and p90 source nightly price by room type, excluding outliers. One row per room type; p90 shows the high-price tail.",
+  "collection_id": 7,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    room_type,\n    'Median price' AS metric,\n    median_price::numeric AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nUNION ALL\n\nSELECT\n    room_type,\n    'P90 price' AS metric,\n    p90_price::numeric AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nORDER BY room_type, metric;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Room Type",
+            "id": "866b7b4d-b5be-4a12-9da5-ab0bf5385e6a",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "2e6ba10d-bf63-4510-935c-6df3a4080885"
+              },
+              211
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "room_type",
+      "metric"
+    ],
+    "graph.metrics": [
+      "value"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "866b7b4d-b5be-4a12-9da5-ab0bf5385e6a",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

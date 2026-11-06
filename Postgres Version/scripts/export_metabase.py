@@ -219,7 +219,7 @@ def main() -> int:
     args = parser.parse_args()
 
     load_dotenv(PROJECT_ROOT / ".env")
-    base_url = args.url or os.environ.get("METABASE_URL", "http://localhost:3000")
+    base_url = args.url or os.environ.get("METABASE_URL", "http://127.0.0.1:3000")
     api_key = os.environ.get("METABASE_API_KEY", "").strip()
     if not api_key:
         print(

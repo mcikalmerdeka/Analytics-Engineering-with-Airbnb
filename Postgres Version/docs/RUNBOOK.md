@@ -32,9 +32,10 @@ Postgres Version/
 ├── docker/pgadmin/             # pgAdmin server configuration
 ├── scripts/watch_db.ps1        # live row-count watcher
 ├── scripts/export_metabase.py  # Git-friendly Metabase definition export
+├── scripts/seed_metabase.py    # create collections, cards, and dashboards
 ├── scripts/backup_metabase.ps1 # Metabase app DB backup
 ├── scripts/restore_metabase.ps1# Metabase app DB restore
-├── metabase/                   # JSON export (committed) + private app DB dumps (ignored)
+├── metabase/                   # definitions.json + JSON export + private dumps
 ├── airbnb_dbt/                 # dbt project (staging → analytics)
 ├── airbnb_dagster_project/     # Dagster project
 ├── sql/                        # ad-hoc data checks
@@ -832,6 +833,9 @@ uv run dbt build --profiles-dir ..
 | --- | --- |
 | `uv run python scripts\export_metabase.py` | Export collections, questions/models, and dashboards to `metabase/export/` |
 | `uv run python scripts\export_metabase.py --include-archived` | Include archived items in the JSON export |
+| `uv run python scripts\seed_metabase.py --dry-run` | Preview the documented Metabase content that would be created |
+| `uv run python scripts\seed_metabase.py` | Create missing collections, questions, and dashboards from `metabase/definitions.json` |
+| `uv run python scripts\seed_metabase.py --dashboard supply --relayout` | Recreate/reposition one dashboard |
 | `.\scripts\backup_metabase.ps1` | Write a `pg_dump` of the `metabase` app DB to `metabase/backups/` |
 | `.\scripts\restore_metabase.ps1 -DumpFile <path>` | Restore the `metabase` app DB from a dump (destructive) |
 

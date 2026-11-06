@@ -63,6 +63,46 @@ The export is read-only. It never changes anything in Metabase.
 Do not edit files under `metabase/export/` by hand: the next export replaces
 them. Make changes in Metabase, then re-run the exporter.
 
+## Seed the documented questions and dashboards
+
+`metabase/definitions.json` contains the 66 documented cards, grouped by the
+five dashboards. The seeder creates any missing collections, questions, and
+dashboards through the Metabase API:
+
+```powershell
+# Preview what would be created
+uv run python scripts\seed_metabase.py --dry-run
+
+# Create everything (Executive Overview is skipped because it already exists)
+uv run python scripts\seed_metabase.py
+
+# Work on one dashboard only
+uv run python scripts\seed_metabase.py --dashboard supply
+
+# Reposition the cards to the generated grid layout
+uv run python scripts\seed_metabase.py --dashboard supply --relayout
+```
+
+The seeder is idempotent by name:
+
+- Existing cards are reused; it does not overwrite a card that already has the
+  documented name.
+- The four partially-created Supply cards are adopted and renamed to the
+  documented `KPI - ...` names.
+- Missing cards are created with native SQL and Field Filter template tags.
+- The Executive Overview dashboard is not touched.
+- Dashboard filters are **not** created in this pass. The cards are
+  filter-ready, so you can add the dashboard filters in the UI later.
+- Text-search filters (`host_name`, `listing_name`) are omitted; the table
+  cards work without them.
+
+After seeding, run the exporter again and commit the updated
+`metabase/export/`:
+
+```powershell
+uv run python scripts\export_metabase.py
+```
+
 ### Create or replace the API key manually
 
 If the key is lost:
@@ -72,9 +112,13 @@ If the key is lost:
 3. Copy the key into `Postgres Version/.env`:
 
 ```dotenv
-METABASE_URL=http://localhost:3000
+METABASE_URL=http://127.0.0.1:3000
 METABASE_API_KEY=mb_...
 ```
+
+> Use `127.0.0.1`, not `localhost`, in `METABASE_URL`. On Windows, Python
+> resolves `localhost` to IPv6 first and falls back to IPv4, adding about two
+> seconds to every API request. The browser can still use `localhost`.
 
 ## Back up the full application database
 
@@ -109,11 +153,13 @@ When to use each:
 Commit:
 
 ```text
+metabase/definitions.json
 metabase/export/manifest.json
 metabase/export/collections/*.json
 metabase/export/cards/*.json
 metabase/export/dashboards/*.json
 scripts/export_metabase.py
+scripts/seed_metabase.py
 scripts/backup_metabase.ps1
 scripts/restore_metabase.ps1
 ```

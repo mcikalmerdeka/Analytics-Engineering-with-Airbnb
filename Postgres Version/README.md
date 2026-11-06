@@ -116,6 +116,9 @@ restore point, use the `metabase/` folder:
 # Export collections, questions/models, and dashboards to JSON
 uv run python scripts\export_metabase.py
 
+# Create the documented collections/questions/dashboards (idempotent)
+uv run python scripts\seed_metabase.py
+
 # Full application-database backup (keep private; gitignored)
 .\scripts\backup_metabase.ps1
 ```

@@ -1,0 +1,114 @@
+{
+  "id": 93,
+  "entity_id": "-FiGB1h2ASH-AwzvOU_oU",
+  "name": "Table - Top Hosts",
+  "description": "Top 100 hosts by total reviews with portfolio size, active listings, and sentiment. One row per host.",
+  "collection_id": 9,
+  "type": "question",
+  "query_type": "native",
+  "display": "table",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    host_name,\n    host_segment,\n    is_superhost,\n    listing_count,\n    active_listing_count,\n    total_reviews,\n    avg_reviews_per_listing,\n    avg_sentiment\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nORDER BY total_reviews DESC\nLIMIT 100;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Host Segment",
+            "id": "d3fa9333-5e06-4dbf-bc8e-434c854ec414",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "host_segment",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "833d9a70-88c1-4a3e-81c3-c75389fb37e0"
+              },
+              147
+            ]
+          },
+          {
+            "display-name": "Is Superhost",
+            "id": "d22d3a44-9654-4646-8912-f9681eeccd5a",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_superhost",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "7b0bfeed-4881-4007-9791-2a80a7626dc6"
+              },
+              144
+            ]
+          },
+          {
+            "display-name": "Listing Count",
+            "id": "c26268fd-fa45-4859-9ebc-1fc6e8b6c877",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "listing_count",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "f847342a-c1f7-4ca4-b31a-2ec1d55b1100"
+              },
+              148
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "d3fa9333-5e06-4dbf-bc8e-434c854ec414",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "host_segment"
+        ]
+      ],
+      "name": "Host Segment",
+      "slug": "host_segment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "d22d3a44-9654-4646-8912-f9681eeccd5a",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_superhost"
+        ]
+      ],
+      "name": "Is Superhost",
+      "slug": "is_superhost",
+      "isMultiSelect": false
+    },
+    {
+      "id": "c26268fd-fa45-4859-9ebc-1fc6e8b6c877",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "listing_count"
+        ]
+      ],
+      "name": "Listing Count",
+      "slug": "listing_count",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

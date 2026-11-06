@@ -16,6 +16,11 @@ If you build the cards as native SQL instead of query-builder questions, use
 [`METABASE_SQL_WITH_FILTERS.md`](METABASE_SQL_WITH_FILTERS.md). It contains a
 Field Filter version of all 66 cards.
 
+> **Shortcut:** `uv run python scripts\seed_metabase.py` creates all five
+> collections, 66 questions, and five dashboards from
+> `metabase/definitions.json`. The guide below remains the reference for card
+> definitions, filter mapping, layout, and QA.
+
 ## Before you build
 
 ### 1. Connect the analytics database
@@ -35,6 +40,14 @@ PostgreSQL database:
 
 Metabase syncs only the schemas the `metabase` user can see. That is
 `analytics`; `staging`, `raw`, and `snapshots` are intentionally inaccessible.
+
+The card tables below use `Model - Listings` for query-builder cards. The
+native SQL companion reads `analytics.dim_listings` directly for the same
+cards; both paths are valid and must produce the same expected totals.
+
+Use the model for query-builder cards that need the wide listing grain. Use
+native SQL only when the query builder cannot express the logic; native SQL
+cannot `FROM` a Metabase model, so it reads the underlying table.
 
 ### 2. Create the collection
 
@@ -248,8 +261,8 @@ Row 5: Chart - Superhost Share by Price Band (1/2) | Table - Room Type Benchmark
 
 | Dashboard filter | Type | Maps to |
 | --- | --- | --- |
-| `Room type` | Text or Category | `room_type` on cards 1, 3, 4, 5, 6, 7, 8, 9, 10, 13 |
-| `Price band` | Text or Category | `price_band` on cards 1, 3, 4, 5, 6, 7, 11, 12 |
+| `Room type` | Text or Category | `room_type` on cards 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 |
+| `Price band` | Text or Category | `price_band` on cards 1, 3, 4, 5, 6, 7, 10, 11, 12 |
 | `Minimum nights band` | Text or Category | `minimum_nights_band` on cards 1, 3, 4, 5, 6, 10 |
 | `Superhost` | Boolean | `is_superhost` on cards 1, 3, 4, 6, 10 |
 | `Price range` | Number | `price` on cards 1, 3, 4, 5, 6, 10 |
@@ -337,11 +350,11 @@ Row 6: Table - Topic Detail (full width)
 
 | Dashboard filter | Type | Maps to |
 | --- | --- | --- |
-| `Review date` | Date | `review_date` on cards 1, 4, 6, 7, 8, 9, 10 |
+| `Review date` | Date | `review_date` on cards 1, 4, 5, 6, 7, 8, 9, 10 |
 | `Review month` | Date | `month_start` on cards 11, 12, 13, 14 |
 | `Room type` | Text or Category | `room_type` on card 9 |
-| `Sentiment` | Text or Category | `review_sentiment` on cards 1, 6, 8, 9 |
-| `Has comment` | Boolean | `has_comment` on cards 1, 6, 8, 9, 10 |
+| `Sentiment` | Text or Category | `review_sentiment` on cards 1, 4, 5, 6, 7, 8, 9, 10 |
+| `Has comment` | Boolean | `has_comment` on cards 1, 4, 5, 6, 7, 8, 9, 10 |
 | `Topic` | Text or Category | `topic` on cards 11, 12, 13, 14 |
 
 Topic cards cannot be filtered by room type or sentiment: `mart_review_topics`
@@ -427,14 +440,15 @@ Row 5: Table - Top Hosts (full width)
 | Dashboard filter | Type | Maps to |
 | --- | --- | --- |
 | `Host segment` | Text or Category | `host_segment` on cards 1, 2, 5–8, 10–13 |
-| `Superhost` | Boolean | `is_superhost` on cards 1, 3–8, 10–13 |
+| `Superhost` | Boolean | `is_superhost` on cards 1, 3–8, 12, 13 |
 | `Minimum listings` | Number | `listing_count` on cards 1–8, 10–13 |
 | `Host created date` | Date | `host_created_at` on card 9 (default `2015-01-01` → `2021-11-19`) |
 | `Host name` | Text | `host_name` on card 13 |
 
 Card 2 is **defined by** superhost status, so do not map the `Superhost` filter
 to it. Cards 3 and 4 are **defined by** segment status, so do not map the
-`Host segment` filter to them. Card 9 uses `dim_hosts.host_created_at`, not the
+`Host segment` filter to them. Cards 10 and 11 group by superhost, so do not map the `Superhost` filter to
+them. Card 9 uses `dim_hosts.host_created_at`, not the
 `mart_host_performance` model, so only the date filter applies there.
 
 ---
@@ -523,9 +537,9 @@ KPI cards 1–3 should respond to every filter. Card 4 (Active Listings) and
 cards 6 and 10 already hard-filter `is_active_last_12m = true`; mapping the
 `Active last 12m` dashboard filter to them is harmless but redundant. Cards 7,
 8, and 11 group by the dimension they filter on, so selecting that filter
-collapses the chart to one bar. Card 10 groups by `host_segment`, so the
-`Host segment` filter collapses it to one bar. The detail table should respond
-to all filters.
+collapses the chart to one bar. Card 10 groups by `host_segment`; leave the `Host segment` filter unmapped
+there so the chart keeps all segments. The detail table should respond to all
+filters.
 
 ---
 

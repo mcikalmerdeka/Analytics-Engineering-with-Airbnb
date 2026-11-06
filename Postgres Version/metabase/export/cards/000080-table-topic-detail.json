@@ -1,0 +1,86 @@
+{
+  "id": 80,
+  "entity_id": "xtmuaKiRm17Tz3I9w-cCZ",
+  "name": "Table - Topic Detail",
+  "description": "Monthly topic mentions, mention rate, average sentiment, and negative share for the last 12 complete months. One row per month and topic.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "table",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    month_start,\n    topic,\n    mentions,\n    mention_rate,\n    avg_sentiment,\n    pct_negative\nFROM analytics.mart_review_topics\nWHERE month_start BETWEEN DATE '2020-11-01' AND DATE '2021-10-01'\n  AND {{review_month}}\n  AND {{topic}}\nORDER BY mentions DESC\nLIMIT 1000;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Review Month",
+            "id": "127521f8-c714-42df-9e4c-0e6cdc3d2620",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "review_month",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "6802d1bc-3be5-4cba-b7ea-351f9e409f2c"
+              },
+              205
+            ]
+          },
+          {
+            "display-name": "Topic",
+            "id": "69fbf153-11b3-4957-a7e2-3b77a2513e8f",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "topic",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "0403b56b-a59d-4c3d-b452-25ab3c959347"
+              },
+              206
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "127521f8-c714-42df-9e4c-0e6cdc3d2620",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_month"
+        ]
+      ],
+      "name": "Review Month",
+      "slug": "review_month",
+      "isMultiSelect": true
+    },
+    {
+      "id": "69fbf153-11b3-4957-a7e2-3b77a2513e8f",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "topic"
+        ]
+      ],
+      "name": "Topic",
+      "slug": "topic",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

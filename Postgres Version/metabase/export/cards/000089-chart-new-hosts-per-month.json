@@ -1,0 +1,66 @@
+{
+  "id": 89,
+  "entity_id": "QWAM3--tnb9f2cdMpEyL-",
+  "name": "Chart - New Hosts per Month",
+  "description": "Host profiles created per month from 2015 onward. One row per host; this is new hosts, not cumulative hosts.",
+  "collection_id": 9,
+  "type": "question",
+  "query_type": "native",
+  "display": "line",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    DATE_TRUNC('month', host_created_at)::date AS month_start,\n    COUNT(*) AS new_hosts\nFROM analytics.dim_hosts\nWHERE host_created_at >= DATE '2015-01-01'\n  AND {{host_created_at}}\nGROUP BY 1\nORDER BY 1;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Host Created At",
+            "id": "b496d6f8-5fa7-421c-b6c5-b92f604f9b45",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "host_created_at",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "42655a9a-e2ee-4808-a128-6b96d86fb04e"
+              },
+              88
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "month_start"
+    ],
+    "graph.x_axis.scale": "timeseries",
+    "graph.metrics": [
+      "new_hosts"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "b496d6f8-5fa7-421c-b6c5-b92f604f9b45",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "host_created_at"
+        ]
+      ],
+      "name": "Host Created At",
+      "slug": "host_created_at",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

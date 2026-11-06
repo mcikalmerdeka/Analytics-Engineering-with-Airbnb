@@ -717,7 +717,7 @@ SELECT
     l.room_type,
     COUNT(*) AS reviews
 FROM analytics.fct_reviews AS r
-INNER JOIN analytics.dim_listings AS l
+LEFT JOIN analytics.dim_listings AS l
     ON r.listing_id = l.listing_id
 WHERE 1 = 1
   AND {{review_date}}
@@ -1383,7 +1383,7 @@ All eight filters apply to cards 5.1–5.3, 5.5, 5.9, and 5.12. The exceptions:
 | --- | --- | --- |
 | `A text variable in this card can only be connected to a text filter with Is operator` | The card has no mappable variable, or the variable is still Text | Change it to **Field Filter**, map the field, save the question |
 | `Cannot run the query: missing required parameters` | A variable is Text, or **Always require a value** is on | Change to **Field Filter** and turn **Always require a value** off |
-| `argument of AND must be type boolean, not type character varying` | A Text variable was used where a Field Filter was needed; a value was substituted as `AND 'Female'` | Change the variable to **Field Filter** and map it |
+| `argument of AND must be type boolean, not type character varying` | A Text variable was used where a Field Filter was needed; a value was substituted as `AND 'Entire home/apt'` | Change the variable to **Field Filter** and map it |
 | `operator does not exist: boolean = character varying` | A Text/Category dashboard filter is connected to a boolean column | Change the dashboard filter to **Boolean** |
 | Field Filter does not appear in the dashboard mapping panel | Question not saved, or the dashboard editor is stale | Save the question, reload the dashboard editor |
 | Filter changes one card but not another | The other card lacks the matching variable or mapping | Add the variable and map the filter |

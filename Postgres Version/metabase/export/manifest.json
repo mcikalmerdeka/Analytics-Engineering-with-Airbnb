@@ -1,19 +1,23 @@
 {
-  "exported_at": "2026-11-06T06:34:16+00:00",
-  "metabase_url": "http://localhost:3000",
+  "exported_at": "2026-11-06T07:27:09+00:00",
+  "metabase_url": "http://127.0.0.1:3000",
   "metabase_version": "v0.64.3.5",
   "root_collection_id": 5,
   "root_collection_name": "Airbnb Analytics",
   "include_archived": false,
   "counts": {
-    "collections": 2,
-    "cards": 14,
-    "dashboards": 1
+    "collections": 6,
+    "cards": 66,
+    "dashboards": 5
   },
   "files": {
     "collections": [
       "collections/000005-airbnb-analytics.json",
-      "collections/000006-executive-overview-collection.json"
+      "collections/000006-executive-overview-collection.json",
+      "collections/000008-guest-experience-collection.json",
+      "collections/000009-host-portfolio-collection.json",
+      "collections/000010-listing-explorer-collection.json",
+      "collections/000007-supply-and-pricing-collection.json"
     ],
     "cards": [
       "cards/000040-kpi-total-listings.json",
@@ -29,10 +33,66 @@
       "cards/000050-chart-avg-sentiment-trend.json",
       "cards/000051-chart-superhost-share-trend.json",
       "cards/000052-chart-review-volume-by-room-type.json",
-      "cards/000053-chart-listing-age-cohorts.json"
+      "cards/000053-chart-listing-age-cohorts.json",
+      "cards/000054-kpi-total-listings.json",
+      "cards/000055-kpi-median-nightly-price.json",
+      "cards/000056-kpi-avg-nightly-price-excl-outliers.json",
+      "cards/000057-kpi-outlier-listings.json",
+      "cards/000058-kpi-superhost-listings.json",
+      "cards/000059-chart-listings-by-price-band.json",
+      "cards/000060-chart-price-band-by-room-type.json",
+      "cards/000061-chart-room-type-price-benchmark.json",
+      "cards/000062-chart-supply-share-by-room-type.json",
+      "cards/000063-chart-minimum-nights-distribution.json",
+      "cards/000064-chart-active-share-by-price-band.json",
+      "cards/000065-chart-superhost-share-by-price-band.json",
+      "cards/000066-table-room-type-benchmark.json",
+      "cards/000067-kpi-total-reviews.json",
+      "cards/000068-kpi-positive-review-share.json",
+      "cards/000069-kpi-negative-review-share.json",
+      "cards/000070-kpi-avg-sentiment-score.json",
+      "cards/000071-kpi-reviews-in-2021.json",
+      "cards/000072-chart-review-volume-by-month.json",
+      "cards/000073-chart-sentiment-mix.json",
+      "cards/000074-chart-sentiment-by-month.json",
+      "cards/000075-chart-reviews-by-room-type.json",
+      "cards/000076-chart-review-length.json",
+      "cards/000077-chart-topic-mentions.json",
+      "cards/000078-chart-topic-mention-rate-trend.json",
+      "cards/000079-chart-negative-mentions-by-topic.json",
+      "cards/000080-table-topic-detail.json",
+      "cards/000081-kpi-total-hosts.json",
+      "cards/000082-kpi-superhosts.json",
+      "cards/000083-kpi-single-listing-hosts.json",
+      "cards/000084-kpi-professional-hosts.json",
+      "cards/000085-kpi-avg-reviews-per-host.json",
+      "cards/000086-chart-hosts-by-segment.json",
+      "cards/000087-chart-avg-listings-per-host-by-segment.json",
+      "cards/000088-chart-avg-reviews-per-host-by-segment.json",
+      "cards/000089-chart-new-hosts-per-month.json",
+      "cards/000090-chart-superhost-performance.json",
+      "cards/000091-chart-hosts-by-segment-and-superhost.json",
+      "cards/000092-chart-portfolio-size.json",
+      "cards/000093-table-top-hosts.json",
+      "cards/000094-kpi-listings-in-view.json",
+      "cards/000095-kpi-avg-price-in-view.json",
+      "cards/000096-kpi-avg-reviews-in-view.json",
+      "cards/000097-kpi-active-listings-in-view.json",
+      "cards/000098-kpi-zero-review-listings.json",
+      "cards/000099-chart-price-vs-review-count.json",
+      "cards/000100-chart-listings-by-room-type.json",
+      "cards/000101-chart-listings-by-price-band.json",
+      "cards/000102-chart-review-count-distribution.json",
+      "cards/000103-chart-active-listings-by-host-segment.json",
+      "cards/000104-chart-listings-by-minimum-nights.json",
+      "cards/000105-table-listing-detail.json"
     ],
     "dashboards": [
-      "dashboards/000002-executive-overview-dashboard.json"
+      "dashboards/000002-executive-overview-dashboard.json",
+      "dashboards/000003-supply-and-pricing-dashboard.json",
+      "dashboards/000004-guest-experience-dashboard.json",
+      "dashboards/000005-host-portfolio-dashboard.json",
+      "dashboards/000006-listing-explorer-dashboard.json"
     ]
   }
 }

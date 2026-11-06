@@ -1,0 +1,93 @@
+{
+  "id": 65,
+  "entity_id": "vriWw9BbB05uCIHL9CIoI",
+  "name": "Chart - Superhost Share by Price Band",
+  "description": "Unweighted average of room-type superhost shares within each price band. One row per price band; not a listing-weighted share.",
+  "collection_id": 7,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    price_band,\n    AVG(pct_superhost) AS superhost_share\nFROM analytics.mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Room Type",
+            "id": "007d0647-9b81-48d3-82bf-bb1daeb4cbc8",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "e30267e2-9238-4f32-bd06-674e1b5adf98"
+              },
+              197
+            ]
+          },
+          {
+            "display-name": "Price Band",
+            "id": "e3770bd6-9271-49b5-ad14-6e35eed4c886",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "price_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "f7f440eb-73fb-4a70-a8e3-9d444e6dca9a"
+              },
+              196
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "price_band"
+    ],
+    "graph.metrics": [
+      "superhost_share"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "007d0647-9b81-48d3-82bf-bb1daeb4cbc8",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    },
+    {
+      "id": "e3770bd6-9271-49b5-ad14-6e35eed4c886",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price_band"
+        ]
+      ],
+      "name": "Price Band",
+      "slug": "price_band",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

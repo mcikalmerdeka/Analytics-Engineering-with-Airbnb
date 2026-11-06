@@ -1,0 +1,149 @@
+{
+  "id": 75,
+  "entity_id": "9yqOBX-BQgEYSB2A9SR3j",
+  "name": "Chart - Reviews by Room Type",
+  "description": "Reviews grouped by the room type of the reviewed listing. One row per review; each review belongs to one listing and one room type.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    dim_listings.room_type,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews\nINNER JOIN analytics.dim_listings\n    ON fct_reviews.listing_id = dim_listings.listing_id\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\n  AND {{room_type}}\nGROUP BY dim_listings.room_type\nORDER BY reviews DESC;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Review Date",
+            "id": "e5a51dfc-5016-472b-83a1-b2c933b8d7b6",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "review_date",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "85e56707-f55b-4e19-b635-318adc4202d8"
+              },
+              113
+            ]
+          },
+          {
+            "display-name": "Review Sentiment",
+            "id": "2a1fa0d2-da0c-4f7d-bce9-462ea145e223",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "review_sentiment",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "5ed40273-5d25-4269-8c90-91f2df48971f"
+              },
+              116
+            ]
+          },
+          {
+            "display-name": "Has Comment",
+            "id": "857ccedb-1c07-4a04-8cfb-27e0299e9b90",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "has_comment",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "bf40fcab-b9d2-4822-9962-3b91814285cd"
+              },
+              118
+            ]
+          },
+          {
+            "display-name": "Room Type",
+            "id": "491baeea-9d17-4ac1-9ae3-3fe0fb3218a8",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "1c1c7359-88d7-4d2e-988c-247f24497637"
+              },
+              95
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "room_type"
+    ],
+    "graph.metrics": [
+      "reviews"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "e5a51dfc-5016-472b-83a1-b2c933b8d7b6",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_date"
+        ]
+      ],
+      "name": "Review Date",
+      "slug": "review_date",
+      "isMultiSelect": true
+    },
+    {
+      "id": "2a1fa0d2-da0c-4f7d-bce9-462ea145e223",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_sentiment"
+        ]
+      ],
+      "name": "Review Sentiment",
+      "slug": "review_sentiment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "857ccedb-1c07-4a04-8cfb-27e0299e9b90",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "has_comment"
+        ]
+      ],
+      "name": "Has Comment",
+      "slug": "has_comment",
+      "isMultiSelect": false
+    },
+    {
+      "id": "491baeea-9d17-4ac1-9ae3-3fe0fb3218a8",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

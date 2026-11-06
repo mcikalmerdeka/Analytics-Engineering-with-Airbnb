@@ -1,0 +1,86 @@
+{
+  "id": 84,
+  "entity_id": "DoRKki0rTClrVvkE2fy07",
+  "name": "KPI - Professional+ Hosts",
+  "description": "Hosts in the Professional, Large professional, or Enterprise segments. One row per host; segments are based on listing count.",
+  "collection_id": 9,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT COUNT(*) AS professional_plus_hosts\nFROM analytics.mart_host_performance\nWHERE host_segment IN ('Professional', 'Large professional', 'Enterprise')\n  AND {{is_superhost}}\n  AND {{listing_count}};",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Is Superhost",
+            "id": "74a36fa7-ff75-47f4-8c0d-cf78edc70c97",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_superhost",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "5de3544b-6455-42c4-92f0-c065700fa238"
+              },
+              144
+            ]
+          },
+          {
+            "display-name": "Listing Count",
+            "id": "511624d8-1ab7-4e9f-8faf-34ed42b1701c",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "listing_count",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "124e50a7-1f01-4f43-a4ac-78c7815d3082"
+              },
+              148
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "74a36fa7-ff75-47f4-8c0d-cf78edc70c97",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_superhost"
+        ]
+      ],
+      "name": "Is Superhost",
+      "slug": "is_superhost",
+      "isMultiSelect": false
+    },
+    {
+      "id": "511624d8-1ab7-4e9f-8faf-34ed42b1701c",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "listing_count"
+        ]
+      ],
+      "name": "Listing Count",
+      "slug": "listing_count",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}
