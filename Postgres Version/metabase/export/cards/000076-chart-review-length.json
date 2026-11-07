@@ -61,7 +61,17 @@
       }
     ]
   },
-  "visualization_settings": {},
+  "visualization_settings": {
+    "graph.dimensions": [
+      "review_length"
+    ],
+    "graph.series_order_dimension": null,
+    "graph.series_order": null,
+    "graph.x_axis.scale": "linear",
+    "graph.metrics": [
+      "review_length"
+    ]
+  },
   "parameters": [
     {
       "id": "45e50f97-500a-47ae-8364-8e05ffa5f56b",

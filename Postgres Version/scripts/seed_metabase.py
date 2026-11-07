@@ -4,7 +4,7 @@
 Reads metabase/definitions.json and uses the Metabase API to create missing
 items. Existing cards/dashboards are reused; the four partially-created Supply
 cards are adopted and renamed to the documented names. Dashboard filters are
-deliberately not created in this pass.
+not created here; use scripts/add_dashboard_filters.py for those.
 
 Usage:
     uv run python scripts/seed_metabase.py --dry-run

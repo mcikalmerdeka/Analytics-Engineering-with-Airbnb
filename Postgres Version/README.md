@@ -50,6 +50,8 @@ The raw CSVs must exist in `data/raw/` (the CSV files are gitignored; see `data/
 | Dagster UI | `cd airbnb_dagster_project; uv run dagster dev -p 3001` |
 | Metabase | http://localhost:3000 |
 | Export Metabase definitions | `uv run python scripts\export_metabase.py` |
+| Add dashboard filters (dry run) | `uv run python scripts\add_dashboard_filters.py --dry-run` |
+| Add dashboard filters (apply) | `uv run python scripts\add_dashboard_filters.py` |
 | Backup Metabase app DB | `.\scripts\backup_metabase.ps1` |
 | pgAdmin | http://localhost:5050 |
 | Live row counts | `.\scripts\watch_db.ps1` |

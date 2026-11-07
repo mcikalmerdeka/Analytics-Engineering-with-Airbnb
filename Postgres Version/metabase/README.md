@@ -6,6 +6,8 @@ This folder keeps the Metabase work reproducible outside the running container.
 metabase/
 ├── README.md
 ├── .gitignore
+├── definitions.json          # 66 documented cards and 5 dashboards
+├── dashboard_filters.json    # dashboard filter specs for the four non-Executive dashboards
 ├── backups/                  # gitignored pg_dump files
 │   └── .gitkeep
 └── export/                   # committed, Git-friendly JSON snapshot
@@ -92,7 +94,8 @@ The seeder is idempotent by name:
 - Missing cards are created with native SQL and Field Filter template tags.
 - The Executive Overview dashboard is not touched.
 - Dashboard filters are **not** created in this pass. The cards are
-  filter-ready, so you can add the dashboard filters in the UI later.
+  filter-ready; run `scripts/add_dashboard_filters.py` after seeding to create
+  and map them.
 - Text-search filters (`host_name`, `listing_name`) are omitted; the table
   cards work without them.
 
@@ -102,6 +105,30 @@ After seeding, run the exporter again and commit the updated
 ```powershell
 uv run python scripts\export_metabase.py
 ```
+
+### Add the dashboard filters
+
+`metabase/dashboard_filters.json` contains the filter specs for Supply and
+Pricing, Guest Experience, Host Portfolio, and Listing Explorer. The script
+creates the dashboard parameters and maps them to every card that exposes the
+matching template tag:
+
+```powershell
+# Preview the full plan; no writes
+uv run python scripts\add_dashboard_filters.py --dry-run
+
+# Apply one dashboard first
+uv run python scripts\add_dashboard_filters.py --dashboard supply
+
+# Apply all four
+uv run python scripts\add_dashboard_filters.py
+```
+
+The script is idempotent by filter slug and preserves unrelated parameters,
+mappings, layout, and tabs. It does not touch the Executive Overview dashboard,
+which already has its manual date filter. Take an application-database backup
+before the first real run. The full analysis is in
+[`docs/METABASE_FILTER_AUTOMATION.md`](../docs/METABASE_FILTER_AUTOMATION.md).
 
 ### Create or replace the API key manually
 
@@ -154,12 +181,14 @@ Commit:
 
 ```text
 metabase/definitions.json
+metabase/dashboard_filters.json
 metabase/export/manifest.json
 metabase/export/collections/*.json
 metabase/export/cards/*.json
 metabase/export/dashboards/*.json
 scripts/export_metabase.py
 scripts/seed_metabase.py
+scripts/add_dashboard_filters.py
 scripts/backup_metabase.ps1
 scripts/restore_metabase.ps1
 ```
