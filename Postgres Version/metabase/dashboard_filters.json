@@ -1,4 +1,14 @@
 {
+  "notes": [
+    "Schema for scripts/add_dashboard_filters.py, using the Airbnb Berlin project as the worked example.",
+    "The cards must already expose the template tags named in filters[].tag.",
+    "root_collection_id is the parent collection; each collection/dashboard is found by exact name.",
+    "expected_cards is optional. When set, the script aborts if the live tag count differs, which catches card drift.",
+    "exclude_cards (optional) lists card names that must not be mapped even if they expose the tag. The Listing example uses it defensively for a grouping card; that card currently lacks the tag, so the expected count stays 11.",
+    "For a plain Text search filter, use type string/contains, values_query_type none, and a card Text tag (not a Field Filter).",
+    "Text filters map with ['variable', ['template-tag', tag]]; Field Filters map with ['dimension', [...], {'stage-number': 0}].",
+    "Use values_query_type 'list' for dropdowns backed by live field values, 'search' for a search box, 'none' for dates/booleans/numbers."
+  ],
   "root_collection_id": 5,
   "dashboards": [
     {
@@ -225,7 +235,8 @@
           "section_id": "string",
           "values_query_type": "list",
           "is_multi": true,
-          "expected_cards": 11
+          "expected_cards": 11,
+          "exclude_cards": ["Chart - Active Listings by Host Segment"]
         },
         {
           "name": "Active last 12m",

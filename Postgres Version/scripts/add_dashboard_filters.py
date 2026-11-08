@@ -1,22 +1,27 @@
 #!/usr/bin/env python3
-"""Add the documented dashboard filters to the four remaining Metabase dashboards.
+"""Create and map Metabase dashboard filters from a JSON source of truth.
 
-The cards already expose Field Filter template tags. This script creates the
-dashboard parameters and maps them to every card that exposes the matching tag.
-It is idempotent: filters are matched by slug, existing mappings are preserved,
-and dashboards the script does not manage are never touched.
+The cards must already expose Field Filter template tags (or plain Text tags for
+search filters). This script reconciles dashboard parameters and dashcard
+`parameter_mappings` against `metabase/dashboard_filters.json`:
 
-Filter definitions live in `metabase/dashboard_filters.json`.
+- Filters are matched by `slug`; existing parameters are updated, not duplicated.
+- A filter is mapped to every card that exposes its `tag`, minus `exclude_cards`.
+- Existing mappings for unrelated filters, layout, tabs, and visualization
+  settings are preserved.
+- `expected_cards` is an optional drift guard per filter.
+- `--dry-run` performs every read and prints the plan without writing.
 
-The Executive Overview dashboard is intentionally excluded; its date filter was
-added manually.
+Schema: assets/dashboard_filters.example.json
+Reference: references/metabase-api-provisioning.md
 
 Usage:
     uv run python scripts/add_dashboard_filters.py --dry-run
     uv run python scripts/add_dashboard_filters.py --dashboard supply
     uv run python scripts/add_dashboard_filters.py
+    uv run python scripts/add_dashboard_filters.py --definitions metabase/dashboard_filters.json
 
-Take an application-database backup before the first real run:
+Back up the application database before the first real run:
     .\\scripts\\backup_metabase.ps1
 """
 
@@ -33,7 +38,7 @@ import urllib.request
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFINITIONS = PROJECT_ROOT / "metabase" / "dashboard_filters.json"
+DEFAULT_DEFINITIONS = PROJECT_ROOT / "metabase" / "dashboard_filters.json"
 PAGE_SIZE = 200
 
 
@@ -97,12 +102,6 @@ class MetabaseClient:
                 return items
 
 
-def load_definitions() -> tuple[int, dict[str, dict]]:
-    definitions = json.loads(DEFINITIONS.read_text(encoding="utf-8"))
-    dashboards = {item["key"]: item for item in definitions["dashboards"]}
-    return definitions["root_collection_id"], dashboards
-
-
 def find_collection(client: MetabaseClient, root_id: int, name: str) -> dict:
     for item in client.collection_items(root_id, "collection"):
         if item.get("name") == name:
@@ -117,53 +116,53 @@ def find_dashboard(client: MetabaseClient, collection_id: int, name: str) -> dic
     raise RuntimeError(f"Dashboard not found in collection {collection_id}: {name}")
 
 
-def card_tag_names(client: MetabaseClient, card_id: int, cache: dict[int, set[str]]) -> set[str]:
+def card_meta(client: MetabaseClient, card_id: int, cache: dict[int, dict]) -> dict:
+    """Return the card name and a tag-name -> tag-type map."""
     if card_id not in cache:
         card = client.get(f"/api/card/{card_id}")
-        tags: set[str] = set()
+        tags: dict[str, str] = {}
         for stage in (card.get("dataset_query") or {}).get("stages") or []:
-            tags.update(tag.get("name") for tag in stage.get("template-tags") or [])
-        cache[card_id] = {tag for tag in tags if tag}
+            for tag in stage.get("template-tags") or []:
+                if tag.get("name"):
+                    tags[tag["name"]] = tag.get("type") or ""
+        cache[card_id] = {"name": card.get("name"), "tags": tags}
     return cache[card_id]
 
 
+def parameter_payload(spec: dict, current: dict | None) -> dict:
+    payload = {
+        **(current or {}),
+        "id": (current or {}).get("id") or secrets.token_hex(4),
+        "name": spec["name"],
+        "slug": spec["slug"],
+        "type": spec["type"],
+        "sectionId": spec.get("section_id", spec["type"].split("/")[0]),
+        "values_query_type": spec.get("values_query_type", "none"),
+        "isMultiSelect": spec.get("is_multi", False),
+    }
+    if "default" in spec:
+        payload["default"] = spec["default"]
+    elif current is None:
+        payload["default"] = None
+    for key in ("values_source_type", "values_source_config", "filteringParameters", "temporal_units"):
+        if key in spec:
+            payload[key] = spec[key]
+    return payload
+
+
 def build_parameters(dashboard: dict, specs: list[dict]) -> tuple[list[dict], dict[str, str]]:
-    """Return the full parameter list plus a slug -> parameter-id map."""
     existing = {param.get("slug"): param for param in dashboard.get("parameters", [])}
     parameters: list[dict] = []
     ids: dict[str, str] = {}
 
     for spec in specs:
         current = existing.get(spec["slug"])
-        if current:
-            parameter = {
-                **current,
-                "name": spec["name"],
-                "slug": spec["slug"],
-                "type": spec["type"],
-                "sectionId": spec["section_id"],
-                "values_query_type": spec["values_query_type"],
-                "isMultiSelect": spec["is_multi"],
-            }
-            id_source = current["id"]
-            print(f"    filter exists: {spec['name']} (id={id_source})")
-        else:
-            parameter = {
-                "id": secrets.token_hex(4),
-                "name": spec["name"],
-                "slug": spec["slug"],
-                "type": spec["type"],
-                "sectionId": spec["section_id"],
-                "values_query_type": spec["values_query_type"],
-                "isMultiSelect": spec["is_multi"],
-                "default": None,
-            }
-            id_source = parameter["id"]
-            print(f"    filter create: {spec['name']} ({spec['type']})")
-        ids[spec["slug"]] = id_source
+        parameter = parameter_payload(spec, current)
+        ids[spec["slug"]] = parameter["id"]
         parameters.append(parameter)
+        action = "exists" if current else "create"
+        print(f"    filter {action}: {spec['name']} ({spec['type']}, id={parameter['id']})")
 
-    # Keep any unrelated parameters that the user added manually.
     managed_slugs = {spec["slug"] for spec in specs}
     for slug, parameter in existing.items():
         if slug not in managed_slugs:
@@ -173,12 +172,19 @@ def build_parameters(dashboard: dict, specs: list[dict]) -> tuple[list[dict], di
     return parameters, ids
 
 
+def mapping_target(tag: str, tag_type: str) -> list:
+    if tag_type == "dimension":
+        return ["dimension", ["template-tag", tag], {"stage-number": 0}]
+    # Plain Text/Number/Date variables use a two-element variable target.
+    return ["variable", ["template-tag", tag]]
+
+
 def build_dashcards(
     client: MetabaseClient,
     dashboard: dict,
     specs: list[dict],
     parameter_ids: dict[str, str],
-    tag_cache: dict[int, set[str]],
+    tag_cache: dict[int, dict],
 ) -> tuple[list[dict], dict[str, int]]:
     managed = {parameter_ids[spec["slug"]]: spec for spec in specs}
     counts = {spec["slug"]: 0 for spec in specs}
@@ -187,22 +193,26 @@ def build_dashcards(
     for dashcard in dashboard.get("dashcards", []):
         card_id = dashcard.get("card_id")
         mappings = list(dashcard.get("parameter_mappings") or [])
-        present_tags = card_tag_names(client, card_id, tag_cache) if card_id else set()
+        meta = card_meta(client, card_id, tag_cache) if card_id else {"name": None, "tags": {}}
+        tags = meta["tags"]
 
-        # Drop stale mappings for managed filters whose tag is gone.
         mappings = [
             mapping
             for mapping in mappings
             if not (
                 mapping.get("parameter_id") in managed
-                and managed[mapping["parameter_id"]]["tag"] not in present_tags
+                and managed[mapping["parameter_id"]]["tag"] not in tags
             )
         ]
 
         for parameter_id, spec in managed.items():
-            if spec["tag"] not in present_tags:
+            tag = spec["tag"]
+            if tag not in tags:
                 continue
-            target = ["dimension", ["template-tag", spec["tag"]], {"stage-number": 0}]
+            excluded = set(spec.get("exclude_cards") or [])
+            if meta["name"] in excluded:
+                continue
+            target = mapping_target(tag, tags[tag])
             current = next(
                 (m for m in mappings if m.get("parameter_id") == parameter_id and m.get("card_id") == card_id),
                 None,
@@ -246,18 +256,26 @@ def process_dashboard(
     dashcards, counts = build_dashcards(client, dashboard, specs, parameter_ids, {})
 
     total = 0
+    failed = False
     for spec in specs:
         actual = counts[spec["slug"]]
         total += actual
-        status = "ok" if actual == spec["expected_cards"] else "MISMATCH"
-        print(f"    map {spec['name']:<22} {actual:>2} cards  (expected {spec['expected_cards']}) {status}")
-        if actual != spec["expected_cards"]:
-            raise RuntimeError(
-                f"{config['dashboard']}: {spec['name']} maps {actual} cards, expected "
-                f"{spec['expected_cards']}. A card tag changed; update the filter spec."
-            )
+        expected = spec.get("expected_cards")
+        if expected is None:
+            print(f"    map {spec['name']:<24} {actual:>2} cards")
+            continue
+        total_count = actual
+        status = "ok" if total_count == expected else "MISMATCH"
+        print(f"    map {spec['name']:<24} {total_count:>2} cards  (expected {expected}) {status}")
+        if total_count != expected:
+            failed = True
     print(f"    total mappings: {total}")
 
+    if failed:
+        raise RuntimeError(
+            f"{config['dashboard']}: mapping counts differ from expected_cards. "
+            "A card tag changed; update the filter spec or exclusions."
+        )
     if dry_run:
         print("    dry run: no write")
         return
@@ -270,24 +288,42 @@ def process_dashboard(
 
 
 def main() -> int:
-    load_dotenv(PROJECT_ROOT / ".env")
-    root_id, definitions = load_definitions()
-
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dashboard", choices=sorted(definitions), help="Only process one dashboard")
+    parser.add_argument("--definitions", default=str(DEFAULT_DEFINITIONS), help="Filter definitions JSON")
+    parser.add_argument("--env-file", default=str(PROJECT_ROOT / ".env"), help="Environment file with METABASE_*")
+    parser.add_argument("--dashboard", help="Only process one dashboard key")
     parser.add_argument("--dry-run", action="store_true", help="Print the plan without writing")
     args = parser.parse_args()
 
+    definitions_path = Path(args.definitions).expanduser().resolve()
+    if not definitions_path.exists():
+        print(f"Definitions file not found: {definitions_path}", file=sys.stderr)
+        return 2
+    definitions = json.loads(definitions_path.read_text(encoding="utf-8"))
+    dashboards = {item["key"]: item for item in definitions.get("dashboards", [])}
+    if not dashboards:
+        print("No dashboards in the definitions file.", file=sys.stderr)
+        return 2
+    if args.dashboard and args.dashboard not in dashboards:
+        print(f"Unknown dashboard key: {args.dashboard}", file=sys.stderr)
+        return 2
+
+    load_dotenv(Path(args.env_file).expanduser().resolve())
     base_url = os.environ.get("METABASE_URL", "http://127.0.0.1:3000")
     api_key = os.environ.get("METABASE_API_KEY", "").strip()
     if not api_key:
-        print("METABASE_API_KEY is not set in the environment or .env", file=sys.stderr)
+        print("METABASE_API_KEY is not set in the environment or env file", file=sys.stderr)
+        return 2
+
+    root_id = definitions.get("root_collection_id")
+    if root_id is None:
+        print("root_collection_id is missing from the definitions file", file=sys.stderr)
         return 2
 
     client = MetabaseClient(base_url, api_key)
-    keys = [args.dashboard] if args.dashboard else list(definitions)
+    keys = [args.dashboard] if args.dashboard else list(dashboards)
     for key in keys:
-        process_dashboard(client, root_id, definitions[key], args.dry_run)
+        process_dashboard(client, root_id, dashboards[key], args.dry_run)
     return 0
 
 
