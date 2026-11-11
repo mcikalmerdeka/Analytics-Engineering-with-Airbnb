@@ -1,0 +1,648 @@
+version: 2
+
+models:
+  # Analytics dimensions
+  - name: dim_listings
+    description: >
+      One row per Airbnb listing with denormalized host attributes and derived
+      price, minimum-night, listing-age, and host-portfolio segments. Review
+      metrics live in mart_listing_performance.
+    columns:
+      - name: listing_id
+        description: Primary key for the listing.
+        tests:
+          - unique
+          - not_null
+
+      - name: listing_name
+        description: The listing title as it appears on Airbnb.
+        tests:
+          - not_null
+
+      - name: listing_url
+        description: The URL path component for the listing on Airbnb.
+        tests:
+          - not_null
+
+      - name: room_type
+        description: The standardized room type for the listing.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  ["Entire home/apt", "Private room", "Shared room", "Hotel room"]
+
+      - name: price
+        description: Parsed nightly source price. Currency is not normalized.
+        tests:
+          - not_null
+
+      - name: price_band
+        description: Derived price band used for distribution charts.
+        tests:
+          - not_null
+
+      - name: is_price_outlier
+        description: >
+          TRUE when the price is zero or above the p99.5 price for its room
+          type. Outliers remain in the data and are filtered in dashboards.
+        tests:
+          - not_null
+
+      - name: minimum_nights
+        description: Minimum bookable nights, with zero normalized to one.
+        tests:
+          - not_null
+          - positive_value
+
+      - name: minimum_nights_band
+        description: Derived minimum-night band.
+        tests:
+          - not_null
+
+      - name: host_id
+        description: Foreign key to dim_hosts.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_hosts')
+                field: host_id
+
+      - name: host_name
+        description: Host display name, with missing names set to Anonymous.
+        tests:
+          - not_null
+
+      - name: is_superhost
+        description: >
+          Nullable boolean superhost flag. NULL means the source did not disclose
+          the status; it is not coerced to FALSE.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: is_superhost_known
+        description: TRUE when the source disclosed a superhost status.
+        tests:
+          - not_null
+
+      - name: host_listing_count
+        description: Number of listings belonging to the host in the snapshot.
+        tests:
+          - not_null
+
+      - name: host_segment
+        description: Derived host portfolio segment based on listing count.
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  ["Single listing", "Small portfolio", "Professional", "Large professional", "Enterprise"]
+
+      - name: listing_created_at
+        description: Timestamp when the listing was created.
+
+      - name: listing_age_days
+        description: Days between listing creation and the 2021-11-19 snapshot.
+
+      - name: listing_age_cohort
+        description: Derived listing-age cohort.
+
+      - name: listing_updated_at
+        description: Timestamp when the listing was last updated.
+
+  - name: dim_hosts
+    description: >
+      One row per Airbnb host with derived host age and portfolio segment.
+      Hosts with no listings in the snapshot are retained.
+    columns:
+      - name: host_id
+        description: Primary key for the host.
+        tests:
+          - unique
+          - not_null
+
+      - name: host_name
+        description: Host display name, with missing names set to Anonymous.
+        tests:
+          - not_null
+
+      - name: is_superhost
+        description: >
+          Nullable boolean superhost flag. NULL means the source did not disclose
+          the status; it is not coerced to FALSE.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: is_superhost_known
+        description: TRUE when the source disclosed a superhost status.
+        tests:
+          - not_null
+
+      - name: host_created_at
+        description: Timestamp when the host profile was created.
+
+      - name: host_age_days
+        description: Days between host creation and the 2021-11-19 snapshot.
+
+      - name: host_listing_count
+        description: Number of listings belonging to the host in the snapshot.
+        tests:
+          - not_null
+
+      - name: host_segment
+        description: Derived host portfolio segment based on listing count.
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  ["Single listing", "Small portfolio", "Professional", "Large professional", "Enterprise"]
+
+  - name: fct_reviews
+    description: >
+      Incremental review fact with one row per distinct review. Exact duplicates
+      are removed by the intermediate layer; null comments and null sentiment
+      are retained and labeled explicitly.
+    columns:
+      - name: review_id
+        description: Deterministic surrogate key over listing, date, reviewer, and comment.
+        tests:
+          - unique
+          - not_null
+
+      - name: listing_id
+        description: Foreign key to dim_listings.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_listings')
+                field: listing_id
+
+      - name: review_date
+        description: The date when the review was submitted.
+        tests:
+          - not_null
+
+      - name: reviewer_name
+        description: >
+          Reviewer display name. Kept for lineage only; excluded from all
+          BI-facing marts.
+        tests:
+          - not_null
+
+      - name: review_text
+        description: Review comment. Nullable; reviews without comments are retained.
+
+      - name: review_sentiment
+        description: >
+          Precomputed source sentiment, with missing values labeled unknown.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["positive", "neutral", "negative", "unknown"]
+
+      - name: sentiment_score
+        description: positive = 1, neutral = 0, negative = -1, unknown = NULL.
+
+      - name: has_comment
+        description: TRUE when the review has a non-null comment.
+        tests:
+          - not_null
+
+      - name: review_length
+        description: Character length of the review comment; NULL when there is no comment.
+
+      - name: review_year
+        description: Calendar year extracted from review_date.
+        tests:
+          - not_null
+
+      - name: review_month
+        description: First day of the review month.
+        tests:
+          - not_null
+
+  - name: dim_date
+    description: >
+      Calendar spine covering 2009-01-01 through 2021-12-31, used to zero-fill
+      monthly marts and to expose calendar attributes for dashboards.
+    columns:
+      - name: date_day
+        description: Calendar date; primary key.
+        tests:
+          - unique
+          - not_null
+
+      - name: date_key
+        description: Integer calendar key in YYYYMMDD form.
+        tests:
+          - unique
+          - not_null
+
+      - name: year_month
+        description: First day of the month containing date_day.
+        tests:
+          - not_null
+
+  - name: mart_listing_performance
+    description: >
+      One row per listing with review volume, recency, sentiment, and activity
+      metrics. Listings with zero reviews are retained with explicit NULL
+      metrics.
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          arguments:
+            compare_model: ref('dim_listings')
+    columns:
+      - name: listing_id
+        description: Primary key for the listing.
+        tests:
+          - unique
+          - not_null
+
+      - name: review_count
+        description: Total reviews for the listing.
+        tests:
+          - not_null
+
+      - name: minimum_nights_band
+        description: Derived minimum-night band, carried from dim_listings for dashboard filters.
+        tests:
+          - not_null
+
+      - name: has_reviews
+        description: TRUE when the listing has at least one review.
+        tests:
+          - not_null
+
+      - name: is_active_last_12m
+        description: TRUE when the listing has a review in the trailing 12 months.
+        tests:
+          - not_null
+
+      - name: review_count_12m
+        description: Reviews in the trailing 12 months.
+        tests:
+          - not_null
+
+      - name: pct_positive
+        description: Share of positive reviews; NULL when there are no reviews.
+
+      - name: pct_neutral
+        description: Share of neutral reviews; NULL when there are no reviews.
+
+      - name: pct_negative
+        description: Share of negative reviews; NULL when there are no reviews.
+
+  - name: mart_host_performance
+    description: >
+      One row per host with portfolio size, activity, review volume, and
+      price/sentiment rollups. Price aggregates exclude outlier listings.
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          arguments:
+            compare_model: ref('dim_hosts')
+    columns:
+      - name: host_id
+        description: Primary key for the host.
+        tests:
+          - unique
+          - not_null
+
+      - name: listing_count
+        description: Number of listings belonging to the host.
+        tests:
+          - not_null
+
+      - name: total_reviews
+        description: Total reviews across the host's listings.
+        tests:
+          - not_null
+
+      - name: pct_active_listings
+        description: Share of the host's listings active in the trailing 12 months.
+        tests:
+          - not_null
+
+      - name: avg_sentiment
+        description: >
+          Review-weighted mean listing sentiment; NULL when the host has no
+          sentiment-bearing reviews.
+
+  - name: mart_market_monthly
+    description: >
+      One row per month and room type, zero-filled across the full calendar
+      spine. Supply is measured by listing creation; demand by review activity.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - month_start
+              - room_type
+    columns:
+      - name: month_start
+        description: First day of the month.
+        tests:
+          - not_null
+
+      - name: room_type
+        description: The standardized room type.
+        tests:
+          - not_null
+
+      - name: new_listings
+        description: Listings created in the month.
+        tests:
+          - not_null
+
+      - name: cumulative_listings
+        description: Listings created on or before the month end.
+        tests:
+          - not_null
+
+      - name: reviews
+        description: Reviews submitted in the month.
+        tests:
+          - not_null
+
+      - name: review_coverage
+        description: >
+          Distinct reviewing listings divided by cumulative listings; NULL when
+          there is no supply.
+
+      - name: avg_price
+        description: Mean source price of supply created by month end; outliers excluded.
+
+      - name: median_price
+        description: Median source price of supply created by month end; outliers excluded.
+
+  - name: mart_price_bands
+    description: >
+      One row per price band and room type. Band spines are zero-filled so every
+      combination exists for dashboard heatmaps.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - price_band
+              - room_type
+    columns:
+      - name: price_band
+        description: Derived listing price band.
+        tests:
+          - not_null
+
+      - name: room_type
+        description: The standardized room type.
+        tests:
+          - not_null
+
+      - name: listing_count
+        description: Listings in the band and room type.
+        tests:
+          - not_null
+
+      - name: share_of_room_type
+        description: Listing count divided by all listings in the room type.
+
+      - name: pct_superhost
+        description: Share of band listings whose host is a superhost.
+
+      - name: pct_active
+        description: Share of band listings active in the trailing 12 months.
+
+  - name: mart_room_type_benchmark
+    description: >
+      One row per room type comparing supply share, price distribution, review
+      volume, sentiment, and host mix. Price aggregates exclude outliers.
+    columns:
+      - name: room_type
+        description: The standardized room type; primary key.
+        tests:
+          - unique
+          - not_null
+
+      - name: listing_count
+        description: Listings of this room type.
+        tests:
+          - not_null
+
+      - name: share_of_supply
+        description: Listing count divided by the 17,499-listing snapshot.
+
+      - name: median_price
+        description: Median source price; outliers excluded.
+
+      - name: p90_price
+        description: 90th percentile source price; outliers excluded.
+
+      - name: pct_superhost
+        description: Share of listings whose host is a superhost.
+
+      - name: pct_active
+        description: Share of listings active in the trailing 12 months.
+
+  - name: mart_executive_kpis
+    description: >
+      One row per month with supply, host growth, review activity, price,
+      superhost share, and sentiment KPIs for the executive dashboard.
+    columns:
+      - name: month_start
+        description: First day of the month; primary key.
+        tests:
+          - unique
+          - not_null
+
+      - name: cumulative_listings
+        description: Listings created on or before the month end.
+        tests:
+          - not_null
+
+      - name: cumulative_hosts
+        description: Hosts created on or before the month end.
+        tests:
+          - not_null
+
+      - name: new_listings
+        description: Listings created in the month.
+        tests:
+          - not_null
+
+      - name: new_hosts
+        description: Hosts created in the month.
+        tests:
+          - not_null
+
+      - name: reviews
+        description: Reviews submitted in the month.
+        tests:
+          - not_null
+
+      - name: reviewing_listings
+        description: Distinct listings reviewed in the month.
+        tests:
+          - not_null
+
+      - name: pct_listings_reviewed
+        description: Cumulative distinct reviewed listings divided by cumulative listings.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1
+
+      - name: pct_active_12m
+        description: Listings reviewed in the trailing 12 months divided by cumulative listings.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1
+
+      - name: avg_price
+        description: Mean source price of cumulative supply; outliers excluded.
+
+      - name: median_price
+        description: Median source price of cumulative supply; outliers excluded.
+
+      - name: superhost_share
+        description: Share of cumulative listings whose host is a superhost.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1
+
+      - name: avg_sentiment
+        description: Mean sentiment score of reviews in the month.
+
+      - name: pct_positive
+        description: Share of positive reviews in the month.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1
+
+      - name: pct_negative
+        description: Share of negative reviews in the month.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1
+
+      - name: is_latest_review_month
+        description: TRUE for 2021-10, the last month with review data.
+        tests:
+          - not_null
+
+  - name: int_review_topics
+    description: >
+      One row per review and matched keyword topic. A review can match multiple
+      topics and contributes once per topic.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - review_id
+              - topic
+    columns:
+      - name: review_id
+        description: Foreign key to fct_reviews.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_reviews')
+                field: review_id
+
+      - name: review_month
+        description: First day of the review month.
+        tests:
+          - not_null
+
+      - name: topic
+        description: Keyword topic matched in the review.
+        tests:
+          - not_null
+
+  - name: mart_review_topics
+    description: >
+      One row per month and keyword topic, over months that contain at least one
+      comment. Counts are keyword mentions, not a semantic classifier.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - month_start
+              - topic
+    columns:
+      - name: month_start
+        description: First day of the month.
+        tests:
+          - not_null
+
+      - name: topic
+        description: Keyword topic.
+        tests:
+          - not_null
+
+      - name: mentions
+        description: Reviews in the month that mention the topic.
+        tests:
+          - not_null
+
+      - name: mention_rate
+        description: Mentions divided by reviews with comments in the month.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1
+
+      - name: avg_sentiment
+        description: Mean sentiment score of matching reviews.
+
+      - name: pct_negative
+        description: Negative matching reviews divided by mentions.
+
+  - name: mart_full_moon_reviews
+    description: >
+      Novelty mart comparing review sentiment on full-moon dates (one day after
+      the seeded full moon) against all other dates. Not part of the executive
+      dashboard.
+    columns:
+      - name: is_full_moon
+        description: full_moon or not_full_moon.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["full_moon", "not_full_moon"]
+
+      - name: review_sentiment
+        description: Review sentiment category.
+        tests:
+          - not_null
+
+      - name: reviews
+        description: Number of reviews in the group and sentiment.
+        tests:
+          - not_null
+
+      - name: share_of_group
+        description: Reviews divided by all reviews in the full-moon group.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1

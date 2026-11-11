@@ -1,0 +1,309 @@
+{
+  "id": 2,
+  "entity_id": "_68uuQ2WYe8o8RDRVlaC0",
+  "name": "Executive Overview Dashboard",
+  "description": null,
+  "collection_id": 6,
+  "parameters": [
+    {
+      "name": "Date",
+      "type": "date/all-options",
+      "sectionId": "date",
+      "slug": "date",
+      "id": "ffb46f98",
+      "default": null
+    }
+  ],
+  "width": "fixed",
+  "auto_apply_filters": true,
+  "archived": false,
+  "dashcards": [
+    {
+      "id": 38,
+      "entity_id": "uWeoWo8yQmOFZ_n7TzkQB",
+      "card_id": 40,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 4,
+      "size_x": 4,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Total Listings"
+    },
+    {
+      "id": 39,
+      "entity_id": "-Q5xRn3Cc5zQRJ3YWxC0_",
+      "card_id": 42,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 13,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Total Reviews"
+    },
+    {
+      "id": 37,
+      "entity_id": "EazK_MdVkI45WbZDaEjew",
+      "card_id": 41,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 0,
+      "size_x": 4,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Total Hosts"
+    },
+    {
+      "id": 49,
+      "entity_id": "tQZNAP3KeKyeSX4Vne-tV",
+      "card_id": 52,
+      "dashboard_tab_id": null,
+      "row": 21,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "ffb46f98",
+          "card_id": 52,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Review Volume by Room Type"
+    },
+    {
+      "id": 45,
+      "entity_id": "Tckntui2rroZQ0AqUtErK",
+      "card_id": 48,
+      "dashboard_tab_id": null,
+      "row": 9,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Room Type Mix"
+    },
+    {
+      "id": 46,
+      "entity_id": "VHEs-4julNsPqn3tKGk7N",
+      "card_id": 49,
+      "dashboard_tab_id": null,
+      "row": 9,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Sentiment Mix"
+    },
+    {
+      "id": 41,
+      "entity_id": "HEDyT6QosfzXsqlu1nZBl",
+      "card_id": 43,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 18,
+      "size_x": 6,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Active Listings (12m)"
+    },
+    {
+      "id": 50,
+      "entity_id": "qRd5F9TUIttlokE_7uQ17",
+      "card_id": 53,
+      "dashboard_tab_id": null,
+      "row": 27,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Listing Age Cohorts"
+    },
+    {
+      "id": 40,
+      "entity_id": "clWqYFX15-LZXJ_9kBW1Y",
+      "card_id": 44,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 8,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Avg Nightly Price"
+    },
+    {
+      "id": 42,
+      "entity_id": "GhAm0mziVJfmxIr51wj8J",
+      "card_id": 45,
+      "dashboard_tab_id": null,
+      "row": 3,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "ffb46f98",
+          "card_id": 45,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Supply and Host Growth"
+    },
+    {
+      "id": 43,
+      "entity_id": "eFo_jtzsUM3l-yR3G_6Xr",
+      "card_id": 46,
+      "dashboard_tab_id": null,
+      "row": 3,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "ffb46f98",
+          "card_id": 46,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - New Listings per Month"
+    },
+    {
+      "id": 44,
+      "entity_id": "90RIqhGMPYS9CkfLlibnI",
+      "card_id": 47,
+      "dashboard_tab_id": null,
+      "row": 15,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "ffb46f98",
+          "card_id": 47,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Monthly Reviews"
+    },
+    {
+      "id": 47,
+      "entity_id": "0OZi8d6B0x1DhfTk-Etjn",
+      "card_id": 50,
+      "dashboard_tab_id": null,
+      "row": 15,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "ffb46f98",
+          "card_id": 50,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Avg Sentiment Trend"
+    },
+    {
+      "id": 48,
+      "entity_id": "0chwJ5q0owDaU6WpiCiIn",
+      "card_id": 51,
+      "dashboard_tab_id": null,
+      "row": 21,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "ffb46f98",
+          "card_id": 51,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Superhost Share Trend"
+    }
+  ],
+  "tabs": []
+}

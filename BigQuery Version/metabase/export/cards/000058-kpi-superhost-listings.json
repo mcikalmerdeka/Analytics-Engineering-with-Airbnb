@@ -1,0 +1,142 @@
+{
+  "id": 58,
+  "entity_id": "kEMx1Cbn_sIshrDI4q9Mv",
+  "name": "KPI - Superhost Listings",
+  "description": "Listings whose host is a superhost. One row per listing; 15 hosts have unknown superhost status and are excluded from the true-filter count.",
+  "collection_id": 7,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT COUNT(*) AS superhost_listings\nFROM analytics.dim_listings\nWHERE is_superhost = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{price}};",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Room Type",
+            "id": "f70966a5-0051-43fa-af49-cca55a90e84c",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "915eb099-4757-4ae1-85cb-80d9423299cc"
+              },
+              95
+            ]
+          },
+          {
+            "display-name": "Price Band",
+            "id": "1aa319ce-d892-4e38-b660-fb279e4cf7ba",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "price_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "6db957bb-8be8-4d8f-a889-01a2c0827ebb"
+              },
+              97
+            ]
+          },
+          {
+            "display-name": "Minimum Nights Band",
+            "id": "d4e9362e-524b-4a5e-a6fb-f3e065ddeec9",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "minimum_nights_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "e2a4251f-e47b-493d-89b3-3b1e55b69369"
+              },
+              100
+            ]
+          },
+          {
+            "display-name": "Price",
+            "id": "dfacf3c3-923f-4182-b458-dba2fc968ebf",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "price",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "c4c89ab3-f3d3-4b61-bd7d-dc4168b58fe1"
+              },
+              96
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "f70966a5-0051-43fa-af49-cca55a90e84c",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    },
+    {
+      "id": "1aa319ce-d892-4e38-b660-fb279e4cf7ba",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price_band"
+        ]
+      ],
+      "name": "Price Band",
+      "slug": "price_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "d4e9362e-524b-4a5e-a6fb-f3e065ddeec9",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "minimum_nights_band"
+        ]
+      ],
+      "name": "Minimum Nights Band",
+      "slug": "minimum_nights_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "dfacf3c3-923f-4182-b458-dba2fc968ebf",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price"
+        ]
+      ],
+      "name": "Price",
+      "slug": "price",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

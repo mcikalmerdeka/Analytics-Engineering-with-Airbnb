@@ -1,0 +1,27 @@
+{
+  "id": 68,
+  "entity_id": "VVZjjcvCi3-7OKGgJwt5e",
+  "name": "KPI - Positive Review Share",
+  "description": "Positive reviews divided by all reviews. One row per review; the denominator includes neutral, negative, and unknown sentiment. Fixed card.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT\n    COUNT(*) FILTER (WHERE review_sentiment = 'positive')::numeric\n        / NULLIF(COUNT(*), 0) AS positive_share\nFROM analytics.fct_reviews;"
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

@@ -1,0 +1,29 @@
+{
+  "id": 41,
+  "entity_id": "pWfuFZ6xHuJYr3fZmiYgG",
+  "name": "KPI - Total Hosts",
+  "description": "Count of host profiles in the snapshot. One row per host; hosts with no listings are retained.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "stages": [
+      {
+        "native": "SELECT COUNT(*) AS total_hosts\nFROM analytics.dim_hosts;",
+        "lib/type": "mbql.stage/native"
+      }
+    ],
+    "lib/type": "mbql/query",
+    "database": 2
+  },
+  "visualization_settings": {
+    "scalar.segments": []
+  },
+  "parameters": [],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

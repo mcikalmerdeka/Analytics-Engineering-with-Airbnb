@@ -1,0 +1,32 @@
+{
+  "id": 48,
+  "entity_id": "QZVwYTOQjAdsCAFWRByk7",
+  "name": "Chart - Room Type Mix",
+  "description": "Listings by standardized room type in the current snapshot. One row per room type.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "pie",
+  "dataset_query": {
+    "stages": [
+      {
+        "native": "SELECT\n    room_type,\n    COUNT(*) AS listings\nFROM analytics.dim_listings\nGROUP BY room_type\nORDER BY listings DESC;",
+        "lib/type": "mbql.stage/native"
+      }
+    ],
+    "lib/type": "mbql/query",
+    "database": 2
+  },
+  "visualization_settings": {
+    "pie.metric": "listings",
+    "pie.dimension": [
+      "room_type"
+    ]
+  },
+  "parameters": [],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

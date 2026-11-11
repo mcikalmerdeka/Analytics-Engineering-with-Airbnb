@@ -1,0 +1,95 @@
+{
+  "id": 78,
+  "entity_id": "ZcHZUPnxyqQMm4NxGvC6v",
+  "name": "Chart - Topic Mention Rate Trend",
+  "description": "Average monthly share of comment-bearing reviews that mention each topic, for the last 24 complete months. One row per month and topic; unweighted average of monthly rates.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "line",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    month_start,\n    topic,\n    AVG(mention_rate) AS avg_mention_rate\nFROM analytics.mart_review_topics\nWHERE month_start BETWEEN DATE '2019-11-01' AND DATE '2021-10-01'\n  AND {{review_month}}\n  AND {{topic}}\nGROUP BY month_start, topic\nORDER BY month_start, topic;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Review Month",
+            "id": "57e141a2-535c-45ff-82de-51caed893cbe",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "review_month",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "f52c2844-e381-4be6-85f4-aff28c3d2286"
+              },
+              205
+            ]
+          },
+          {
+            "display-name": "Topic",
+            "id": "af1f6b1e-1043-414c-abaf-4feba633dfb3",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "topic",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "fee8daeb-a574-43b8-a3fe-9617261055c3"
+              },
+              206
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "month_start",
+      "topic"
+    ],
+    "graph.x_axis.scale": "timeseries",
+    "graph.metrics": [
+      "avg_mention_rate"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "57e141a2-535c-45ff-82de-51caed893cbe",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_month"
+        ]
+      ],
+      "name": "Review Month",
+      "slug": "review_month",
+      "isMultiSelect": true
+    },
+    {
+      "id": "af1f6b1e-1043-414c-abaf-4feba633dfb3",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "topic"
+        ]
+      ],
+      "name": "Topic",
+      "slug": "topic",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

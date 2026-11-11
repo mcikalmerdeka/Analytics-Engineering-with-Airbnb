@@ -1,0 +1,29 @@
+{
+  "id": 40,
+  "entity_id": "qIy4hptFDW9wTX87OUh26",
+  "name": "KPI - Total Listings",
+  "description": "Count of listings in the 2021-11-19 Airbnb Berlin snapshot. One row per listing; use this as the denominator for listing-level shares.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "stages": [
+      {
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT COUNT(*) AS total_listings\nFROM analytics.dim_listings;"
+      }
+    ],
+    "lib/type": "mbql/query",
+    "database": 2
+  },
+  "visualization_settings": {
+    "scalar.segments": []
+  },
+  "parameters": [],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

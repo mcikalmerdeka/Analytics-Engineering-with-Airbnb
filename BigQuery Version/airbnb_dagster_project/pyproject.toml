@@ -1,0 +1,21 @@
+[project]
+name = "airbnb-dagster-project"
+version = "0.1.0"
+description = "Dagster orchestration for the Airbnb dbt project."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "dagster>=1.13.28,<1.14",
+    "dagster-dbt>=0.29.28,<0.30",
+    "dagster-webserver>=1.13.28,<1.14",
+]
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["airbnb_dagster_project"]
+
+[tool.dagster]
+module_name = "airbnb_dagster_project.definitions"
+code_location_name = "airbnb_dagster_project"

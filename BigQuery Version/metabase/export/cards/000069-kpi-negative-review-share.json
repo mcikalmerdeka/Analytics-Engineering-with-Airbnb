@@ -1,0 +1,27 @@
+{
+  "id": 69,
+  "entity_id": "DGJroUVsF_hFcuVoikMQX",
+  "name": "KPI - Negative Review Share",
+  "description": "Negative reviews divided by all reviews. One row per review; the denominator includes positive, neutral, and unknown sentiment. Fixed card.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT\n    COUNT(*) FILTER (WHERE review_sentiment = 'negative')::numeric\n        / NULLIF(COUNT(*), 0) AS negative_share\nFROM analytics.fct_reviews;"
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

@@ -1,0 +1,93 @@
+{
+  "id": 64,
+  "entity_id": "lgIp0NkIWOFJ6a851uGBr",
+  "name": "Chart - Active Share by Price Band",
+  "description": "Unweighted average of room-type active shares within each price band. One row per price band; active means a review in the trailing 12 months.",
+  "collection_id": 7,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    price_band,\n    AVG(pct_active) AS active_share\nFROM analytics.mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Room Type",
+            "id": "d88b55df-0c14-43b0-9f85-5265ee0e3fb4",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "7d0bd45f-f393-4be1-b9b2-dfd125296aaa"
+              },
+              197
+            ]
+          },
+          {
+            "display-name": "Price Band",
+            "id": "d241e9b5-b898-4419-ab96-509fbce9f9a9",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "price_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "93f1363c-dd8b-47ab-ba5e-38562d96f3bf"
+              },
+              196
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "price_band"
+    ],
+    "graph.metrics": [
+      "active_share"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "d88b55df-0c14-43b0-9f85-5265ee0e3fb4",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    },
+    {
+      "id": "d241e9b5-b898-4419-ab96-509fbce9f9a9",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price_band"
+        ]
+      ],
+      "name": "Price Band",
+      "slug": "price_band",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

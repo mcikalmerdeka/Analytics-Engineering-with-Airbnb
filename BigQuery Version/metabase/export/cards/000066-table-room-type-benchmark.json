@@ -1,0 +1,58 @@
+{
+  "id": 66,
+  "entity_id": "Va97V3Cb8O9fYir_FHQWf",
+  "name": "Table - Room Type Benchmark",
+  "description": "One row per room type with supply share, price distribution, review volume, sentiment, superhost share, and active share.",
+  "collection_id": 7,
+  "type": "question",
+  "query_type": "native",
+  "display": "table",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    room_type,\n    listing_count,\n    share_of_supply,\n    avg_price,\n    median_price,\n    p90_price,\n    avg_reviews,\n    median_reviews,\n    avg_sentiment,\n    pct_superhost,\n    pct_active\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\nORDER BY listing_count DESC;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Room Type",
+            "id": "344191eb-21cb-4f21-847c-8abef3865bfb",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "6f533bfb-ad83-4265-9afe-736c17e47db7"
+              },
+              211
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "344191eb-21cb-4f21-847c-8abef3865bfb",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

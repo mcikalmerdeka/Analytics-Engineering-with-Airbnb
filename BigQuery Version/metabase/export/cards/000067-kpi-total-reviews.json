@@ -1,0 +1,114 @@
+{
+  "id": 67,
+  "entity_id": "9G2V-Pd07p8FOetbsv9X3",
+  "name": "KPI - Total Reviews",
+  "description": "Count of distinct reviews matching the selected Guest filters. One row per review; duplicate reviews are removed upstream.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT COUNT(*) AS total_reviews\nFROM analytics.fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Review Date",
+            "id": "260be8cc-dc6b-4507-a15c-c93283952bfd",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "review_date",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "8eeab8e3-aa31-437c-a196-2ae0a1528d1b"
+              },
+              113
+            ]
+          },
+          {
+            "display-name": "Review Sentiment",
+            "id": "4e71fe23-25ea-40f8-83d4-e7a795cc205a",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "review_sentiment",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "eb42e1c5-5c47-48da-be79-23909e53d62c"
+              },
+              116
+            ]
+          },
+          {
+            "display-name": "Has Comment",
+            "id": "9cac8120-1776-4dc8-ba00-4d7910acff5b",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "has_comment",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "379967e6-43fd-42be-8378-785dbbefbce7"
+              },
+              118
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "260be8cc-dc6b-4507-a15c-c93283952bfd",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_date"
+        ]
+      ],
+      "name": "Review Date",
+      "slug": "review_date",
+      "isMultiSelect": true
+    },
+    {
+      "id": "4e71fe23-25ea-40f8-83d4-e7a795cc205a",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_sentiment"
+        ]
+      ],
+      "name": "Review Sentiment",
+      "slug": "review_sentiment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "9cac8120-1776-4dc8-ba00-4d7910acff5b",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "has_comment"
+        ]
+      ],
+      "name": "Has Comment",
+      "slug": "has_comment",
+      "isMultiSelect": false
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

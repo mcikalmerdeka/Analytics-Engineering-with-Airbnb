@@ -1,0 +1,226 @@
+{
+  "id": 98,
+  "entity_id": "GC1ES8gGC37iyzxLCQnz6",
+  "name": "KPI - Zero-review Listings",
+  "description": "Filtered listings with no reviews. One row per listing; includes new and inactive listings.",
+  "collection_id": 10,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT COUNT(*) AS zero_review_listings\nFROM analytics.mart_listing_performance\nWHERE review_count = 0\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Room Type",
+            "id": "dedb6dfc-2e6a-437e-96a2-54d12e426379",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "c56b88be-36ab-493e-932f-5e400a7df598"
+              },
+              160
+            ]
+          },
+          {
+            "display-name": "Price Band",
+            "id": "78eb061c-90ca-46be-afdd-c612eebddcf6",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "price_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "a7f23390-343a-4d30-9a89-f566af3a4a85"
+              },
+              162
+            ]
+          },
+          {
+            "display-name": "Minimum Nights Band",
+            "id": "80ab9a86-871e-4ce1-9957-e8043c9d727f",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "minimum_nights_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "457eb7b8-2641-43cf-99ca-645ec1682e46"
+              },
+              165
+            ]
+          },
+          {
+            "display-name": "Is Superhost",
+            "id": "de2213a8-2ce9-489d-87dd-d2802029acfc",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_superhost",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "c04ff24d-b197-4d0c-aa07-e3fb6b6101f7"
+              },
+              168
+            ]
+          },
+          {
+            "display-name": "Host Segment",
+            "id": "9ba7fee9-3cda-4903-a33a-ce3071623b7b",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "host_segment",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "7e48f3bd-99b1-4142-be7b-38d51736534b"
+              },
+              169
+            ]
+          },
+          {
+            "display-name": "Is Active Last 12m",
+            "id": "2c63a107-4bb8-49f8-bed0-55aed066438e",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_active_last_12m",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "441a12cf-1049-4c96-9848-48203b6c20af"
+              },
+              172
+            ]
+          },
+          {
+            "display-name": "Price",
+            "id": "73d6ea18-5678-4b01-b491-5149be9349c4",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "price",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "9e3ef069-3e3d-45a4-ae86-026f84d11fa9"
+              },
+              161
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "dedb6dfc-2e6a-437e-96a2-54d12e426379",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    },
+    {
+      "id": "78eb061c-90ca-46be-afdd-c612eebddcf6",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price_band"
+        ]
+      ],
+      "name": "Price Band",
+      "slug": "price_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "80ab9a86-871e-4ce1-9957-e8043c9d727f",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "minimum_nights_band"
+        ]
+      ],
+      "name": "Minimum Nights Band",
+      "slug": "minimum_nights_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "de2213a8-2ce9-489d-87dd-d2802029acfc",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_superhost"
+        ]
+      ],
+      "name": "Is Superhost",
+      "slug": "is_superhost",
+      "isMultiSelect": false
+    },
+    {
+      "id": "9ba7fee9-3cda-4903-a33a-ce3071623b7b",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "host_segment"
+        ]
+      ],
+      "name": "Host Segment",
+      "slug": "host_segment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "2c63a107-4bb8-49f8-bed0-55aed066438e",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_active_last_12m"
+        ]
+      ],
+      "name": "Is Active Last 12m",
+      "slug": "is_active_last_12m",
+      "isMultiSelect": false
+    },
+    {
+      "id": "73d6ea18-5678-4b01-b491-5149be9349c4",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price"
+        ]
+      ],
+      "name": "Price",
+      "slug": "price",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

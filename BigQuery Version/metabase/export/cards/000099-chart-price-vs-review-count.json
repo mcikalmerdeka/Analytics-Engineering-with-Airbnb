@@ -1,0 +1,205 @@
+{
+  "id": 99,
+  "entity_id": "rsdTmkO7NfJA7ascH1WC4",
+  "name": "Chart - Price vs Review Count",
+  "description": "Scatter of active, non-outlier listings: nightly price versus lifetime review count. One point per listing; not a time series.",
+  "collection_id": 10,
+  "type": "question",
+  "query_type": "native",
+  "display": "scatter",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    price,\n    review_count\nFROM analytics.mart_listing_performance\nWHERE NOT is_price_outlier\n  AND is_active_last_12m = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{price}}",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Room Type",
+            "id": "b3bcead3-6bc6-4add-9527-7656c8b05eab",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "f198831c-2448-4946-826c-a9fab4f89ed0"
+              },
+              160
+            ]
+          },
+          {
+            "display-name": "Price Band",
+            "id": "8c15e682-d34b-4488-b296-c19ff9c69fc5",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "price_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "6e4015df-3f75-4adf-897e-ad135901bb7c"
+              },
+              162
+            ]
+          },
+          {
+            "display-name": "Minimum Nights Band",
+            "id": "f893828d-44da-4d56-8a50-9de0bb073174",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "minimum_nights_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "296796f9-b01a-42c5-9b0d-b3e66dc1ae78"
+              },
+              165
+            ]
+          },
+          {
+            "display-name": "Is Superhost",
+            "id": "49436880-3714-4151-b03f-962a340a6417",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_superhost",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "a381d5c9-f076-4538-ba2c-8a0dfe4b59a3"
+              },
+              168
+            ]
+          },
+          {
+            "display-name": "Host Segment",
+            "id": "ba969f2f-6d87-452f-9270-48c665f391fb",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "host_segment",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "4eae5afb-c5ff-496a-897d-5718d22ae445"
+              },
+              169
+            ]
+          },
+          {
+            "display-name": "Price",
+            "id": "cda7bd7a-3c7f-400d-a37c-ed433383d855",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "price",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "a6300b13-5744-47dc-9163-2732e998da57"
+              },
+              161
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "price"
+    ],
+    "graph.metrics": [
+      "review_count"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "b3bcead3-6bc6-4add-9527-7656c8b05eab",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    },
+    {
+      "id": "8c15e682-d34b-4488-b296-c19ff9c69fc5",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price_band"
+        ]
+      ],
+      "name": "Price Band",
+      "slug": "price_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "f893828d-44da-4d56-8a50-9de0bb073174",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "minimum_nights_band"
+        ]
+      ],
+      "name": "Minimum Nights Band",
+      "slug": "minimum_nights_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "49436880-3714-4151-b03f-962a340a6417",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_superhost"
+        ]
+      ],
+      "name": "Is Superhost",
+      "slug": "is_superhost",
+      "isMultiSelect": false
+    },
+    {
+      "id": "ba969f2f-6d87-452f-9270-48c665f391fb",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "host_segment"
+        ]
+      ],
+      "name": "Host Segment",
+      "slug": "host_segment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "cda7bd7a-3c7f-400d-a37c-ed433383d855",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price"
+        ]
+      ],
+      "name": "Price",
+      "slug": "price",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

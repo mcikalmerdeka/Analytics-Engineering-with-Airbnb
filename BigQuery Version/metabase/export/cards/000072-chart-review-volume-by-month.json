@@ -1,0 +1,122 @@
+{
+  "id": 72,
+  "entity_id": "B6wpv-KfrrzIeyuJJ3xut",
+  "name": "Chart - Review Volume by Month",
+  "description": "Reviews submitted per month through 2021-10. One row per month; 2021-11 is excluded because review data ends in October.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "line",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    review_month,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews\nWHERE review_month <= DATE '2021-10-01'\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_month\nORDER BY review_month;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Review Date",
+            "id": "0cf8d720-aef7-4877-b67b-9e053265cfda",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "review_date",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "dbcb7a02-6bde-4e9b-843c-5d20c2ecb8d8"
+              },
+              113
+            ]
+          },
+          {
+            "display-name": "Review Sentiment",
+            "id": "7db83ad0-a909-4482-abca-e786de2abb3f",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "review_sentiment",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "b97e1e33-e9bb-4673-8040-efb8bdffad08"
+              },
+              116
+            ]
+          },
+          {
+            "display-name": "Has Comment",
+            "id": "8f9accdc-d9ad-4f20-a00b-65eade77bb9a",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "has_comment",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "a5e0e2ff-0fae-4324-92dc-c74e8ef6275e"
+              },
+              118
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "review_month"
+    ],
+    "graph.x_axis.scale": "timeseries",
+    "graph.metrics": [
+      "reviews"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "0cf8d720-aef7-4877-b67b-9e053265cfda",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_date"
+        ]
+      ],
+      "name": "Review Date",
+      "slug": "review_date",
+      "isMultiSelect": true
+    },
+    {
+      "id": "7db83ad0-a909-4482-abca-e786de2abb3f",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_sentiment"
+        ]
+      ],
+      "name": "Review Sentiment",
+      "slug": "review_sentiment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "8f9accdc-d9ad-4f20-a00b-65eade77bb9a",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "has_comment"
+        ]
+      ],
+      "name": "Has Comment",
+      "slug": "has_comment",
+      "isMultiSelect": false
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

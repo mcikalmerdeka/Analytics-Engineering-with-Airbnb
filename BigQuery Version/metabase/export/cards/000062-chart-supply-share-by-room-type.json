@@ -1,0 +1,61 @@
+{
+  "id": 62,
+  "entity_id": "4FyRZJYQGPOQSEcbCgpt0",
+  "name": "Chart - Supply Share by Room Type",
+  "description": "Share of the 17,499-listing snapshot by room type. One row per room type; shares sum to 100%.",
+  "collection_id": 7,
+  "type": "question",
+  "query_type": "native",
+  "display": "pie",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    room_type,\n    listing_count\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\nORDER BY listing_count DESC;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "display-name": "Room Type",
+            "id": "6e774944-59dd-4b2b-bc78-20ea07816a0d",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "0ac766a8-6124-46df-9500-969961082623"
+              },
+              211
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "pie.dimension": "room_type",
+    "pie.metric": "listing_count"
+  },
+  "parameters": [
+    {
+      "id": "6e774944-59dd-4b2b-bc78-20ea07816a0d",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

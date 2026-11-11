@@ -1,0 +1,264 @@
+{
+  "notes": [
+    "Schema for scripts/add_dashboard_filters.py, using the Airbnb Berlin project as the worked example.",
+    "The cards must already expose the template tags named in filters[].tag.",
+    "root_collection_id is the parent collection; each collection/dashboard is found by exact name.",
+    "expected_cards is optional. When set, the script aborts if the live tag count differs, which catches card drift.",
+    "exclude_cards (optional) lists card names that must not be mapped even if they expose the tag. The Listing example uses it defensively for a grouping card; that card currently lacks the tag, so the expected count stays 11.",
+    "For a plain Text search filter, use type string/contains, values_query_type none, and a card Text tag (not a Field Filter).",
+    "Text filters map with ['variable', ['template-tag', tag]]; Field Filters map with ['dimension', [...], {'stage-number': 0}].",
+    "Use values_query_type 'list' for dropdowns backed by live field values, 'search' for a search box, 'none' for dates/booleans/numbers."
+  ],
+  "root_collection_id": 5,
+  "dashboards": [
+    {
+      "key": "supply",
+      "collection": "Supply and Pricing Collection",
+      "dashboard": "Supply and Pricing Dashboard",
+      "filters": [
+        {
+          "name": "Room type",
+          "slug": "room_type",
+          "tag": "room_type",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 12
+        },
+        {
+          "name": "Price band",
+          "slug": "price_band",
+          "tag": "price_band",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 9
+        },
+        {
+          "name": "Minimum nights band",
+          "slug": "minimum_nights_band",
+          "tag": "minimum_nights_band",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 6
+        },
+        {
+          "name": "Superhost",
+          "slug": "is_superhost",
+          "tag": "is_superhost",
+          "type": "boolean/=",
+          "section_id": "boolean",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 5
+        },
+        {
+          "name": "Price range",
+          "slug": "price",
+          "tag": "price",
+          "type": "number/between",
+          "section_id": "number",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 6
+        }
+      ]
+    },
+    {
+      "key": "guest",
+      "collection": "Guest Experience Collection",
+      "dashboard": "Guest Experience Dashboard",
+      "filters": [
+        {
+          "name": "Review date",
+          "slug": "review_date",
+          "tag": "review_date",
+          "type": "date/all-options",
+          "section_id": "date",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 8
+        },
+        {
+          "name": "Review month",
+          "slug": "review_month",
+          "tag": "review_month",
+          "type": "date/all-options",
+          "section_id": "date",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 4
+        },
+        {
+          "name": "Room type",
+          "slug": "room_type",
+          "tag": "room_type",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 1
+        },
+        {
+          "name": "Sentiment",
+          "slug": "review_sentiment",
+          "tag": "review_sentiment",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 8
+        },
+        {
+          "name": "Has comment",
+          "slug": "has_comment",
+          "tag": "has_comment",
+          "type": "boolean/=",
+          "section_id": "boolean",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 8
+        },
+        {
+          "name": "Topic",
+          "slug": "topic",
+          "tag": "topic",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 4
+        }
+      ]
+    },
+    {
+      "key": "host",
+      "collection": "Host Portfolio Collection",
+      "dashboard": "Host Portfolio Dashboard",
+      "filters": [
+        {
+          "name": "Host segment",
+          "slug": "host_segment",
+          "tag": "host_segment",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 10
+        },
+        {
+          "name": "Superhost",
+          "slug": "is_superhost",
+          "tag": "is_superhost",
+          "type": "boolean/=",
+          "section_id": "boolean",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 9
+        },
+        {
+          "name": "Minimum listings",
+          "slug": "listing_count",
+          "tag": "listing_count",
+          "type": "number/>=",
+          "section_id": "number",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 12
+        },
+        {
+          "name": "Host created date",
+          "slug": "host_created_at",
+          "tag": "host_created_at",
+          "type": "date/all-options",
+          "section_id": "date",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 1
+        }
+      ]
+    },
+    {
+      "key": "listing",
+      "collection": "Listing Explorer Collection",
+      "dashboard": "Listing Explorer Dashboard",
+      "filters": [
+        {
+          "name": "Room type",
+          "slug": "room_type",
+          "tag": "room_type",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 12
+        },
+        {
+          "name": "Price band",
+          "slug": "price_band",
+          "tag": "price_band",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 12
+        },
+        {
+          "name": "Minimum nights band",
+          "slug": "minimum_nights_band",
+          "tag": "minimum_nights_band",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 12
+        },
+        {
+          "name": "Superhost",
+          "slug": "is_superhost",
+          "tag": "is_superhost",
+          "type": "boolean/=",
+          "section_id": "boolean",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 12
+        },
+        {
+          "name": "Host segment",
+          "slug": "host_segment",
+          "tag": "host_segment",
+          "type": "string/=",
+          "section_id": "string",
+          "values_query_type": "list",
+          "is_multi": true,
+          "expected_cards": 11,
+          "exclude_cards": ["Chart - Active Listings by Host Segment"]
+        },
+        {
+          "name": "Active last 12m",
+          "slug": "is_active_last_12m",
+          "tag": "is_active_last_12m",
+          "type": "boolean/=",
+          "section_id": "boolean",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 9
+        },
+        {
+          "name": "Price range",
+          "slug": "price",
+          "tag": "price",
+          "type": "number/between",
+          "section_id": "number",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 12
+        }
+      ]
+    }
+  ]
+}
