@@ -208,7 +208,10 @@ Roles:
 | `roles/bigquery.jobUser` | project | Run SELECT jobs |
 
 The service account must not have access to `raw`, `staging`, or `snapshots`.
-The key is written to `.secrets/metabase-bigquery-key.json` and never committed.
+The dataset-level read grant is applied through the official BigQuery Python
+client because this `bq` CLI cannot set dataset IAM policies. The result is the
+same dataset ACL (`READER` for `userByEmail`). The key is written to
+`.secrets/metabase-bigquery-key.json` and never committed.
 
 ### 7.3 Raw data loading
 
@@ -248,16 +251,16 @@ Guardrails:
 
 1. `scripts/set_bigquery_guardrails.ps1` enables
    `billingbudgets.googleapis.com`.
-2. It creates a **$1 monthly budget** named
-   `Airbnb Analytics BigQuery Guardrail`, filtered to
-   `projects/orbital-scene-422012-h0` and
-   `services/bigquery.googleapis.com`, with email thresholds at 50%, 100%, and
-   200%.
+2. It creates a **16,000 IDR monthly budget** (approximately USD 1; the billing
+   account currency is IDR) named `Airbnb Analytics BigQuery Guardrail`,
+   filtered to `projects/orbital-scene-422012-h0`, with email thresholds at 50%
+   and 100%. Cloud Billing rejects thresholds above 100%.
 3. It creates a project-level Cloud Quota preference:
    - quota ID: `QueryUsagePerDay`
    - service: `bigquery.googleapis.com`
    - preferred value: `32212254720` bytes (30 GiB/day)
    - preference ID: `bigquery-query-usage-daily-cap`
+   - contact email: the active `gcloud` account, required by the Quotas API
 4. `profiles.yml` sets `maximum_bytes_billed: 1000000000` (1 GiB) per dbt query.
 5. Helper scripts pass `--maximum_bytes_billed` to `bq query`.
 6. The Dagster schedule stays stopped until explicitly started.
@@ -638,7 +641,7 @@ Guardrails cap the downside:
 
 - `maximum_bytes_billed=1 GiB` per dbt query.
 - 30 GiB/day project query quota.
-- $1 budget alert at 50%, 100%, and 200%.
+- 16,000 IDR (~$1) budget alert at 50% and 100%.
 - No automatic schedule by default.
 
 ## 15. Acceptance criteria

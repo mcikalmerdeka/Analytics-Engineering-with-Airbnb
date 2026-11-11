@@ -70,7 +70,7 @@ Additional guardrails:
 
 - `maximum_bytes_billed: 1000000000` (1 GiB) per dbt query
 - 30 GiB/day project query quota
-- $1 monthly budget alert at 50%, 100%, and 200%
+- 16,000 IDR (~$1) monthly budget alert at 50% and 100%
 - Dagster schedule stopped by default
 
 Expected monthly BigQuery cost at normal usage: **$0.00**.

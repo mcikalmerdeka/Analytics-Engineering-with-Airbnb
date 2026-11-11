@@ -25,7 +25,7 @@
 - BigQuery service account: `airbnb-metabase@orbital-scene-422012-h0.iam.gserviceaccount.com`.
 - Service account roles: `roles/bigquery.dataViewer` on the `analytics` dataset, `roles/bigquery.metadataViewer` and `roles/bigquery.jobUser` on the project.
 - Service account key path: `.secrets/metabase-bigquery-key.json`; never commit it.
-- Cost guardrails: $1 monthly budget with 50/100/200% alerts; 30 GiB/day `QueryUsagePerDay` quota (`32212254720` bytes); dbt `maximum_bytes_billed: 1000000000`.
+- Cost guardrails: 16,000 IDR (~$1) monthly budget with 50/100% alerts; 30 GiB/day `QueryUsagePerDay` quota (`32212254720` bytes); dbt `maximum_bytes_billed: 1000000000`.
 - Raw row counts: `raw_listings` 17,499; `raw_hosts` 14,111; `raw_reviews` 410,284.
 - Analytics row counts: `dim_date` 4,748; `dim_listings` 17,499; `dim_hosts` 14,111; `fct_reviews` 410,283; `mart_listing_performance` 17,499; `mart_host_performance` 14,111; `mart_market_monthly` 620; `mart_price_bands` 28; `mart_room_type_benchmark` 4; `mart_review_topics` 1,573; `mart_executive_kpis` 155; `mart_full_moon_reviews` 8.
 - Snapshot row counts on first build: `scd_raw_hosts` 14,111; `scd_raw_listings` 17,499.
@@ -208,6 +208,7 @@ Do not stage `.env`, `profiles.yml`, or `.secrets/`.
 
 **Files:**
 - Create: `BigQuery Version/scripts/provision_bigquery.ps1`
+- Create: `BigQuery Version/scripts/grant_bigquery_access.py`
 - Create: `BigQuery Version/scripts/set_bigquery_guardrails.ps1`
 - Test: run both scripts and inspect BigQuery, IAM, billing, and quota state.
 
@@ -233,10 +234,11 @@ The script must be idempotent and stop on the first error (`$ErrorActionPreferen
 9. Grant project roles:
    `roles/bigquery.metadataViewer` and `roles/bigquery.jobUser`.
 10. Grant dataset role:
-    `bq add-iam-policy-binding --member="serviceAccount:airbnb-metabase@orbital-scene-422012-h0.iam.gserviceaccount.com" --role="roles/bigquery.dataViewer" --project_id=orbital-scene-422012-h0 analytics`.
-    If this CLI build rejects a dataset identifier, fall back to
-    `bq get-iam-policy --format=json analytics`, add the binding, and apply it
-    with `bq set-iam-policy analytics <file>`.
+    run `uv run python scripts/grant_bigquery_access.py --dataset analytics --email=airbnb-metabase@orbital-scene-422012-h0.iam.gserviceaccount.com`.
+    The `bq` CLI in this environment cannot set dataset IAM policies
+    (`bq get-iam-policy` requires allowlisting), so the official BigQuery
+    client writes the dataset `READER` access entry. This is the same dataset
+    ACL that `roles/bigquery.dataViewer` grants at dataset scope.
 11. Create the key only if `.secrets/metabase-bigquery-key.json` does not exist:
     `gcloud iam service-accounts keys create .secrets/metabase-bigquery-key.json --iam-account=airbnb-metabase@orbital-scene-422012-h0.iam.gserviceaccount.com`.
 12. Print a summary of datasets, roles, and key path.
@@ -246,19 +248,23 @@ The script must be idempotent and stop on the first error (`$ErrorActionPreferen
 The script must be idempotent and must:
 
 1. Enable `billingbudgets.googleapis.com` on the project.
-2. Create a $1 budget only if `Airbnb Analytics BigQuery Guardrail` does not already exist:
+2. Create a 16,000 IDR budget (approximately USD 1; the billing account
+   currency is IDR) only if `Airbnb Analytics BigQuery Guardrail` does not
+   already exist:
 
 ```powershell
 gcloud billing budgets create `
   --billing-account=01D852-BA4F4C-1BCBD1 `
   --display-name="Airbnb Analytics BigQuery Guardrail" `
-  --budget-amount=1USD `
+  --budget-amount=16000 `
+  --calendar-period=month `
   --filter-projects=projects/orbital-scene-422012-h0 `
-  --filter-services=services/bigquery.googleapis.com `
   --threshold-rule=percent=0.5 `
-  --threshold-rule=percent=1.0 `
-  --threshold-rule=percent=2.0
+  --threshold-rule=percent=1.0
 ```
+
+Cloud Billing rejects thresholds above 100%, so the supported alerts are 50%
+and 100%.
 
 3. Create the daily query quota only if it does not exist:
 
@@ -269,9 +275,12 @@ gcloud quotas preferences create `
   --quota-id=QueryUsagePerDay `
   --preferred-value=32212254720 `
   --preference-id=bigquery-query-usage-daily-cap `
+  --email=(gcloud config get-value account) `
   --allow-high-percentage-quota-decrease `
   --allow-quota-decrease-below-usage
 ```
+
+The Quotas API requires a contact email even for a decrease.
 
 4. Print the current budget and quota preference.
 
@@ -302,17 +311,18 @@ gcloud projects get-iam-policy orbital-scene-422012-h0 `
   --filter="bindings.members:airbnb-metabase@orbital-scene-422012-h0.iam.gserviceaccount.com" `
   --format="value(bindings.role)"
 
-bq get-iam-policy --project_id=orbital-scene-422012-h0 analytics
+uv run python scripts/grant_bigquery_access.py --dataset analytics --email=airbnb-metabase@orbital-scene-422012-h0.iam.gserviceaccount.com
 Test-Path .secrets\metabase-bigquery-key.json
 ```
 
-Expected: `roles/bigquery.metadataViewer`, `roles/bigquery.jobUser`, a dataset binding for `roles/bigquery.dataViewer`, and `True`.
+Expected: `roles/bigquery.metadataViewer`, `roles/bigquery.jobUser`, the
+`READER` dataset access entry, and `True`.
 
 - [ ] **Step 6: Verify guardrails**
 
 ```powershell
-gcloud billing budgets list --billing-account=01D852-BA4F4C-1BCBD1 --format="table(displayName,budget.amount)"
-gcloud quotas preferences list --project=orbital-scene-422012-h0 --service=bigquery.googleapis.com --format="table(name,quotaId,preferredValue)"
+gcloud billing budgets list --billing-account=01D852-BA4F4C-1BCBD1 --format="table(displayName,budget.amount.specifiedAmount.units,budget.amount.specifiedAmount.currencyCode)"
+gcloud quotas preferences list --project=orbital-scene-422012-h0 --format="table(name,quotaId,quotaConfig.preferredValue)"
 ```
 
 Expected: the budget and `bigquery-query-usage-daily-cap` are present.
@@ -1670,8 +1680,8 @@ Expected: UI loads at `http://localhost:3001`; asset graph is complete; material
 - [ ] **Step 4: Verify cost guardrails**
 
 ```powershell
-gcloud billing budgets list --billing-account=01D852-BA4F4C-1BCBD1 --format="table(displayName,budget.amount)"
-gcloud quotas preferences list --project=orbital-scene-422012-h0 --service=bigquery.googleapis.com --format="table(name,quotaId,preferredValue)"
+gcloud billing budgets list --billing-account=01D852-BA4F4C-1BCBD1 --format="table(displayName,budget.amount.specifiedAmount.units,budget.amount.specifiedAmount.currencyCode)"
+gcloud quotas preferences list --project=orbital-scene-422012-h0 --format="table(name,quotaId,quotaConfig.preferredValue)"
 ```
 
 Expected: budget and quota preference are present and unchanged.
