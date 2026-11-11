@@ -40,7 +40,7 @@
 
 These are the failure modes the spec implies but that a normal happy-path build may not exercise. Each has a test in the owning task.
 
-1. **CSV edge cases:** quoted newlines in `raw_reviews.comments`, German umlauts, Cyrillic text, `$`-prefixed prices, and timestamps with `.000` milliseconds must load without truncation or row loss. Tested in Task 3.
+1. **CSV edge cases:** long review comments, German umlauts, Cyrillic text, `$`-prefixed prices, and timestamps with `.000` milliseconds must load without truncation or row loss. The source reviews have no embedded newlines, but `--allow_quoted_newlines` remains enabled for future refreshes. Tested in Task 3.
 2. **Silent numeric drift:** BigQuery `PERCENTILE_CONT`, ISO week/day extraction, `COUNTIF`, and RE2 topic regexes must reproduce the Postgres row counts and KPI values. Tested in Tasks 8 and 9.
 3. **Metabase Field Filters:** the converted cards must still filter correctly after the Postgres field IDs are replaced by BigQuery field IDs. Tested in Task 15 with a real filtered query.
 4. **Least-privilege access:** the Metabase service account must see `analytics` and must not see `raw`, `staging`, or `snapshots`. Tested in Task 12.
@@ -363,7 +363,7 @@ bq load `
   --skip_leading_rows=1 `
   --allow_quoted_newlines `
   --encoding=UTF-8 `
-  --write_disposition=WRITE_TRUNCATE `
+  --replace `
   --schema="id:INT64,listing_url:STRING,name:STRING,room_type:STRING,minimum_nights:INT64,host_id:INT64,price:STRING,created_at:TIMESTAMP,updated_at:TIMESTAMP" `
   "orbital-scene-422012-h0:raw.raw_listings" `
   "data/raw/raw_listings.csv"
@@ -391,15 +391,14 @@ Expected: `17499`, `14111`, `410284`.
 - [ ] **Step 3: Add edge-case checks**
 
 ```sql
--- A multiline review must be preserved, not truncated at the first newline.
-SELECT COUNT(*) AS multiline_reviews
-FROM `orbital-scene-422012-h0.raw.raw_reviews`
-WHERE STRPOS(comments, '\n') > 0;
+-- Long comments must be preserved in full, not truncated.
+SELECT MAX(LENGTH(comments)) AS max_comment_length
+FROM `orbital-scene-422012-h0.raw.raw_reviews`;
 
 -- German umlauts and non-ASCII text must survive the UTF-8 load.
-SELECT COUNT(*) AS unicode_reviews
+SELECT COUNT(*) AS non_ascii_reviews
 FROM `orbital-scene-422012-h0.raw.raw_reviews`
-WHERE REGEXP_CONTAINS(comments, r'[üöäÜÖÄß]');
+WHERE REGEXP_CONTAINS(comments, r'[^\x00-\x7F]');
 
 -- Prices must remain the original dollar strings.
 SELECT COUNT(*) AS dollar_prices
@@ -411,7 +410,11 @@ SELECT MIN(created_at) AS min_created, MAX(created_at) AS max_created
 FROM `orbital-scene-422012-h0.raw.raw_listings`;
 ```
 
-Expected: `multiline_reviews > 0`, `unicode_reviews > 0`, `dollar_prices = 17499`, and non-null timestamp range from 2009 to 2021.
+Expected: `max_comment_length >= 500` (the source max is 5,626),
+`non_ascii_reviews >= 100000` (the source has 126,712 non-ASCII comments),
+`dollar_prices = 17499`, and a timestamp range from 2009 to 2021. The source
+reviews contain no embedded newlines; the loader still enables
+`--allow_quoted_newlines` so a future data refresh cannot truncate quoted text.
 
 - [ ] **Step 4: Run the loader and validator**
 

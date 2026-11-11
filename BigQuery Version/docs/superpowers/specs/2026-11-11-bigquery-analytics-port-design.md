@@ -216,7 +216,7 @@ same dataset ACL (`READER` for `userByEmail`). The key is written to
 ### 7.3 Raw data loading
 
 `scripts/load_raw_data.ps1` runs one `bq load` per table with
-`WRITE_TRUNCATE`, so it can be rerun safely.
+`--replace` (truncate-and-reload), so it can be rerun safely.
 
 | Table | Schema | Expected rows |
 |---|---|---:|
@@ -231,7 +231,7 @@ Flags:
 --skip_leading_rows=1
 --allow_quoted_newlines
 --encoding=UTF-8
---write_disposition=WRITE_TRUNCATE
+--replace
 --location=asia-southeast2
 ```
 
