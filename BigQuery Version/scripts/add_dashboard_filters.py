@@ -86,7 +86,7 @@ class MetabaseClient:
     def put(self, path: str, payload: dict):
         return self.request("PUT", path, payload)
 
-    def collection_items(self, collection_id: int, model: str) -> list[dict]:
+    def collection_items(self, collection_id: int | str, model: str) -> list[dict]:
         items: list[dict] = []
         offset = 0
         while True:
@@ -102,7 +102,7 @@ class MetabaseClient:
                 return items
 
 
-def find_collection(client: MetabaseClient, root_id: int, name: str) -> dict:
+def find_collection(client: MetabaseClient, root_id: int | str, name: str) -> dict:
     for item in client.collection_items(root_id, "collection"):
         if item.get("name") == name:
             return item
@@ -315,12 +315,22 @@ def main() -> int:
         print("METABASE_API_KEY is not set in the environment or env file", file=sys.stderr)
         return 2
 
-    root_id = definitions.get("root_collection_id")
+    client = MetabaseClient(base_url, api_key)
+    root_name = definitions.get("root_collection_name")
+    if root_name:
+        # Resolve the collection by name so the spec is not tied to one
+        # Metabase instance's collection IDs.
+        root = find_collection(client, "root", root_name)
+        root_id = root["id"]
+    else:
+        root_id = definitions.get("root_collection_id")
     if root_id is None:
-        print("root_collection_id is missing from the definitions file", file=sys.stderr)
+        print(
+            "root_collection_name or root_collection_id is missing from the definitions file",
+            file=sys.stderr,
+        )
         return 2
 
-    client = MetabaseClient(base_url, api_key)
     keys = [args.dashboard] if args.dashboard else list(dashboards)
     for key in keys:
         process_dashboard(client, root_id, dashboards[key], args.dry_run)

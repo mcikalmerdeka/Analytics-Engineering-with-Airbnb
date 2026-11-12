@@ -9,8 +9,25 @@
     "Text filters map with ['variable', ['template-tag', tag]]; Field Filters map with ['dimension', [...], {'stage-number': 0}].",
     "Use values_query_type 'list' for dropdowns backed by live field values, 'search' for a search box, 'none' for dates/booleans/numbers."
   ],
-  "root_collection_id": 5,
+  "root_collection_name": "Airbnb Analytics",
   "dashboards": [
+    {
+      "key": "executive",
+      "collection": "Executive Overview Collection",
+      "dashboard": "Executive Overview Dashboard",
+      "filters": [
+        {
+          "name": "Month range",
+          "slug": "month_start",
+          "tag": "month_start",
+          "type": "date/all-options",
+          "section_id": "date",
+          "values_query_type": "none",
+          "is_multi": false,
+          "expected_cards": 6
+        }
+      ]
+    },
     {
       "key": "supply",
       "collection": "Supply and Pricing Collection",
