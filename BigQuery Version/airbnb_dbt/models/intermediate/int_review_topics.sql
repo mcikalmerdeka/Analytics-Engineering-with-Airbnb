@@ -8,5 +8,5 @@ SELECT
     r.sentiment_score
 FROM {{ ref('fct_reviews') }} AS r
 INNER JOIN {{ ref('seed_review_topics') }} AS t
-    ON r.review_text ~* t.keywords_regex
+    ON REGEXP_CONTAINS(LOWER(r.review_text), LOWER(t.keywords_regex))
 WHERE r.has_comment = TRUE

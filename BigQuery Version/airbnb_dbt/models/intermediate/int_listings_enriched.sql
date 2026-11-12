@@ -41,14 +41,19 @@ typed_listings AS (
 aged_listings AS (
     SELECT
         *,
-        DATE '2021-11-19' - listing_created_at::date AS listing_age_days
+        DATE_DIFF(DATE '2021-11-19', DATE(listing_created_at), DAY) AS listing_age_days
     FROM typed_listings
 ),
 price_thresholds AS (
     SELECT
         room_type,
-        percentile_cont(0.995) WITHIN GROUP (ORDER BY price) AS p99_5_price
-    FROM parsed_listings
+        MAX(p99_5_price) AS p99_5_price
+    FROM (
+        SELECT
+            room_type,
+            PERCENTILE_CONT(price, 0.995) OVER (PARTITION BY room_type) AS p99_5_price
+        FROM parsed_listings
+    )
     GROUP BY room_type
 ),
 host_listing_counts AS (
