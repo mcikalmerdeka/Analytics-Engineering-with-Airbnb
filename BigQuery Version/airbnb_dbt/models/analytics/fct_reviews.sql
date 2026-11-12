@@ -1,7 +1,7 @@
 {{ config(
     materialized='incremental',
     unique_key='review_id',
-    incremental_strategy='delete+insert',
+    incremental_strategy='merge',
     on_schema_change='append_new_columns'
 ) }}
 
@@ -21,7 +21,7 @@ FROM {{ ref('int_reviews_deduped') }}
 
 {% if is_incremental() %}
 WHERE review_date >= (
-    SELECT COALESCE(MAX(review_date), DATE '1900-01-01') - INTERVAL '3 days'
+    SELECT DATE_SUB(COALESCE(MAX(review_date), DATE '1900-01-01'), INTERVAL 3 DAY)
     FROM {{ this }}
 )
 {% endif %}

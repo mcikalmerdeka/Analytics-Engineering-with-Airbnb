@@ -28,7 +28,7 @@ SELECT
     h.is_superhost_bool AS is_superhost,
     h.is_superhost_bool IS NOT NULL AS is_superhost_known,
     h.created_at AS host_created_at,
-    DATE '2021-11-19' - h.created_at::date AS host_age_days,
+    DATE_DIFF(DATE '2021-11-19', DATE(h.created_at), DAY) AS host_age_days,
     COALESCE(a.host_listing_count, 0) AS host_listing_count,
     a.host_segment
 FROM typed_hosts h
