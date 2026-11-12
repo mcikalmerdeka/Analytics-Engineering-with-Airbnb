@@ -123,13 +123,23 @@ else {
 }
 
 Write-Host "Ensuring project IAM roles..."
-Invoke-Gcloud @(
-    "projects", "add-iam-policy-binding", $project,
-    "--member=serviceAccount:$saEmail",
-    "--role=roles/bigquery.metadataViewer",
-    "--condition=None",
-    "--quiet"
-) | Out-Null
+# Project-level metadataViewer lets the account enumerate tables in raw,
+# staging, and snapshots. Dataset-level READER on analytics supplies the
+# metadata the driver needs, so remove the broader role if it exists.
+$existingRoles = gcloud projects get-iam-policy $project `
+    --flatten="bindings[].members" `
+    --filter="bindings.members:serviceAccount:$saEmail" `
+    --format="value(bindings.role)"
+if (($existingRoles -join "`n") -match "roles/bigquery.metadataViewer") {
+    Invoke-Gcloud @(
+        "projects", "remove-iam-policy-binding", $project,
+        "--member=serviceAccount:$saEmail",
+        "--role=roles/bigquery.metadataViewer",
+        "--condition=None",
+        "--quiet"
+    ) | Out-Null
+    Write-Host "  removed: roles/bigquery.metadataViewer"
+}
 Invoke-Gcloud @(
     "projects", "add-iam-policy-binding", $project,
     "--member=serviceAccount:$saEmail",
@@ -145,6 +155,20 @@ uv run python scripts/grant_bigquery_access.py `
     --email=$saEmail
 if ($LASTEXITCODE -ne 0) {
     throw "Could not grant dataset-level read access."
+}
+
+# Keep raw/staging/snapshots private even from project viewers. Remove the
+# default projectReaders ACL entry from each non-analytics dataset.
+foreach ($dataset in @($env:BQ_RAW_DATASET, $env:BQ_STAGING_DATASET, $env:BQ_SNAPSHOTS_DATASET)) {
+    if (-not $dataset) { continue }
+    uv run python scripts/grant_bigquery_access.py `
+        --project=$project `
+        --dataset=$dataset `
+        --email=$saEmail `
+        --remove-project-readers
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not tighten dataset access for $dataset."
+    }
 }
 
 $keyDirectory = Split-Path -Parent $keyPath

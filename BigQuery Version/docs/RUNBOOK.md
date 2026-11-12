@@ -50,7 +50,9 @@ BigQuery Version/
 | `snapshots` | `scd_raw_hosts`, `scd_raw_listings` | dbt SCD snapshots |
 
 `raw`, `staging`, and `snapshots` are not exposed to Metabase. The Metabase
-service account can read only `analytics`.
+service account has dataset-level `READER` on `analytics` only. It cannot list
+or query tables in the other three datasets; only their dataset names remain
+visible at project scope through BigQuery's dataset listing.
 
 ## Prerequisites
 
@@ -74,7 +76,16 @@ Run all commands from `BigQuery Version/`.
 
 ```powershell
 cd "BigQuery Version"
+
+# Create local configuration (both files are gitignored)
+Copy-Item .env.example .env
+Copy-Item profiles.yml.example profiles.yml
+# Edit .env and set a strong METABASE_ADMIN_PASSWORD.
 ```
+
+The examples contain the project, datasets, location, ports, and dbt profile.
+They contain no secret values; the service account key is created by
+`provision_bigquery.ps1` under `.secrets/`.
 
 ### 1. Install the Python environment
 
@@ -402,6 +413,7 @@ Invoke-WebRequest -UseBasicParsing http://127.0.0.1:3000/api/health
 - [ ] Dagster loads 22 assets and the daily schedule is stopped.
 - [ ] Metabase health returns 200.
 - [ ] `Airbnb Analytics` shows 12 tables and 150 fields from `analytics` only.
+- [ ] The service account can list `analytics` tables but is denied on `raw`, `staging`, and `snapshots`.
 - [ ] 5 dashboards and 66 cards exist; every card executes.
 - [ ] Filter mappings match their expected card counts.
 - [ ] A real Field Filter returns `9,890` listings for `Entire home/apt`.

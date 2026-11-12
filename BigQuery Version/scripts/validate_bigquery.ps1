@@ -165,6 +165,12 @@ $marketMax = Invoke-BqScalar "SELECT CAST(MAX(month_start) AS STRING) FROM ``$pr
 Assert-Equal "mart_market_monthly first month" "2009-01-01" $marketMin
 Assert-Equal "mart_market_monthly last month" "2021-11-01" $marketMax
 
+Write-Host "=== Metabase service account scope ==="
+$accessOutput = uv run python scripts/check_metabase_access.py 2>&1
+$accessOk = $LASTEXITCODE -eq 0
+$accessOutput | ForEach-Object { Write-Host $_ }
+Assert-True "Metabase service account least privilege" $accessOk "analytics allowed; raw/staging/snapshots denied"
+
 Write-Host "=== KPI parity ==="
 $activeListings = Invoke-BqScalar "SELECT COUNTIF(is_active_last_12m) FROM ``$project.analytics.mart_listing_performance``"
 Assert-Equal "active listings (12m)" "6050" $activeListings

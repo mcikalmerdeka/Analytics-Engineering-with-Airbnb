@@ -22,6 +22,11 @@ not the analytics warehouse.
 ```powershell
 cd "BigQuery Version"
 
+# 0. Create local configuration from the committed examples
+Copy-Item .env.example .env
+Copy-Item profiles.yml.example profiles.yml
+# Edit .env: set a strong METABASE_ADMIN_PASSWORD and keep the GCP values.
+
 # 1. Create/use the uv-managed Python 3.13 environment
 uv sync
 
@@ -36,9 +41,18 @@ uv sync
 cd airbnb_dbt
 uv run dbt deps --profiles-dir ..
 uv run dbt build --profiles-dir ..
+cd ..
 
-# 5. Start Dagster on port 3001
-cd ..\airbnb_dagster_project
+# 5. Start the Metabase application database stack
+docker compose up -d
+
+# 6. Provision the Metabase connection, cards, dashboards, and filters
+uv run python scripts\setup_metabase.py
+uv run python scripts\seed_metabase.py
+uv run python scripts\add_dashboard_filters.py
+
+# 7. Start Dagster on port 3001
+cd airbnb_dagster_project
 uv run dagster dev -p 3001
 ```
 
