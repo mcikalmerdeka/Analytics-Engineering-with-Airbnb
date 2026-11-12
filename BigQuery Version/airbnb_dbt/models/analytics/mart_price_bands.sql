@@ -26,14 +26,24 @@ band_rollup AS (
         room_type,
         COUNT(*) AS listing_count,
         AVG(review_count) AS avg_reviews,
-        PERCENTILE_CONT(0.5) WITHIN GROUP (
-            ORDER BY review_count
-        )::numeric AS median_reviews,
-        COUNT(*) FILTER (WHERE is_superhost)::numeric
-            / NULLIF(COUNT(*), 0) AS pct_superhost,
-        COUNT(*) FILTER (WHERE is_active_last_12m)::numeric
-            / NULLIF(COUNT(*), 0) AS pct_active
+        SAFE_DIVIDE(COUNTIF(is_superhost), COUNT(*)) AS pct_superhost,
+        SAFE_DIVIDE(COUNTIF(is_active_last_12m), COUNT(*)) AS pct_active
     FROM {{ ref('mart_listing_performance') }}
+    GROUP BY price_band, room_type
+),
+band_median AS (
+    SELECT
+        price_band,
+        room_type,
+        MAX(median_reviews) AS median_reviews
+    FROM (
+        SELECT
+            price_band,
+            room_type,
+            PERCENTILE_CONT(review_count, 0.5)
+                OVER (PARTITION BY price_band, room_type) AS median_reviews
+        FROM {{ ref('mart_listing_performance') }}
+    )
     GROUP BY price_band, room_type
 ),
 review_sentiment AS (
@@ -50,13 +60,12 @@ SELECT
     s.price_band,
     s.room_type,
     COALESCE(r.listing_count, 0) AS listing_count,
-    COALESCE(r.listing_count, 0)::numeric
-        / NULLIF(
-            SUM(COALESCE(r.listing_count, 0)) OVER (PARTITION BY s.room_type),
-            0
-        ) AS share_of_room_type,
+    SAFE_DIVIDE(
+        COALESCE(r.listing_count, 0),
+        SUM(COALESCE(r.listing_count, 0)) OVER (PARTITION BY s.room_type)
+    ) AS share_of_room_type,
     r.avg_reviews,
-    r.median_reviews,
+    bm.median_reviews,
     rs.avg_sentiment,
     COALESCE(r.pct_superhost, 0) AS pct_superhost,
     COALESCE(r.pct_active, 0) AS pct_active
@@ -64,6 +73,9 @@ FROM band_spine AS s
 LEFT JOIN band_rollup AS r
     ON s.price_band = r.price_band
    AND s.room_type = r.room_type
+LEFT JOIN band_median AS bm
+    ON s.price_band = bm.price_band
+   AND s.room_type = bm.room_type
 LEFT JOIN review_sentiment AS rs
     ON s.price_band = rs.price_band
    AND s.room_type = rs.room_type

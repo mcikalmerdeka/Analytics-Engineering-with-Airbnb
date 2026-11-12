@@ -30,7 +30,7 @@ topic_rollup AS (
         topic,
         COUNT(DISTINCT review_id) AS mentions,
         AVG(sentiment_score) AS avg_sentiment,
-        COUNT(*) FILTER (WHERE review_sentiment = 'negative') AS negative_mentions
+        COUNTIF(review_sentiment = 'negative') AS negative_mentions
     FROM {{ ref('int_review_topics') }}
     GROUP BY review_month, topic
 )
@@ -38,11 +38,15 @@ SELECT
     g.month_start,
     g.topic,
     COALESCE(r.mentions, 0) AS mentions,
-    COALESCE(r.mentions, 0)::numeric
-        / NULLIF(c.reviews_with_comments, 0) AS mention_rate,
+    SAFE_DIVIDE(
+        COALESCE(r.mentions, 0),
+        c.reviews_with_comments
+    ) AS mention_rate,
     r.avg_sentiment,
-    COALESCE(r.negative_mentions, 0)::numeric
-        / NULLIF(r.mentions, 0) AS pct_negative
+    SAFE_DIVIDE(
+        COALESCE(r.negative_mentions, 0),
+        r.mentions
+    ) AS pct_negative
 FROM grid AS g
 LEFT JOIN topic_rollup AS r
     ON g.month_start = r.month_start
