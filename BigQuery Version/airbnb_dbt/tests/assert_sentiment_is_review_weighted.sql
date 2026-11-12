@@ -55,28 +55,31 @@ FROM price_band_actual AS a
 INNER JOIN price_band_expected AS e
     ON a.price_band = e.price_band
    AND a.room_type = e.room_type
-WHERE a.actual_avg_sentiment IS DISTINCT FROM e.expected_avg_sentiment
+WHERE ROUND(a.actual_avg_sentiment, 9)
+    IS DISTINCT FROM ROUND(e.expected_avg_sentiment, 9)
 
 UNION ALL
 
 SELECT
     'room_type' AS check_name,
     a.room_type AS dimension_1,
-    NULL AS dimension_2,
+    CAST(NULL AS STRING) AS dimension_2,
     a.actual_avg_sentiment,
     e.expected_avg_sentiment
 FROM room_type_actual AS a
 INNER JOIN room_type_expected AS e ON a.room_type = e.room_type
-WHERE a.actual_avg_sentiment IS DISTINCT FROM e.expected_avg_sentiment
+WHERE ROUND(a.actual_avg_sentiment, 9)
+    IS DISTINCT FROM ROUND(e.expected_avg_sentiment, 9)
 
 UNION ALL
 
 SELECT
     'host' AS check_name,
-    a.host_id::text AS dimension_1,
-    NULL AS dimension_2,
+    CAST(a.host_id AS STRING) AS dimension_1,
+    CAST(NULL AS STRING) AS dimension_2,
     a.actual_avg_sentiment,
     e.expected_avg_sentiment
 FROM host_actual AS a
 INNER JOIN host_expected AS e ON a.host_id = e.host_id
-WHERE a.actual_avg_sentiment IS DISTINCT FROM e.expected_avg_sentiment
+WHERE ROUND(a.actual_avg_sentiment, 9)
+    IS DISTINCT FROM ROUND(e.expected_avg_sentiment, 9)
