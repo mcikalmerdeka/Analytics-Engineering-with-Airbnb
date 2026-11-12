@@ -21,134 +21,18 @@
   "archived": false,
   "dashcards": [
     {
-      "id": 47,
-      "entity_id": "QPWY-HQrkkjMM_6OgwrB_",
-      "card_id": 50,
-      "dashboard_tab_id": null,
-      "row": 15,
-      "col": 12,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "c9211ebb",
-          "card_id": 50,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "month_start"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Avg Sentiment Trend"
-    },
-    {
-      "id": 42,
-      "entity_id": "c7TA09FnVqNhLoTMA1wnp",
-      "card_id": 45,
-      "dashboard_tab_id": null,
-      "row": 3,
-      "col": 0,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "c9211ebb",
-          "card_id": 45,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "month_start"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Supply and Host Growth"
-    },
-    {
-      "id": 44,
-      "entity_id": "TgdrfFY29YL1oSSQ-QV4N",
-      "card_id": 47,
-      "dashboard_tab_id": null,
-      "row": 15,
-      "col": 0,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "c9211ebb",
-          "card_id": 47,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "month_start"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Monthly Reviews"
-    },
-    {
-      "id": 49,
-      "entity_id": "i1mSgjvK5nlIUkV2vAWhh",
-      "card_id": 52,
-      "dashboard_tab_id": null,
-      "row": 21,
-      "col": 12,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "c9211ebb",
-          "card_id": 52,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "month_start"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Review Volume by Room Type"
-    },
-    {
-      "id": 39,
-      "entity_id": "GsjpBlJRSiODXQymwFwp5",
-      "card_id": 42,
+      "id": 38,
+      "entity_id": "l6q-S3xaSS4Ci1KKhzuM4",
+      "card_id": 41,
       "dashboard_tab_id": null,
       "row": 0,
-      "col": 13,
-      "size_x": 5,
+      "col": 0,
+      "size_x": 4,
       "size_y": 3,
       "parameter_mappings": [],
       "visualization_settings": {},
       "inline_parameters": [],
-      "card_name": "KPI - Total Reviews"
+      "card_name": "KPI - Total Hosts"
     },
     {
       "id": 40,
@@ -163,105 +47,6 @@
       "visualization_settings": {},
       "inline_parameters": [],
       "card_name": "KPI - Active Listings (12m)"
-    },
-    {
-      "id": 41,
-      "entity_id": "-DyEPlquDX1PXfLb0PqA7",
-      "card_id": 44,
-      "dashboard_tab_id": null,
-      "row": 0,
-      "col": 8,
-      "size_x": 5,
-      "size_y": 3,
-      "parameter_mappings": [],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "KPI - Avg Nightly Price"
-    },
-    {
-      "id": 45,
-      "entity_id": "cBSU8EiNsT78FkYEquMRq",
-      "card_id": 48,
-      "dashboard_tab_id": null,
-      "row": 9,
-      "col": 12,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Room Type Mix"
-    },
-    {
-      "id": 46,
-      "entity_id": "RjbtXKwb1rApQWZcqOYVW",
-      "card_id": 49,
-      "dashboard_tab_id": null,
-      "row": 9,
-      "col": 0,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Sentiment Mix"
-    },
-    {
-      "id": 37,
-      "entity_id": "S_DuaRKW_XcS7OIVkcskN",
-      "card_id": 40,
-      "dashboard_tab_id": null,
-      "row": 0,
-      "col": 4,
-      "size_x": 4,
-      "size_y": 3,
-      "parameter_mappings": [],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "KPI - Total Listings"
-    },
-    {
-      "id": 43,
-      "entity_id": "T3py9HrbYEPU8_l6T6L5y",
-      "card_id": 46,
-      "dashboard_tab_id": null,
-      "row": 3,
-      "col": 12,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "c9211ebb",
-          "card_id": 46,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "month_start"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - New Listings per Month"
-    },
-    {
-      "id": 50,
-      "entity_id": "3KzgRUkiDyFpNb8QuxfYO",
-      "card_id": 53,
-      "dashboard_tab_id": null,
-      "row": 27,
-      "col": 0,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Listing Age Cohorts"
     },
     {
       "id": 48,
@@ -293,18 +78,233 @@
       "card_name": "Chart - Superhost Share Trend"
     },
     {
-      "id": 38,
-      "entity_id": "l6q-S3xaSS4Ci1KKhzuM4",
-      "card_id": 41,
+      "id": 47,
+      "entity_id": "QPWY-HQrkkjMM_6OgwrB_",
+      "card_id": 50,
+      "dashboard_tab_id": null,
+      "row": 15,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "c9211ebb",
+          "card_id": 50,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Avg Sentiment Trend"
+    },
+    {
+      "id": 43,
+      "entity_id": "T3py9HrbYEPU8_l6T6L5y",
+      "card_id": 46,
+      "dashboard_tab_id": null,
+      "row": 3,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "c9211ebb",
+          "card_id": 46,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - New Listings per Month"
+    },
+    {
+      "id": 44,
+      "entity_id": "TgdrfFY29YL1oSSQ-QV4N",
+      "card_id": 47,
+      "dashboard_tab_id": null,
+      "row": 15,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "c9211ebb",
+          "card_id": 47,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Monthly Reviews"
+    },
+    {
+      "id": 50,
+      "entity_id": "3KzgRUkiDyFpNb8QuxfYO",
+      "card_id": 53,
+      "dashboard_tab_id": null,
+      "row": 27,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Listing Age Cohorts"
+    },
+    {
+      "id": 39,
+      "entity_id": "GsjpBlJRSiODXQymwFwp5",
+      "card_id": 42,
       "dashboard_tab_id": null,
       "row": 0,
+      "col": 13,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Total Reviews"
+    },
+    {
+      "id": 41,
+      "entity_id": "-DyEPlquDX1PXfLb0PqA7",
+      "card_id": 44,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 8,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Avg Nightly Price"
+    },
+    {
+      "id": 42,
+      "entity_id": "c7TA09FnVqNhLoTMA1wnp",
+      "card_id": 45,
+      "dashboard_tab_id": null,
+      "row": 3,
       "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "c9211ebb",
+          "card_id": 45,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Supply and Host Growth"
+    },
+    {
+      "id": 37,
+      "entity_id": "S_DuaRKW_XcS7OIVkcskN",
+      "card_id": 40,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 4,
       "size_x": 4,
       "size_y": 3,
       "parameter_mappings": [],
       "visualization_settings": {},
       "inline_parameters": [],
-      "card_name": "KPI - Total Hosts"
+      "card_name": "KPI - Total Listings"
+    },
+    {
+      "id": 49,
+      "entity_id": "i1mSgjvK5nlIUkV2vAWhh",
+      "card_id": 52,
+      "dashboard_tab_id": null,
+      "row": 21,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "c9211ebb",
+          "card_id": 52,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "month_start"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Review Volume by Room Type"
+    },
+    {
+      "id": 45,
+      "entity_id": "cBSU8EiNsT78FkYEquMRq",
+      "card_id": 48,
+      "dashboard_tab_id": null,
+      "row": 9,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Room Type Mix"
+    },
+    {
+      "id": 46,
+      "entity_id": "RjbtXKwb1rApQWZcqOYVW",
+      "card_id": 49,
+      "dashboard_tab_id": null,
+      "row": 9,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Sentiment Mix"
     }
   ],
   "tabs": []

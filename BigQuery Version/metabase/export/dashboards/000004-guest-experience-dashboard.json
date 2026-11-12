@@ -71,63 +71,6 @@
   "archived": false,
   "dashcards": [
     {
-      "id": 71,
-      "entity_id": "odkaSxsNxfez3cJbyyoaE",
-      "card_id": 74,
-      "dashboard_tab_id": null,
-      "row": 9,
-      "col": 0,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "b5d23f55",
-          "card_id": 74,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "review_date"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "a81f7b59",
-          "card_id": 74,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "review_sentiment"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "d55b3109",
-          "card_id": 74,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "has_comment"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Sentiment by Month"
-    },
-    {
       "id": 73,
       "entity_id": "bSGu37LTYMCVW_RjcRjFm",
       "card_id": 76,
@@ -185,49 +128,6 @@
       "card_name": "Chart - Review Length"
     },
     {
-      "id": 76,
-      "entity_id": "AAzws6A3M7mNK49x5-LZU",
-      "card_id": 79,
-      "dashboard_tab_id": null,
-      "row": 27,
-      "col": 0,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "01e84139",
-          "card_id": 79,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "review_month"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "b0be9acd",
-          "card_id": 79,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "topic"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Negative Mentions by Topic"
-    },
-    {
       "id": 77,
       "entity_id": "1BBSrx5N6i3_spzEX_BZg",
       "card_id": 80,
@@ -269,20 +169,6 @@
       "visualization_settings": {},
       "inline_parameters": [],
       "card_name": "Table - Topic Detail"
-    },
-    {
-      "id": 65,
-      "entity_id": "DOJyF1bHjsgLq5HiHmALe",
-      "card_id": 68,
-      "dashboard_tab_id": null,
-      "row": 0,
-      "col": 5,
-      "size_x": 5,
-      "size_y": 3,
-      "parameter_mappings": [],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "KPI - Positive Review Share"
     },
     {
       "id": 72,
@@ -356,6 +242,134 @@
       "card_name": "Chart - Reviews by Room Type"
     },
     {
+      "id": 71,
+      "entity_id": "odkaSxsNxfez3cJbyyoaE",
+      "card_id": 74,
+      "dashboard_tab_id": null,
+      "row": 9,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "b5d23f55",
+          "card_id": 74,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "review_date"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "a81f7b59",
+          "card_id": 74,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "review_sentiment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "d55b3109",
+          "card_id": 74,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "has_comment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Sentiment by Month"
+    },
+    {
+      "id": 74,
+      "entity_id": "8-z5vmGSXqEzNEV1HVZNc",
+      "card_id": 77,
+      "dashboard_tab_id": null,
+      "row": 15,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "01e84139",
+          "card_id": 77,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "review_month"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "b0be9acd",
+          "card_id": 77,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "topic"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Topic Mentions"
+    },
+    {
+      "id": 66,
+      "entity_id": "Wknp9FCBFiL8PL0eC2X8Q",
+      "card_id": 69,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 10,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Negative Review Share"
+    },
+    {
+      "id": 65,
+      "entity_id": "DOJyF1bHjsgLq5HiHmALe",
+      "card_id": 68,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 5,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Positive Review Share"
+    },
+    {
       "id": 67,
       "entity_id": "JPCUDtKaVnqlJCI2NFOvG",
       "card_id": 70,
@@ -413,20 +427,6 @@
       "card_name": "KPI - Avg Sentiment Score"
     },
     {
-      "id": 66,
-      "entity_id": "Wknp9FCBFiL8PL0eC2X8Q",
-      "card_id": 69,
-      "dashboard_tab_id": null,
-      "row": 0,
-      "col": 10,
-      "size_x": 5,
-      "size_y": 3,
-      "parameter_mappings": [],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "KPI - Negative Review Share"
-    },
-    {
       "id": 70,
       "entity_id": "98LqgdX3IfCjerLLo7PIo",
       "card_id": 73,
@@ -482,92 +482,6 @@
       "visualization_settings": {},
       "inline_parameters": [],
       "card_name": "Chart - Sentiment Mix"
-    },
-    {
-      "id": 74,
-      "entity_id": "8-z5vmGSXqEzNEV1HVZNc",
-      "card_id": 77,
-      "dashboard_tab_id": null,
-      "row": 15,
-      "col": 12,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "01e84139",
-          "card_id": 77,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "review_month"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "b0be9acd",
-          "card_id": 77,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "topic"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Topic Mentions"
-    },
-    {
-      "id": 75,
-      "entity_id": "337b-RdZpnvSYJEv05nT1",
-      "card_id": 78,
-      "dashboard_tab_id": null,
-      "row": 21,
-      "col": 0,
-      "size_x": 24,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "01e84139",
-          "card_id": 78,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "review_month"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "b0be9acd",
-          "card_id": 78,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "topic"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Topic Mention Rate Trend"
     },
     {
       "id": 69,
@@ -739,6 +653,92 @@
       "visualization_settings": {},
       "inline_parameters": [],
       "card_name": "KPI - Reviews in 2021"
+    },
+    {
+      "id": 76,
+      "entity_id": "AAzws6A3M7mNK49x5-LZU",
+      "card_id": 79,
+      "dashboard_tab_id": null,
+      "row": 27,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "01e84139",
+          "card_id": 79,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "review_month"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "b0be9acd",
+          "card_id": 79,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "topic"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Negative Mentions by Topic"
+    },
+    {
+      "id": 75,
+      "entity_id": "337b-RdZpnvSYJEv05nT1",
+      "card_id": 78,
+      "dashboard_tab_id": null,
+      "row": 21,
+      "col": 0,
+      "size_x": 24,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "01e84139",
+          "card_id": 78,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "review_month"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "b0be9acd",
+          "card_id": 78,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "topic"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Topic Mention Rate Trend"
     }
   ],
   "tabs": []

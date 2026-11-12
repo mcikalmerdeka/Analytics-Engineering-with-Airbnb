@@ -146,6 +146,20 @@
       "card_name": "KPI - Total Listings"
     },
     {
+      "id": 52,
+      "entity_id": "fDz13VxPzKN86PAbqSkCj",
+      "card_id": 55,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 5,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Median Nightly Price"
+    },
+    {
       "id": 60,
       "entity_id": "jUdVcEoPUAoh-naS0DAJf",
       "card_id": 63,
@@ -686,20 +700,6 @@
       "visualization_settings": {},
       "inline_parameters": [],
       "card_name": "Chart - Listings by Price Band"
-    },
-    {
-      "id": 52,
-      "entity_id": "fDz13VxPzKN86PAbqSkCj",
-      "card_id": 55,
-      "dashboard_tab_id": null,
-      "row": 0,
-      "col": 5,
-      "size_x": 5,
-      "size_y": 3,
-      "parameter_mappings": [],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "KPI - Median Nightly Price"
     },
     {
       "id": 53,
