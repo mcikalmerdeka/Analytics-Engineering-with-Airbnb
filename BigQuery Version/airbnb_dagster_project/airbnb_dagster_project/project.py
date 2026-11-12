@@ -2,8 +2,8 @@ from pathlib import Path
 
 from dagster_dbt import DbtProject
 
-# Postgres Version/ is three levels up from this file:
-# Postgres Version/airbnb_dagster_project/airbnb_dagster_project/project.py
+# BigQuery Version/ is three levels up from this file:
+# BigQuery Version/airbnb_dagster_project/airbnb_dagster_project/project.py
 project_root = Path(__file__).resolve().parents[2]
 
 airbnb_dbt_project = DbtProject(
