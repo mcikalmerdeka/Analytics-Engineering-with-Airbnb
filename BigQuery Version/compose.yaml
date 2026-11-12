@@ -1,0 +1,84 @@
+name: airbnb-bigquery-analytics
+
+services:
+  postgres:
+    # Local Postgres stores only the Metabase application database.
+    # All analytics data lives in BigQuery.
+    image: postgres:17-alpine
+    container_name: airbnb-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cikalmerdeka}
+      POSTGRES_DB: ${POSTGRES_DB:-airbnb}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  metabase:
+    # Pinned to the version the dashboard guide targets; bump deliberately.
+    image: metabase/metabase:v0.64.3.5
+    container_name: airbnb-metabase
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Metabase keeps its application data (users, questions, dashboards) in
+      # Postgres instead of the default embedded H2 file, so it survives
+      # container restarts and rebuilds.
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: ${POSTGRES_USER:-postgres}
+      MB_DB_PASS: ${POSTGRES_PASSWORD:-cikalmerdeka}
+      MB_DB_HOST: postgres
+      MB_SITE_URL: ${MB_SITE_URL:-http://localhost:3000}
+      TZ: ${TZ:-Asia/Jakarta}
+      JAVA_TIMEZONE: ${TZ:-Asia/Jakarta}
+    ports:
+      - "127.0.0.1:${METABASE_PORT:-3000}:3000"
+    volumes:
+      - metabase_data:/metabase-data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 90s
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: airbnb-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  # BigQuery-scoped volume names keep this stack isolated from the Postgres
+  # version's Metabase application data on the same machine.
+  postgres_data:
+    name: airbnb_bigquery_postgres_data
+  pgadmin_data:
+    name: airbnb_bigquery_pgadmin_data
+  metabase_data:
+    name: airbnb_bigquery_metabase_data
