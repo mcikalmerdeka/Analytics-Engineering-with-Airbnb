@@ -76,6 +76,23 @@ function Assert-True {
     }
 }
 
+function Assert-Near {
+    param(
+        [string]$Name,
+        [double]$Expected,
+        [string]$Actual,
+        [int]$Decimals = 2
+    )
+    $parsed = [double]::Parse($Actual, [Globalization.CultureInfo]::InvariantCulture)
+    if ([math]::Round($parsed, $Decimals) -eq [math]::Round($Expected, $Decimals)) {
+        Write-Host "PASS  $Name = $Actual"
+    }
+    else {
+        Write-Host "FAIL  $Name expected $Expected, got $Actual"
+        $script:Failures++
+    }
+}
+
 Import-DotEnv (Join-Path $projectRoot ".env")
 $project = $env:GCP_PROJECT_ID
 
@@ -111,10 +128,69 @@ if ($RawOnly) {
     exit 0
 }
 
-Write-Host ""
-Write-Host "Analytics and KPI checks will be added in Task 9."
+Write-Host "=== Analytics row counts ==="
+$rowCounts = [ordered]@{
+    "dim_date"                  = @("analytics.dim_date", "4748")
+    "dim_listings"              = @("analytics.dim_listings", "17499")
+    "dim_hosts"                 = @("analytics.dim_hosts", "14111")
+    "fct_reviews"               = @("analytics.fct_reviews", "410283")
+    "mart_listing_performance"  = @("analytics.mart_listing_performance", "17499")
+    "mart_host_performance"     = @("analytics.mart_host_performance", "14111")
+    "mart_market_monthly"       = @("analytics.mart_market_monthly", "620")
+    "mart_price_bands"          = @("analytics.mart_price_bands", "28")
+    "mart_room_type_benchmark"  = @("analytics.mart_room_type_benchmark", "4")
+    "mart_review_topics"        = @("analytics.mart_review_topics", "1573")
+    "mart_executive_kpis"       = @("analytics.mart_executive_kpis", "155")
+    "mart_full_moon_reviews"    = @("analytics.mart_full_moon_reviews", "8")
+    "scd_raw_hosts"             = @("snapshots.scd_raw_hosts", "14111")
+    "scd_raw_listings"          = @("snapshots.scd_raw_listings", "17499")
+    "seed_full_moon_dates"      = @("staging.seed_full_moon_dates", "272")
+    "seed_review_topics"        = @("staging.seed_review_topics", "11")
+}
+foreach ($name in $rowCounts.Keys) {
+    $table, $expected = $rowCounts[$name]
+    $actual = Invoke-BqScalar "SELECT COUNT(*) FROM ``$project.$table``"
+    Assert-Equal $name $expected $actual
+}
+
+Write-Host "=== Data integrity ==="
+$duplicateReviews = Invoke-BqScalar "SELECT COUNT(*) FROM (SELECT review_id FROM ``$project.analytics.fct_reviews`` GROUP BY review_id HAVING COUNT(*) > 1)"
+Assert-Equal "fct_reviews duplicate review_id" "0" $duplicateReviews
+
+$nullDates = Invoke-BqScalar "SELECT COUNT(*) FROM ``$project.analytics.dim_date`` WHERE date_day IS NULL"
+Assert-Equal "dim_date null date_day" "0" $nullDates
+
+$marketMin = Invoke-BqScalar "SELECT CAST(MIN(month_start) AS STRING) FROM ``$project.analytics.mart_market_monthly``"
+$marketMax = Invoke-BqScalar "SELECT CAST(MAX(month_start) AS STRING) FROM ``$project.analytics.mart_market_monthly``"
+Assert-Equal "mart_market_monthly first month" "2009-01-01" $marketMin
+Assert-Equal "mart_market_monthly last month" "2021-11-01" $marketMax
+
+Write-Host "=== KPI parity ==="
+$activeListings = Invoke-BqScalar "SELECT COUNTIF(is_active_last_12m) FROM ``$project.analytics.mart_listing_performance``"
+Assert-Equal "active listings (12m)" "6050" $activeListings
+
+$zeroReviewListings = Invoke-BqScalar "SELECT COUNTIF(review_count = 0) FROM ``$project.analytics.mart_listing_performance``"
+Assert-Equal "zero-review listings" "3254" $zeroReviewListings
+
+$avgPrice = Invoke-BqScalar "SELECT CAST(ROUND(AVG(price), 2) AS STRING) FROM ``$project.analytics.dim_listings`` WHERE NOT is_price_outlier"
+Assert-Near "avg nightly price" 70.41 $avgPrice
+
+$medianPrice = Invoke-BqScalar "SELECT CAST(MAX(median_price) AS STRING) FROM (SELECT PERCENTILE_CONT(price, 0.5) OVER () AS median_price FROM ``$project.analytics.dim_listings`` WHERE NOT is_price_outlier)"
+Assert-Near "median nightly price" 55 $medianPrice
+
+$positiveShare = Invoke-BqScalar "SELECT CAST(ROUND(SAFE_DIVIDE(COUNTIF(review_sentiment = 'positive'), COUNT(*)) * 100, 2) AS STRING) FROM ``$project.analytics.fct_reviews``"
+Assert-Near "positive review share (%)" 56.68 $positiveShare
+
+$negativeShare = Invoke-BqScalar "SELECT CAST(ROUND(SAFE_DIVIDE(COUNTIF(review_sentiment = 'negative'), COUNT(*)) * 100, 2) AS STRING) FROM ``$project.analytics.fct_reviews``"
+Assert-Near "negative review share (%)" 7.33 $negativeShare
+
+$avgSentiment = Invoke-BqScalar "SELECT CAST(ROUND(AVG(sentiment_score), 3) AS STRING) FROM ``$project.analytics.fct_reviews``"
+Assert-Near "avg sentiment score" 0.494 $avgSentiment 3
+
 if ($script:Failures -gt 0) {
+    Write-Host ""
     Write-Host "FAILED: $script:Failures check(s) failed."
     exit 1
 }
+Write-Host ""
 Write-Host "All requested checks passed."

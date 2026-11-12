@@ -6,6 +6,12 @@ WITH date_spine AS (
         start_date="cast('2009-01-01' as date)",
         end_date="cast('2022-01-01' as date)"
     ) }}
+),
+date_values AS (
+    -- dbt_utils.date_spine returns DATETIME on BigQuery; the warehouse model
+    -- keeps DATE semantics so downstream month keys stay DATE.
+    SELECT CAST(date_day AS DATE) AS date_day
+    FROM date_spine
 )
 SELECT
     date_day,
@@ -20,5 +26,5 @@ SELECT
     CAST(FORMAT_DATE('%u', date_day) AS INT64) AS day_of_week,
     FORMAT_DATE('%A', date_day) AS day_name,
     EXTRACT(DAYOFWEEK FROM date_day) IN (1, 7) AS is_weekend
-FROM date_spine
+FROM date_values
 WHERE date_day < DATE '2022-01-01'
