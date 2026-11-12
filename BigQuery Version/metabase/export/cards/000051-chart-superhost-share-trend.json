@@ -1,0 +1,67 @@
+{
+  "id": 51,
+  "entity_id": "_YGHdpnTv3BqnUxXkyEGy",
+  "name": "Chart - Superhost Share Trend",
+  "description": "Share of cumulative listings whose host is a superhost, by month through 2021-10. One row per month.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "line",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    month_start,\n    superhost_share\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "a2f579d5-5857-416b-a8ba-0aa177e86b10"
+              },
+              122
+            ],
+            "id": "6ab50ec5-7522-4f4b-be92-a04a96687d9b",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "month_start",
+            "display-name": "Month Start",
+            "alias": "mart_executive_kpis.month_start"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "month_start"
+    ],
+    "graph.x_axis.scale": "timeseries",
+    "graph.metrics": [
+      "superhost_share"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "6ab50ec5-7522-4f4b-be92-a04a96687d9b",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "month_start"
+        ]
+      ],
+      "name": "Month Start",
+      "slug": "month_start",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

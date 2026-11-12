@@ -1,0 +1,175 @@
+{
+  "id": 54,
+  "entity_id": "7BGJwYha_7d8dX13ir498",
+  "name": "KPI - Total Listings",
+  "description": "Count of listings matching the selected Supply filters. One row per listing; use this as the denominator for supply shares on this dashboard.",
+  "collection_id": 7,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT COUNT(*) AS total_listings\nFROM analytics.dim_listings AS dim_listings\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}};",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "name": "room_type",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "8c02fd2f-3175-4d3e-b5d3-5604f8b850c2"
+              },
+              95
+            ],
+            "display-name": "Room Type",
+            "id": "98efa582-e8cd-40fb-8730-e289cf54c34a",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "alias": "dim_listings.room_type"
+          },
+          {
+            "name": "price_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "b49d1f3b-a2ec-484d-8dcf-c819bc92bdce"
+              },
+              97
+            ],
+            "display-name": "Price Band",
+            "id": "0ca0061f-c6f3-46b3-b131-013f480ebd27",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "alias": "dim_listings.price_band"
+          },
+          {
+            "name": "minimum_nights_band",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "7473f396-5771-4da0-a1fa-40cc9f981d38"
+              },
+              100
+            ],
+            "display-name": "Minimum Nights Band",
+            "id": "0239bbc3-25fa-4939-91cb-5844fcb39e34",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "alias": "dim_listings.minimum_nights_band"
+          },
+          {
+            "name": "is_superhost",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "b043a08c-bc92-4c9c-bcfb-938d0844b226"
+              },
+              103
+            ],
+            "display-name": "Is Superhost",
+            "id": "f5f778ef-d969-4951-9103-631c6b0566e5",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "alias": "dim_listings.is_superhost"
+          },
+          {
+            "name": "price",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "fd655313-627b-4920-9a89-c6fc8b344279"
+              },
+              96
+            ],
+            "display-name": "Price",
+            "id": "5acd2ee6-d7b9-436a-a960-b703c9ec51fe",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "alias": "dim_listings.price"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "98efa582-e8cd-40fb-8730-e289cf54c34a",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    },
+    {
+      "id": "0ca0061f-c6f3-46b3-b131-013f480ebd27",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price_band"
+        ]
+      ],
+      "name": "Price Band",
+      "slug": "price_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "0239bbc3-25fa-4939-91cb-5844fcb39e34",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "minimum_nights_band"
+        ]
+      ],
+      "name": "Minimum Nights Band",
+      "slug": "minimum_nights_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "f5f778ef-d969-4951-9103-631c6b0566e5",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_superhost"
+        ]
+      ],
+      "name": "Is Superhost",
+      "slug": "is_superhost",
+      "isMultiSelect": false
+    },
+    {
+      "id": "5acd2ee6-d7b9-436a-a960-b703c9ec51fe",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price"
+        ]
+      ],
+      "name": "Price",
+      "slug": "price",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

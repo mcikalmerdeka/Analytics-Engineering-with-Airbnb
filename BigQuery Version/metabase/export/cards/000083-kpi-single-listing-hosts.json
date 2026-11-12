@@ -1,0 +1,88 @@
+{
+  "id": 83,
+  "entity_id": "9GATQWhLLQWsELl69hQRS",
+  "name": "KPI - Single-listing Hosts",
+  "description": "Hosts with exactly one listing in the snapshot. One row per host; this is a host count, not a listing count.",
+  "collection_id": 9,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT COUNT(*) AS single_listing_hosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE host_segment = 'Single listing'\n  AND {{is_superhost}}\n  AND {{listing_count}};",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "f88adb9f-5e61-4051-8272-4a962bb19e55"
+              },
+              144
+            ],
+            "id": "070ca221-a8c2-4bbe-aa3d-c9764d5d05e7",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "mart_host_performance.is_superhost"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "4011de22-38e1-49d2-a152-cf322a97c97f"
+              },
+              148
+            ],
+            "id": "749c97b4-cd79-41d9-9de4-d88a5eff9da5",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "listing_count",
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "070ca221-a8c2-4bbe-aa3d-c9764d5d05e7",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_superhost"
+        ]
+      ],
+      "name": "Is Superhost",
+      "slug": "is_superhost",
+      "isMultiSelect": false
+    },
+    {
+      "id": "749c97b4-cd79-41d9-9de4-d88a5eff9da5",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "listing_count"
+        ]
+      ],
+      "name": "Listing Count",
+      "slug": "listing_count",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

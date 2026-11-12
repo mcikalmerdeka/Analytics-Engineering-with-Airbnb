@@ -1,0 +1,15 @@
+# Copy this file to profiles.yml. It is gitignored because it is local config.
+# Replace your-gcp-project-id with your own Google Cloud project ID.
+# Keep the profile name `airbnb_dbt`; it must match dbt_project.yml.
+airbnb_dbt:
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: your-gcp-project-id
+      dataset: staging
+      location: asia-southeast2
+      threads: 4
+      priority: interactive
+      maximum_bytes_billed: 1000000000
+  target: dev

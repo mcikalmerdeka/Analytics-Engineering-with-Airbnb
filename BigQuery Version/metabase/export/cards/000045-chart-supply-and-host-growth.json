@@ -1,0 +1,68 @@
+{
+  "id": 45,
+  "entity_id": "82Er8yQv4TKVDKLrEcVds",
+  "name": "Chart - Supply and Host Growth",
+  "description": "Monthly cumulative listing and host counts from the dbt month spine. One row per month; values are cumulative, not new additions.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "line",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    month_start,\n    'Cumulative listings' AS metric,\n    CAST(cumulative_listings AS FLOAT64) AS value\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nUNION ALL\n\nSELECT\n    month_start,\n    'Cumulative hosts' AS metric,\n    CAST(cumulative_hosts AS FLOAT64) AS value\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nORDER BY month_start, metric;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "0c3cf024-e6fa-4ce0-b510-7d4c129c31f1"
+              },
+              122
+            ],
+            "id": "122341bf-ee0e-433e-bb5c-4fb2c95585f3",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "month_start",
+            "display-name": "Month Start",
+            "alias": "mart_executive_kpis.month_start"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "month_start",
+      "metric"
+    ],
+    "graph.x_axis.scale": "timeseries",
+    "graph.metrics": [
+      "value"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "122341bf-ee0e-433e-bb5c-4fb2c95585f3",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "month_start"
+        ]
+      ],
+      "name": "Month Start",
+      "slug": "month_start",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

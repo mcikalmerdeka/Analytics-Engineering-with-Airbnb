@@ -1,0 +1,233 @@
+{
+  "id": 94,
+  "entity_id": "Mm2-fcg4Q1dh77nbM3_JP",
+  "name": "KPI - Listings in View",
+  "description": "Count of listings matching the selected Listing Explorer filters. One row per listing; responds to every dashboard filter and is the denominator for listing-level shares.",
+  "collection_id": 10,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT COUNT(*) AS listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "e849149c-1031-44d7-9ffd-86a1e0fd6e31"
+              },
+              160
+            ],
+            "id": "4dc1d154-e73b-46ba-b208-c4633367b2a4",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "display-name": "Room Type",
+            "alias": "mart_listing_performance.room_type"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "67a538d2-1a73-4ed2-89d2-e966cb3593b2"
+              },
+              162
+            ],
+            "id": "38fa9a03-c1e0-4e33-979f-2062504eb675",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "price_band",
+            "display-name": "Price Band",
+            "alias": "mart_listing_performance.price_band"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "0bef4a6a-86e6-406c-b974-1ba62f95f3e1"
+              },
+              165
+            ],
+            "id": "e899acff-16d8-475a-b768-418419a6078d",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "minimum_nights_band",
+            "display-name": "Minimum Nights Band",
+            "alias": "mart_listing_performance.minimum_nights_band"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "b9dd0653-424b-4c5b-bda3-e592033c96a4"
+              },
+              168
+            ],
+            "id": "5594a2dc-0104-4288-bc0e-e2cb196792cb",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "mart_listing_performance.is_superhost"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "9d775487-ddbf-4e59-be7f-222773104e06"
+              },
+              169
+            ],
+            "id": "782f6510-d0e3-4511-8269-1704c8e84e95",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_listing_performance.host_segment"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "b2ddc2b4-fc40-4859-ab6d-0e5678a2f735"
+              },
+              172
+            ],
+            "id": "5cc62010-d0b7-45cb-9c6f-511a6d11ebd7",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_active_last_12m",
+            "display-name": "Is Active Last 12m",
+            "alias": "mart_listing_performance.is_active_last_12m"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "4c79b85e-6098-4647-9a7a-510014c4bc2d"
+              },
+              161
+            ],
+            "id": "557f87af-5ed9-4f5b-ae4c-49e9083d8153",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "price",
+            "display-name": "Price",
+            "alias": "mart_listing_performance.price"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "4dc1d154-e73b-46ba-b208-c4633367b2a4",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    },
+    {
+      "id": "38fa9a03-c1e0-4e33-979f-2062504eb675",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price_band"
+        ]
+      ],
+      "name": "Price Band",
+      "slug": "price_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "e899acff-16d8-475a-b768-418419a6078d",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "minimum_nights_band"
+        ]
+      ],
+      "name": "Minimum Nights Band",
+      "slug": "minimum_nights_band",
+      "isMultiSelect": true
+    },
+    {
+      "id": "5594a2dc-0104-4288-bc0e-e2cb196792cb",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_superhost"
+        ]
+      ],
+      "name": "Is Superhost",
+      "slug": "is_superhost",
+      "isMultiSelect": false
+    },
+    {
+      "id": "782f6510-d0e3-4511-8269-1704c8e84e95",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "host_segment"
+        ]
+      ],
+      "name": "Host Segment",
+      "slug": "host_segment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "5cc62010-d0b7-45cb-9c6f-511a6d11ebd7",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_active_last_12m"
+        ]
+      ],
+      "name": "Is Active Last 12m",
+      "slug": "is_active_last_12m",
+      "isMultiSelect": false
+    },
+    {
+      "id": "557f87af-5ed9-4f5b-ae4c-49e9083d8153",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "price"
+        ]
+      ],
+      "name": "Price",
+      "slug": "price",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

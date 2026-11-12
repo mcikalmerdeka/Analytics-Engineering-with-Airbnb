@@ -1,0 +1,30 @@
+{
+  "id": 49,
+  "entity_id": "5K6iz5D4SDLQF8I3m_4Eg",
+  "name": "Chart - Sentiment Mix",
+  "description": "Reviews by source sentiment category. One row per review; unknown means the source did not provide a sentiment.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "pie",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nGROUP BY review_sentiment\nORDER BY reviews DESC;"
+      }
+    ]
+  },
+  "visualization_settings": {
+    "pie.dimension": "review_sentiment",
+    "pie.metric": "reviews"
+  },
+  "parameters": [],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

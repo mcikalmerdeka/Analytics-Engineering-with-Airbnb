@@ -1,0 +1,125 @@
+{
+  "id": 74,
+  "entity_id": "AaYsY-gIzd2eA43hlQGS4",
+  "name": "Chart - Sentiment by Month",
+  "description": "Reviews by month and sentiment category through 2021-10. One row per month and sentiment.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    review_month,\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nWHERE review_month <= DATE '2021-10-01'\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_month, review_sentiment\nORDER BY review_month, review_sentiment;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "8a2ea685-ece7-4d4e-8aac-3876d13ab6f7"
+              },
+              113
+            ],
+            "id": "2184328d-9b4a-4254-8e93-3e5c14a98a27",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "review_date",
+            "display-name": "Review Date",
+            "alias": "fct_reviews.review_date"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "6c92c559-a841-4218-932c-4af7c223d2a7"
+              },
+              116
+            ],
+            "id": "93c45383-3e9e-4bef-93e3-56e68ca39733",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "review_sentiment",
+            "display-name": "Review Sentiment",
+            "alias": "fct_reviews.review_sentiment"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "28e3ae76-6893-41b4-8995-c85fdb6da65d"
+              },
+              118
+            ],
+            "id": "78bcecac-7c62-4a14-ae36-a136f5c12c51",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "has_comment",
+            "display-name": "Has Comment",
+            "alias": "fct_reviews.has_comment"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "review_month",
+      "review_sentiment"
+    ],
+    "graph.metrics": [
+      "reviews"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "2184328d-9b4a-4254-8e93-3e5c14a98a27",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_date"
+        ]
+      ],
+      "name": "Review Date",
+      "slug": "review_date",
+      "isMultiSelect": true
+    },
+    {
+      "id": "93c45383-3e9e-4bef-93e3-56e68ca39733",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_sentiment"
+        ]
+      ],
+      "name": "Review Sentiment",
+      "slug": "review_sentiment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "78bcecac-7c62-4a14-ae36-a136f5c12c51",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "has_comment"
+        ]
+      ],
+      "name": "Has Comment",
+      "slug": "has_comment",
+      "isMultiSelect": false
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

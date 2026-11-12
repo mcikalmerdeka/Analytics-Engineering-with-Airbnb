@@ -1,0 +1,117 @@
+{
+  "id": 70,
+  "entity_id": "GzwyDhaWKQKCWZ9xYXnvS",
+  "name": "KPI - Avg Sentiment Score",
+  "description": "Mean sentiment score (positive=1, neutral=0, negative=-1) for the filtered reviews. One row per review; unknown reviews are excluded.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT AVG(sentiment_score) AS avg_sentiment_score\nFROM analytics.fct_reviews AS fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "84ab235f-e482-4f26-a463-a55c7a5bfd4e"
+              },
+              113
+            ],
+            "id": "bd8a2684-d85c-4a0d-8fb8-aa0c17a77c78",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "review_date",
+            "display-name": "Review Date",
+            "alias": "fct_reviews.review_date"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "0a564857-1802-4891-9277-c23cd4ec156f"
+              },
+              116
+            ],
+            "id": "3f377298-5603-4023-9540-7efa04f40502",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "review_sentiment",
+            "display-name": "Review Sentiment",
+            "alias": "fct_reviews.review_sentiment"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "5f055f5a-2287-4a7c-8251-9a1962eea3b2"
+              },
+              118
+            ],
+            "id": "49a30944-72ef-4114-9322-61ff8b88af37",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "has_comment",
+            "display-name": "Has Comment",
+            "alias": "fct_reviews.has_comment"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "bd8a2684-d85c-4a0d-8fb8-aa0c17a77c78",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_date"
+        ]
+      ],
+      "name": "Review Date",
+      "slug": "review_date",
+      "isMultiSelect": true
+    },
+    {
+      "id": "3f377298-5603-4023-9540-7efa04f40502",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_sentiment"
+        ]
+      ],
+      "name": "Review Sentiment",
+      "slug": "review_sentiment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "49a30944-72ef-4114-9322-61ff8b88af37",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "has_comment"
+        ]
+      ],
+      "name": "Has Comment",
+      "slug": "has_comment",
+      "isMultiSelect": false
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

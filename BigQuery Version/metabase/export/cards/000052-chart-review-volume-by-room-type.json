@@ -1,0 +1,68 @@
+{
+  "id": 52,
+  "entity_id": "ybB_o54bqoI5uWa3VMo9s",
+  "name": "Chart - Review Volume by Room Type",
+  "description": "Monthly reviews by listing room type through 2021-10. One row per month and room type; each review belongs to one room type.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "line",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    month_start,\n    room_type,\n    reviews\nFROM analytics.mart_market_monthly AS mart_market_monthly\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start, room_type;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "d80bb5eb-4a8e-4493-9e3a-4b0f729dc37f"
+              },
+              184
+            ],
+            "id": "0fc80614-4964-4641-8233-f3e9a8c89af5",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "month_start",
+            "display-name": "Month Start",
+            "alias": "mart_market_monthly.month_start"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "month_start",
+      "room_type"
+    ],
+    "graph.x_axis.scale": "timeseries",
+    "graph.metrics": [
+      "reviews"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "0fc80614-4964-4641-8233-f3e9a8c89af5",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "month_start"
+        ]
+      ],
+      "name": "Month Start",
+      "slug": "month_start",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

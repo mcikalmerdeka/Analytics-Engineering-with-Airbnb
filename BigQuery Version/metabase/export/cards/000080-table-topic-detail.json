@@ -1,0 +1,88 @@
+{
+  "id": 80,
+  "entity_id": "H0mjgaAU9p0PrT1ZXtEze",
+  "name": "Table - Topic Detail",
+  "description": "Monthly topic mentions, mention rate, average sentiment, and negative share for the last 12 complete months. One row per month and topic.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "table",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    month_start,\n    topic,\n    mentions,\n    mention_rate,\n    avg_sentiment,\n    pct_negative\nFROM analytics.mart_review_topics AS mart_review_topics\nWHERE month_start BETWEEN DATE '2020-11-01' AND DATE '2021-10-01'\n  AND {{review_month}}\n  AND {{topic}}\nORDER BY mentions DESC\nLIMIT 1000;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "7569206d-e4c2-43fd-9b1b-27a071319982"
+              },
+              205
+            ],
+            "id": "19a3c1da-28e1-480b-bd07-6b511100328d",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "review_month",
+            "display-name": "Review Month",
+            "alias": "mart_review_topics.month_start"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "c3f3493a-5e9d-4194-aed5-1d36324e8b89"
+              },
+              206
+            ],
+            "id": "d2fdeaa1-1a53-4265-91f2-7ea67de8d3f3",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "topic",
+            "display-name": "Topic",
+            "alias": "mart_review_topics.topic"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "19a3c1da-28e1-480b-bd07-6b511100328d",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_month"
+        ]
+      ],
+      "name": "Review Month",
+      "slug": "review_month",
+      "isMultiSelect": true
+    },
+    {
+      "id": "d2fdeaa1-1a53-4265-91f2-7ea67de8d3f3",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "topic"
+        ]
+      ],
+      "name": "Topic",
+      "slug": "topic",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

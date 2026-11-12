@@ -1,0 +1,66 @@
+{
+  "id": 46,
+  "entity_id": "N283NdR9PqtWvFjrrKBpE",
+  "name": "Chart - New Listings per Month",
+  "description": "Listings created in each month, through 2021-10 to exclude the partial snapshot month. One row per month.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    month_start,\n    new_listings\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "622dca14-308e-424f-9d45-696c0821e9c0"
+              },
+              122
+            ],
+            "id": "3c877126-cab6-466e-993e-edfb6b3d1478",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "month_start",
+            "display-name": "Month Start",
+            "alias": "mart_executive_kpis.month_start"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "month_start"
+    ],
+    "graph.metrics": [
+      "new_listings"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "3c877126-cab6-466e-993e-edfb6b3d1478",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "month_start"
+        ]
+      ],
+      "name": "Month Start",
+      "slug": "month_start",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

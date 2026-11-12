@@ -1,0 +1,67 @@
+{
+  "id": 61,
+  "entity_id": "Ff8Bwx37xlBqvQOc6cClh",
+  "name": "Chart - Room Type Price Benchmark",
+  "description": "Median and p90 source nightly price by room type, excluding outliers. One row per room type; p90 shows the high-price tail.",
+  "collection_id": 7,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    room_type,\n    'Median price' AS metric,\n    CAST(median_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nUNION ALL\n\nSELECT\n    room_type,\n    'P90 price' AS metric,\n    CAST(p90_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nORDER BY room_type, metric;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "49f48cb0-a596-4344-aa06-a3252da1b9ef"
+              },
+              211
+            ],
+            "id": "25ec5080-171e-4db2-9d78-99a014565046",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "display-name": "Room Type",
+            "alias": "mart_room_type_benchmark.room_type"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "room_type",
+      "metric"
+    ],
+    "graph.metrics": [
+      "value"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "25ec5080-171e-4db2-9d78-99a014565046",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

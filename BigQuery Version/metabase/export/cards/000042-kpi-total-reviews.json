@@ -1,0 +1,27 @@
+{
+  "id": 42,
+  "entity_id": "UGHPzAtwyKysTn6oOokR6",
+  "name": "KPI - Total Reviews",
+  "description": "Count of distinct reviews in the review fact. One row per review; duplicate reviews are removed upstream.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT COUNT(*) AS total_reviews\nFROM analytics.fct_reviews AS fct_reviews;"
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

@@ -21,6 +21,14 @@ Postgres Version/logs/
 venv/
 Snowflake Version/logs/
 
+# BigQuery Version patterns
+BigQuery Version/.venv/
+BigQuery Version/logs/
+BigQuery Version/airbnb_dagster_project/.tmp_dagster_home_*
+BigQuery Version/.secrets/
+!BigQuery Version/airbnb_dbt/seeds/seed_full_moon_dates.csv
+!BigQuery Version/airbnb_dbt/seeds/seed_review_topics.csv
+
 # AXIOM coding agent
 .env.axiom
 .agents/

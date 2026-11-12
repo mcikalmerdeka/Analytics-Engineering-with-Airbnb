@@ -1,0 +1,117 @@
+{
+  "id": 85,
+  "entity_id": "XbRQW0pIq904GpYUomny1",
+  "name": "KPI - Avg Reviews per Host",
+  "description": "Mean total reviews per host across all of the host's listings. One row per host; not a per-listing average.",
+  "collection_id": 9,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT AVG(total_reviews) AS avg_reviews_per_host\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}};",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "41e739f4-afe7-4ba9-afaa-bf3e50e3d551"
+              },
+              147
+            ],
+            "id": "8a3b46bb-d1c4-40eb-93f6-9375db1dc77e",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_host_performance.host_segment"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "df6485d6-be35-4006-9058-984d5ff20ffe"
+              },
+              144
+            ],
+            "id": "9c833bf1-f850-4fdf-bfbd-0bbd134b1ba1",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "mart_host_performance.is_superhost"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "564342be-78cd-430c-8019-1b52c6c2ad81"
+              },
+              148
+            ],
+            "id": "ac8b855d-daa3-4501-9651-59884e7917f6",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "listing_count",
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "8a3b46bb-d1c4-40eb-93f6-9375db1dc77e",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "host_segment"
+        ]
+      ],
+      "name": "Host Segment",
+      "slug": "host_segment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "9c833bf1-f850-4fdf-bfbd-0bbd134b1ba1",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_superhost"
+        ]
+      ],
+      "name": "Is Superhost",
+      "slug": "is_superhost",
+      "isMultiSelect": false
+    },
+    {
+      "id": "ac8b855d-daa3-4501-9651-59884e7917f6",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "listing_count"
+        ]
+      ],
+      "name": "Listing Count",
+      "slug": "listing_count",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

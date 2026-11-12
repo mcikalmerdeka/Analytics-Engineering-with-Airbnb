@@ -1,0 +1,27 @@
+{
+  "id": 43,
+  "entity_id": "-lPbqpY9yTAoy-hJ96GwS",
+  "name": "KPI - Active Listings (12m)",
+  "description": "Listings with at least one review in the trailing 12 months ending 2021-11-19. One row per listing; this is not a review count.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT COUNT(*) AS active_listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE is_active_last_12m = TRUE;"
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

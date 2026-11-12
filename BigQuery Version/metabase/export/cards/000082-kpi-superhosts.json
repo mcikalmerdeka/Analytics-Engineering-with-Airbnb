@@ -1,0 +1,88 @@
+{
+  "id": 82,
+  "entity_id": "XpaR9NznZTUOG_SeZNXcd",
+  "name": "KPI - Superhosts",
+  "description": "Hosts whose superhost flag is true. One row per host; 15 hosts with unknown status are excluded.",
+  "collection_id": 9,
+  "type": "question",
+  "query_type": "native",
+  "display": "scalar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT COUNT(*) AS superhosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE is_superhost = TRUE\n  AND {{host_segment}}\n  AND {{listing_count}};",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "5d257ec7-b746-45a9-aaf2-c2191e501ab7"
+              },
+              147
+            ],
+            "id": "faf56b82-3f13-4714-aec5-387a74640d58",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_host_performance.host_segment"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "a36be964-1482-4106-b5c9-b352249c7433"
+              },
+              148
+            ],
+            "id": "2a76bd20-40e7-495e-8e2b-8c15e7870e17",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "listing_count",
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {},
+  "parameters": [
+    {
+      "id": "faf56b82-3f13-4714-aec5-387a74640d58",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "host_segment"
+        ]
+      ],
+      "name": "Host Segment",
+      "slug": "host_segment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "2a76bd20-40e7-495e-8e2b-8c15e7870e17",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "listing_count"
+        ]
+      ],
+      "name": "Listing Count",
+      "slug": "listing_count",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

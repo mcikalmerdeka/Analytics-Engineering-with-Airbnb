@@ -1,0 +1,12 @@
+topic,keywords_regex
+cleanliness,sauber|(?:^|[^\p{L}\p{N}_])clean(?:$|[^\p{L}\p{N}_])|hygien|schmutz|(?:^|[^\p{L}\p{N}_])dirty(?:$|[^\p{L}\p{N}_])
+location,(?:^|[^\p{L}\p{N}_])lage(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])location(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])zentral(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])central(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])nahe(?:$|[^\p{L}\p{N}_])|close to|(?:^|[^\p{L}\p{N}_])near(?:$|[^\p{L}\p{N}_])
+host,gastgeber|(?:^|[^\p{L}\p{N}_])host(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])kommunikation(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])communication(?:$|[^\p{L}\p{N}_])
+check-in,check.?in|check.?out|ankunft|arrival|schlüssel|(?:^|[^\p{L}\p{N}_])key(?:$|[^\p{L}\p{N}_])
+noise,(?:^|[^\p{L}\p{N}_])ruhig(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])quiet(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])laut(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])noisy(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])lärm(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])noise(?:$|[^\p{L}\p{N}_])
+bed,(?:^|[^\p{L}\p{N}_])bett(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])bed(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])matratze(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])mattress(?:$|[^\p{L}\p{N}_])
+bathroom,badezimmer|(?:^|[^\p{L}\p{N}_])bathroom(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])dusche(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])shower(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])wc(?:$|[^\p{L}\p{N}_])
+kitchen,küche|(?:^|[^\p{L}\p{N}_])kitchen(?:$|[^\p{L}\p{N}_])
+wifi,wlan|(?:^|[^\p{L}\p{N}_])wifi(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])internet(?:$|[^\p{L}\p{N}_])
+transport,u.?bahn|s.?bahn|(?:^|[^\p{L}\p{N}_])bahn(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])metro(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])subway(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])bus(?:$|[^\p{L}\p{N}_])|(?:^|[^\p{L}\p{N}_])transport(?:$|[^\p{L}\p{N}_])
+breakfast,frühstück|(?:^|[^\p{L}\p{N}_])breakfast(?:$|[^\p{L}\p{N}_])

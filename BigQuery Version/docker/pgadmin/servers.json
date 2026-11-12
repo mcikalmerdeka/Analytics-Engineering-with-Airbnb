@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Airbnb Metabase App DB",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "metabase",
+      "Username": "postgres",
+      "SSLMode": "prefer",
+      "Comment": "Dockerized Postgres that stores only Metabase application data"
+    }
+  }
+}

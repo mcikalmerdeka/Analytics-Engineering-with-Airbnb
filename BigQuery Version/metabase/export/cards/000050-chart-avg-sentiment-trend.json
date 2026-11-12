@@ -1,0 +1,67 @@
+{
+  "id": 50,
+  "entity_id": "KaKicwZzLEBYuo38tFgkE",
+  "name": "Chart - Avg Sentiment Trend",
+  "description": "Monthly mean sentiment score (positive=1, neutral=0, negative=-1) through 2021-10. One row per month; unknown reviews are excluded from the mean.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "line",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    month_start,\n    avg_sentiment\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "3c283df1-2a38-4571-8ce7-cd606dee7d77"
+              },
+              122
+            ],
+            "id": "cba6137e-adec-492a-acda-a4b679980c17",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "month_start",
+            "display-name": "Month Start",
+            "alias": "mart_executive_kpis.month_start"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "month_start"
+    ],
+    "graph.x_axis.scale": "timeseries",
+    "graph.metrics": [
+      "avg_sentiment"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "cba6137e-adec-492a-acda-a4b679980c17",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "month_start"
+        ]
+      ],
+      "name": "Month Start",
+      "slug": "month_start",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

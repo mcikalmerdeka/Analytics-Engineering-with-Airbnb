@@ -1,0 +1,153 @@
+{
+  "id": 75,
+  "entity_id": "Lo4FML2rdb237nWjjCTo7",
+  "name": "Chart - Reviews by Room Type",
+  "description": "Reviews grouped by the room type of the reviewed listing. One row per review; each review belongs to one listing and one room type.",
+  "collection_id": 8,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    dim_listings.room_type,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nINNER JOIN analytics.dim_listings AS dim_listings\n    ON fct_reviews.listing_id = dim_listings.listing_id\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\n  AND {{room_type}}\nGROUP BY dim_listings.room_type\nORDER BY reviews DESC;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "6dc6ecb8-f6d4-49ff-b559-810cd0176581"
+              },
+              113
+            ],
+            "id": "3e87d42b-f917-4ec8-acac-338ce3563f1d",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "review_date",
+            "display-name": "Review Date",
+            "alias": "fct_reviews.review_date"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "e4ae6256-78b7-4c6f-8e1e-b1ddd991e84c"
+              },
+              116
+            ],
+            "id": "886d8b6a-b09f-43a6-b29d-803c14fb24a7",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "review_sentiment",
+            "display-name": "Review Sentiment",
+            "alias": "fct_reviews.review_sentiment"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "6ef81c9a-1498-4eef-93e5-73830a262a76"
+              },
+              118
+            ],
+            "id": "bfecb9f0-6d7a-4fb8-867d-a675810191f4",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "has_comment",
+            "display-name": "Has Comment",
+            "alias": "fct_reviews.has_comment"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "d1b85ad5-7975-456c-98c9-6594a8891a11"
+              },
+              95
+            ],
+            "id": "2c1b2daf-c8ec-4a33-ade5-1e26e54c8b58",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "display-name": "Room Type",
+            "alias": "dim_listings.room_type"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "room_type"
+    ],
+    "graph.metrics": [
+      "reviews"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "3e87d42b-f917-4ec8-acac-338ce3563f1d",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_date"
+        ]
+      ],
+      "name": "Review Date",
+      "slug": "review_date",
+      "isMultiSelect": true
+    },
+    {
+      "id": "886d8b6a-b09f-43a6-b29d-803c14fb24a7",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "review_sentiment"
+        ]
+      ],
+      "name": "Review Sentiment",
+      "slug": "review_sentiment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "bfecb9f0-6d7a-4fb8-867d-a675810191f4",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "has_comment"
+        ]
+      ],
+      "name": "Has Comment",
+      "slug": "has_comment",
+      "isMultiSelect": false
+    },
+    {
+      "id": "2c1b2daf-c8ec-4a33-ade5-1e26e54c8b58",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "room_type"
+        ]
+      ],
+      "name": "Room Type",
+      "slug": "room_type",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

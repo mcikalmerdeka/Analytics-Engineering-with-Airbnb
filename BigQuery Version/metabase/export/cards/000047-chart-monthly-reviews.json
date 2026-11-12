@@ -1,0 +1,67 @@
+{
+  "id": 47,
+  "entity_id": "7DV3Fl4LSlpoWPF9Oy4Ne",
+  "name": "Chart - Monthly Reviews",
+  "description": "Reviews submitted per month through 2021-10. One row per month; early months have few or zero reviews.",
+  "collection_id": 6,
+  "type": "question",
+  "query_type": "native",
+  "display": "line",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    month_start,\n    reviews\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "e1744bc4-597c-4b77-9910-3582011fc6c5"
+              },
+              122
+            ],
+            "id": "c3ff80fb-97b7-485c-b709-a2ba8567ab1c",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "month_start",
+            "display-name": "Month Start",
+            "alias": "mart_executive_kpis.month_start"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "month_start"
+    ],
+    "graph.x_axis.scale": "timeseries",
+    "graph.metrics": [
+      "reviews"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "c3ff80fb-97b7-485c-b709-a2ba8567ab1c",
+      "type": "date/all-options",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "month_start"
+        ]
+      ],
+      "name": "Month Start",
+      "slug": "month_start",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

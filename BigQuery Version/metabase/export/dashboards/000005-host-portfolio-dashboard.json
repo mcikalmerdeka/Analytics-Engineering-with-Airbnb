@@ -1,0 +1,698 @@
+{
+  "id": 5,
+  "entity_id": "nkPq9Ng8IWDYozhMWoLN_",
+  "name": "Host Portfolio Dashboard",
+  "description": "Portfolio concentration, professional host segments, and superhost performance.",
+  "collection_id": 9,
+  "parameters": [
+    {
+      "id": "6e5a1aa5",
+      "name": "Host segment",
+      "slug": "host_segment",
+      "type": "string/=",
+      "sectionId": "string",
+      "values_query_type": "list",
+      "isMultiSelect": true,
+      "default": null
+    },
+    {
+      "id": "0ed4fdf5",
+      "name": "Superhost",
+      "slug": "is_superhost",
+      "type": "boolean/=",
+      "sectionId": "boolean",
+      "values_query_type": "none",
+      "isMultiSelect": false,
+      "default": null
+    },
+    {
+      "id": "6fb03bf2",
+      "name": "Minimum listings",
+      "slug": "listing_count",
+      "type": "number/>=",
+      "sectionId": "number",
+      "values_query_type": "none",
+      "isMultiSelect": false,
+      "default": null
+    },
+    {
+      "id": "4b1481e4",
+      "name": "Host created date",
+      "slug": "host_created_at",
+      "type": "date/all-options",
+      "sectionId": "date",
+      "values_query_type": "none",
+      "isMultiSelect": false,
+      "default": null
+    }
+  ],
+  "width": "fixed",
+  "auto_apply_filters": true,
+  "archived": false,
+  "dashcards": [
+    {
+      "id": 80,
+      "entity_id": "KMpjs9WXtaByOiA4i9o20",
+      "card_id": 83,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 10,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [
+        {
+          "parameter_id": "0ed4fdf5",
+          "card_id": 83,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 83,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Single-listing Hosts"
+    },
+    {
+      "id": 79,
+      "entity_id": "QoJzEcSZDcK-fTDZ-vAYK",
+      "card_id": 82,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 5,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 82,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 82,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Superhosts"
+    },
+    {
+      "id": 90,
+      "entity_id": "BXTIpbRIbZBKBg1UtYcgF",
+      "card_id": 93,
+      "dashboard_tab_id": null,
+      "row": 27,
+      "col": 0,
+      "size_x": 24,
+      "size_y": 7,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 93,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "0ed4fdf5",
+          "card_id": 93,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 93,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Table - Top Hosts"
+    },
+    {
+      "id": 84,
+      "entity_id": "4tKTzmlo1bcjVrD83dJbA",
+      "card_id": 87,
+      "dashboard_tab_id": null,
+      "row": 3,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 87,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "0ed4fdf5",
+          "card_id": 87,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 87,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Avg Listings per Host by Segment"
+    },
+    {
+      "id": 86,
+      "entity_id": "fS2HF63rv48LwZHIfdgka",
+      "card_id": 89,
+      "dashboard_tab_id": null,
+      "row": 9,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "4b1481e4",
+          "card_id": 89,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_created_at"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - New Hosts per Month"
+    },
+    {
+      "id": 78,
+      "entity_id": "FX9S3nmo8APJ-Ew_Xsd7S",
+      "card_id": 81,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 0,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 81,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "0ed4fdf5",
+          "card_id": 81,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 81,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Total Hosts"
+    },
+    {
+      "id": 89,
+      "entity_id": "v0_jnfDXkZVwsi9Ac93bJ",
+      "card_id": 92,
+      "dashboard_tab_id": null,
+      "row": 21,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 92,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "0ed4fdf5",
+          "card_id": 92,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 92,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Portfolio Size"
+    },
+    {
+      "id": 82,
+      "entity_id": "18OzChGaqaua1j-miaWH2",
+      "card_id": 85,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 20,
+      "size_x": 4,
+      "size_y": 3,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 85,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "0ed4fdf5",
+          "card_id": 85,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 85,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Avg Reviews per Host"
+    },
+    {
+      "id": 83,
+      "entity_id": "VPcyHbNztGZFg81BvPsA-",
+      "card_id": 86,
+      "dashboard_tab_id": null,
+      "row": 3,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 86,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "0ed4fdf5",
+          "card_id": 86,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 86,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Hosts by Segment"
+    },
+    {
+      "id": 85,
+      "entity_id": "8uCTjFUR55ytFOcEaOhx-",
+      "card_id": 88,
+      "dashboard_tab_id": null,
+      "row": 9,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 88,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "0ed4fdf5",
+          "card_id": 88,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 88,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Avg Reviews per Host by Segment"
+    },
+    {
+      "id": 87,
+      "entity_id": "wMes3Sj5sTuNeAje1K06k",
+      "card_id": 90,
+      "dashboard_tab_id": null,
+      "row": 15,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 90,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 90,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Superhost Performance"
+    },
+    {
+      "id": 88,
+      "entity_id": "mwH9d-yiXrjkX_q4VGp5e",
+      "card_id": 91,
+      "dashboard_tab_id": null,
+      "row": 15,
+      "col": 12,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "6e5a1aa5",
+          "card_id": 91,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 91,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Hosts by Segment and Superhost"
+    },
+    {
+      "id": 81,
+      "entity_id": "tU2IA-2hK1GuOWRAXtgIK",
+      "card_id": 84,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 15,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [
+        {
+          "parameter_id": "0ed4fdf5",
+          "card_id": 84,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "6fb03bf2",
+          "card_id": 84,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "listing_count"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Professional+ Hosts"
+    }
+  ],
+  "tabs": []
+}

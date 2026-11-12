@@ -1,0 +1,95 @@
+{
+  "id": 90,
+  "entity_id": "XRr2Nuzcwnmu1ec-2kTG9",
+  "name": "Chart - Superhost Performance",
+  "description": "Average total reviews per host for superhosts vs non-superhosts. One row per host; includes an unclassified group for 15 hosts with unknown status.",
+  "collection_id": 9,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    is_superhost,\n    AVG(total_reviews) AS avg_reviews\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{listing_count}}\nGROUP BY is_superhost\nORDER BY is_superhost NULLS LAST;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "095c0bd1-f493-43c8-8c90-b2dcd46ef26f"
+              },
+              147
+            ],
+            "id": "31521118-1bf4-4a54-808a-9659f9be5219",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_host_performance.host_segment"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "861e5ac7-011f-46b9-99e9-05a706e8ee94"
+              },
+              148
+            ],
+            "id": "66b70173-4892-4f6c-982b-0ef092615a70",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "listing_count",
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "is_superhost"
+    ],
+    "graph.metrics": [
+      "avg_reviews"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "31521118-1bf4-4a54-808a-9659f9be5219",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "host_segment"
+        ]
+      ],
+      "name": "Host Segment",
+      "slug": "host_segment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "66b70173-4892-4f6c-982b-0ef092615a70",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "listing_count"
+        ]
+      ],
+      "name": "Listing Count",
+      "slug": "listing_count",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}

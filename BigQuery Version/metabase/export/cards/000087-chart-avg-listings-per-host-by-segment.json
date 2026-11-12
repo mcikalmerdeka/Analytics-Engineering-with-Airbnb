@@ -1,0 +1,124 @@
+{
+  "id": 87,
+  "entity_id": "C4NWcccIAy4428DWezJSw",
+  "name": "Chart - Avg Listings per Host by Segment",
+  "description": "Mean number of listings per host within each segment. One row per host; host-grain calculation.",
+  "collection_id": 9,
+  "type": "question",
+  "query_type": "native",
+  "display": "bar",
+  "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
+    "stages": [
+      {
+        "native": "SELECT\n    host_segment,\n    AVG(listing_count) AS avg_listings\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY avg_listings DESC;",
+        "lib/type": "mbql.stage/native",
+        "template-tags": [
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "aef2f1e8-48bd-42e1-a1e5-0736fce5e28a"
+              },
+              147
+            ],
+            "id": "6ec5fe17-922d-461e-a382-a90300470e12",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_host_performance.host_segment"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "ac8af813-77d4-4185-b953-5a9618b5224c"
+              },
+              144
+            ],
+            "id": "fb28c8e8-26a7-41d4-8874-5b28ddb938de",
+            "type": "dimension",
+            "widget-type": "boolean/=",
+            "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "mart_host_performance.is_superhost"
+          },
+          {
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "5e6aa9e1-c5fb-49f0-b42d-7691daaa00e1"
+              },
+              148
+            ],
+            "id": "75711587-5543-4f29-bfbe-b383962d8806",
+            "type": "dimension",
+            "widget-type": "number/=",
+            "name": "listing_count",
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
+          }
+        ]
+      }
+    ]
+  },
+  "visualization_settings": {
+    "graph.dimensions": [
+      "host_segment"
+    ],
+    "graph.metrics": [
+      "avg_listings"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "6ec5fe17-922d-461e-a382-a90300470e12",
+      "type": "string/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "host_segment"
+        ]
+      ],
+      "name": "Host Segment",
+      "slug": "host_segment",
+      "isMultiSelect": true
+    },
+    {
+      "id": "fb28c8e8-26a7-41d4-8874-5b28ddb938de",
+      "type": "boolean/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "is_superhost"
+        ]
+      ],
+      "name": "Is Superhost",
+      "slug": "is_superhost",
+      "isMultiSelect": false
+    },
+    {
+      "id": "75711587-5543-4f29-bfbe-b383962d8806",
+      "type": "number/=",
+      "target": [
+        "dimension",
+        [
+          "template-tag",
+          "listing_count"
+        ]
+      ],
+      "name": "Listing Count",
+      "slug": "listing_count",
+      "isMultiSelect": true
+    }
+  ],
+  "parameter_mappings": [],
+  "database_id": 2,
+  "table_id": null,
+  "archived": false,
+  "card_schema": 24
+}
