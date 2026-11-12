@@ -9,8 +9,9 @@ This guide builds the five dashboards declared in
 4. Host Portfolio
 5. Listing Explorer
 
-It assumes Metabase v0.64.x and the stack from `compose.yaml`. Every expected
-value below was captured from the current dataset on 2026-11-05.
+It assumes Metabase v0.64.x, BigQuery project `orbital-scene-422012-h0`, and the
+stack from `compose.yaml`. Every expected value below was verified against the
+BigQuery build on 2026-11-12.
 
 If you build the cards as native SQL instead of query-builder questions, use
 [`METABASE_SQL_WITH_FILTERS.md`](METABASE_SQL_WITH_FILTERS.md). It contains a
@@ -25,21 +26,19 @@ Field Filter version of all 66 cards.
 
 ### 1. Connect the analytics database
 
-Complete the Metabase setup wizard at `http://localhost:3000`, then add a
-PostgreSQL database:
+Run `uv run python scripts\setup_metabase.py`, or add a BigQuery database
+manually at `http://localhost:3000`:
 
 | Field | Value |
 | --- | --- |
 | Display name | `Airbnb Analytics` |
-| Host | `postgres` |
-| Port | `5432` |
-| Database | `airbnb` |
-| Username | `metabase` |
-| Password | `metabasePassword123` |
-| SSL | Off |
+| Engine | BigQuery (`bigquery-cloud-sdk`) |
+| Project ID | `orbital-scene-422012-h0` |
+| Service account JSON | contents of `.secrets/metabase-bigquery-key.json` |
+| Dataset filter | inclusion, `analytics` only |
 
-Metabase syncs only the schemas the `metabase` user can see. That is
-`analytics`; `staging`, `raw`, and `snapshots` are intentionally inaccessible.
+Metabase syncs only the datasets the service account can see. That is
+`analytics`; `raw`, `staging`, and `snapshots` are intentionally inaccessible.
 
 The card tables below use `Model - Listings` for query-builder cards. The
 native SQL companion reads `analytics.dim_listings` directly for the same
@@ -657,15 +656,17 @@ Run these in order after building each dashboard.
 4. **Host grain vs listing grain.** `Model - Hosts` has one row per host;
    `Model - Listings` has one row per listing. Segment charts on the two
    dashboards will not match, and that is expected.
-5. **`staging` is not a reporting schema.** Do not build cards on
-   `staging.*`. The `metabase` user has no `USAGE` there, and the dbt contract
-   treats `analytics` as the only BI surface.
-6. **Native SQL cards do not accept dashboard filters.** The ratio and median
-   KPI cards in Appendix A are fixed. If you need them filterable, rebuild
-   them as query-builder cards or add Field Filter variables and map them.
+5. **`staging` is not a reporting dataset.** Do not build cards on
+   `staging.*`. The Metabase service account has no access there, and the dbt
+   contract treats `analytics` as the only BI surface.
+6. **Native SQL cards need table aliases for Field Filters.** Write
+   `FROM analytics.dim_listings AS dim_listings` and set each template tag's
+   alias to `dim_listings.column`. Without the alias the BigQuery driver emits
+   an invalid backticked dataset path. The fixed cards in Appendix A have no
+   template tags and therefore ignore dashboard filters.
 7. **Metabase caching.** If a card shows stale values after a `dbt build`,
-   use the card menu → **Refresh** or clear the dashboard cache. The data is
-   read live from Postgres unless caching is enabled in admin settings.
+   use the card menu → **Refresh** or clear the dashboard cache. BigQuery is
+   queried live unless caching is enabled in admin settings.
 8. **Relative date filters are evaluated against today.** The dataset ends in
    2021, so presets such as "Past 12 months" or "Previous 24 months" return
    nothing in 2026. Use absolute ranges for every dashboard filter and card
@@ -683,10 +684,12 @@ native SQL question on the `Airbnb Analytics` database.
 ### Median nightly price
 
 ```sql
-SELECT
-    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price) AS median_price
-FROM analytics.dim_listings
-WHERE NOT is_price_outlier;
+SELECT MAX(median_price) AS median_price
+FROM (
+    SELECT PERCENTILE_CONT(price, 0.5) OVER () AS median_price
+    FROM analytics.dim_listings
+    WHERE NOT is_price_outlier
+);
 ```
 
 Expected: `55`.
@@ -694,9 +697,10 @@ Expected: `55`.
 ### Positive review share
 
 ```sql
-SELECT
-    COUNT(*) FILTER (WHERE review_sentiment = 'positive')::numeric
-        / NULLIF(COUNT(*), 0) AS positive_share
+SELECT SAFE_DIVIDE(
+    COUNTIF(review_sentiment = 'positive'),
+    COUNT(*)
+) AS positive_share
 FROM analytics.fct_reviews;
 ```
 
@@ -705,9 +709,10 @@ Expected: `0.5668` — format as `56.7%`.
 ### Negative review share
 
 ```sql
-SELECT
-    COUNT(*) FILTER (WHERE review_sentiment = 'negative')::numeric
-        / NULLIF(COUNT(*), 0) AS negative_share
+SELECT SAFE_DIVIDE(
+    COUNTIF(review_sentiment = 'negative'),
+    COUNT(*)
+) AS negative_share
 FROM analytics.fct_reviews;
 ```
 
@@ -716,9 +721,10 @@ Expected: `0.0733` — format as `7.3%`.
 ### Active listing share (optional)
 
 ```sql
-SELECT
-    COUNT(*) FILTER (WHERE is_active_last_12m)::numeric
-        / NULLIF(COUNT(*), 0) AS active_share
+SELECT SAFE_DIVIDE(
+    COUNTIF(is_active_last_12m),
+    COUNT(*)
+) AS active_share
 FROM analytics.mart_listing_performance;
 ```
 

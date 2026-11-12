@@ -10,4 +10,14 @@ The raw Airbnb CSVs are not committed to git (see the root `.gitignore`). Downlo
 
 The `seed_full_moon_dates.csv` file used by dbt is tracked separately in `airbnb_dbt/seeds/` (source: https://dbtlearn.s3.us-east-2.amazonaws.com/seed_full_moon_dates.csv).
 
-These files are mounted read-only into the Postgres container at `/data` and loaded by `docker/init/02_raw_tables.sql` on the first `docker compose up`. To reload after changing the files, run `docker compose down -v` and `docker compose up -d`.
+These files are loaded into BigQuery by `scripts/load_raw_data.ps1`. The loader
+runs one `bq load --replace` job per file, so rerunning it truncates and reloads
+`raw_listings`, `raw_hosts`, and `raw_reviews` in the `raw` dataset. The local Docker
+Postgres container is not used for analytics data; it stores only the Metabase
+application database.
+
+```powershell
+cd "BigQuery Version"
+.\scripts\load_raw_data.ps1
+.\scripts\validate_bigquery.ps1 -RawOnly
+```

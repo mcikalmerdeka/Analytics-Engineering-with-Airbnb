@@ -4,8 +4,10 @@ This is the native-SQL companion to
 [`METABASE_DASHBOARDS.md`](METABASE_DASHBOARDS.md). Use it when you build the
 five dashboards as **native SQL questions** instead of query-builder cards.
 
-Every SQL block below is written for Metabase v0.64.x and PostgreSQL 17. The
-values and filter columns match the `analytics` schema in this project.
+Every SQL block below is written for Metabase v0.64.x and Google BigQuery.
+The values and filter columns match the `analytics` dataset in this project.
+Each card aliases its table because the BigQuery driver renders Field Filters
+as `table_alias.column`.
 
 The matching question descriptions are in
 [`METABASE_DASHBOARDS.md`](METABASE_DASHBOARDS.md). Use those in the
@@ -74,7 +76,7 @@ Expected: `17,499`. No variables.
 
 ```sql
 SELECT COUNT(*) AS total_listings
-FROM analytics.dim_listings;
+FROM analytics.dim_listings AS dim_listings;
 ```
 
 ### 1.2 KPI - Total Hosts
@@ -83,7 +85,7 @@ Expected: `14,111`. No variables.
 
 ```sql
 SELECT COUNT(*) AS total_hosts
-FROM analytics.dim_hosts;
+FROM analytics.dim_hosts AS dim_hosts;
 ```
 
 ### 1.3 KPI - Total Reviews
@@ -92,7 +94,7 @@ Expected: `410,283`. No variables.
 
 ```sql
 SELECT COUNT(*) AS total_reviews
-FROM analytics.fct_reviews;
+FROM analytics.fct_reviews AS fct_reviews;
 ```
 
 ### 1.4 KPI - Active Listings (12m)
@@ -101,7 +103,7 @@ Expected: `6,050`. No variables.
 
 ```sql
 SELECT COUNT(*) AS active_listings
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE is_active_last_12m = TRUE;
 ```
 
@@ -111,7 +113,7 @@ Expected: `70.41`. No variables.
 
 ```sql
 SELECT AVG(price) AS avg_nightly_price
-FROM analytics.dim_listings
+FROM analytics.dim_listings AS dim_listings
 WHERE NOT is_price_outlier;
 ```
 
@@ -124,8 +126,8 @@ X = `month_start`, Y = `value`, series = `metric`.
 SELECT
     month_start,
     'Cumulative listings' AS metric,
-    cumulative_listings::numeric AS value
-FROM analytics.mart_executive_kpis
+    CAST(cumulative_listings AS FLOAT64) AS value
+FROM analytics.mart_executive_kpis AS mart_executive_kpis
 WHERE 1 = 1
   AND {{month_start}}
 
@@ -134,8 +136,8 @@ UNION ALL
 SELECT
     month_start,
     'Cumulative hosts' AS metric,
-    cumulative_hosts::numeric AS value
-FROM analytics.mart_executive_kpis
+    CAST(cumulative_hosts AS FLOAT64) AS value
+FROM analytics.mart_executive_kpis AS mart_executive_kpis
 WHERE 1 = 1
   AND {{month_start}}
 
@@ -150,7 +152,7 @@ Expected 2021-10: `1,246`. Visualization: Bar.
 SELECT
     month_start,
     new_listings
-FROM analytics.mart_executive_kpis
+FROM analytics.mart_executive_kpis AS mart_executive_kpis
 WHERE month_start <= DATE '2021-10-01'
   AND {{month_start}}
 ORDER BY month_start;
@@ -164,7 +166,7 @@ Expected 2021-10: `5,110`. Visualization: Line.
 SELECT
     month_start,
     reviews
-FROM analytics.mart_executive_kpis
+FROM analytics.mart_executive_kpis AS mart_executive_kpis
 WHERE month_start <= DATE '2021-10-01'
   AND {{month_start}}
 ORDER BY month_start;
@@ -179,7 +181,7 @@ Hotel room `165`. Visualization: Pie.
 SELECT
     room_type,
     COUNT(*) AS listings
-FROM analytics.dim_listings
+FROM analytics.dim_listings AS dim_listings
 GROUP BY room_type
 ORDER BY listings DESC;
 ```
@@ -193,7 +195,7 @@ Unknown `384`. Visualization: Pie.
 SELECT
     review_sentiment,
     COUNT(*) AS reviews
-FROM analytics.fct_reviews
+FROM analytics.fct_reviews AS fct_reviews
 GROUP BY review_sentiment
 ORDER BY reviews DESC;
 ```
@@ -206,7 +208,7 @@ Expected 2021-10: `0.43`. Visualization: Line.
 SELECT
     month_start,
     avg_sentiment
-FROM analytics.mart_executive_kpis
+FROM analytics.mart_executive_kpis AS mart_executive_kpis
 WHERE month_start <= DATE '2021-10-01'
   AND {{month_start}}
 ORDER BY month_start;
@@ -220,7 +222,7 @@ Expected 2021-10: `0.174` (17.4%). Visualization: Line. Format as percentage.
 SELECT
     month_start,
     superhost_share
-FROM analytics.mart_executive_kpis
+FROM analytics.mart_executive_kpis AS mart_executive_kpis
 WHERE month_start <= DATE '2021-10-01'
   AND {{month_start}}
 ORDER BY month_start;
@@ -236,7 +238,7 @@ SELECT
     month_start,
     room_type,
     reviews
-FROM analytics.mart_market_monthly
+FROM analytics.mart_market_monthly AS mart_market_monthly
 WHERE month_start <= DATE '2021-10-01'
   AND {{month_start}}
 ORDER BY month_start, room_type;
@@ -251,7 +253,7 @@ Expected: 3–5 years `6,135`; < 1 year `4,819`; 1–2 years `4,158`;
 SELECT
     listing_age_cohort,
     COUNT(*) AS listings
-FROM analytics.dim_listings
+FROM analytics.dim_listings AS dim_listings
 GROUP BY listing_age_cohort
 ORDER BY listings DESC;
 ```
@@ -300,7 +302,7 @@ Expected: `17,499`.
 
 ```sql
 SELECT COUNT(*) AS total_listings
-FROM analytics.dim_listings
+FROM analytics.dim_listings AS dim_listings
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -315,9 +317,13 @@ Expected: `55`. Fixed card: no variables.
 
 ```sql
 SELECT
-    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price) AS median_price
-FROM analytics.dim_listings
-WHERE NOT is_price_outlier;
+    MAX(median_price) AS median_price
+FROM (
+    SELECT
+        PERCENTILE_CONT(price, 0.5) OVER () AS median_price
+    FROM analytics.dim_listings AS dim_listings
+WHERE NOT is_price_outlier
+);
 ```
 
 ### 2.3 KPI - Avg Nightly Price (excl. outliers)
@@ -326,7 +332,7 @@ Expected: `70.41`.
 
 ```sql
 SELECT AVG(price) AS avg_nightly_price
-FROM analytics.dim_listings
+FROM analytics.dim_listings AS dim_listings
 WHERE NOT is_price_outlier
   AND {{room_type}}
   AND {{price_band}}
@@ -341,7 +347,7 @@ Expected: `97`.
 
 ```sql
 SELECT COUNT(*) AS outlier_listings
-FROM analytics.dim_listings
+FROM analytics.dim_listings AS dim_listings
 WHERE is_price_outlier = TRUE
   AND {{room_type}}
   AND {{price_band}}
@@ -357,7 +363,7 @@ this card is defined by superhost status.
 
 ```sql
 SELECT COUNT(*) AS superhost_listings
-FROM analytics.dim_listings
+FROM analytics.dim_listings AS dim_listings
 WHERE is_superhost = TRUE
   AND {{room_type}}
   AND {{price_band}}
@@ -377,7 +383,7 @@ selected band. That is expected.
 SELECT
     price_band,
     COUNT(*) AS listings
-FROM analytics.dim_listings
+FROM analytics.dim_listings AS dim_listings
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -406,7 +412,7 @@ SELECT
     price_band,
     room_type,
     SUM(listing_count) AS listings
-FROM analytics.mart_price_bands
+FROM analytics.mart_price_bands AS mart_price_bands
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -432,8 +438,8 @@ X = `room_type`, Y = `value`, series = `metric`.
 SELECT
     room_type,
     'Median price' AS metric,
-    median_price::numeric AS value
-FROM analytics.mart_room_type_benchmark
+    CAST(median_price AS FLOAT64) AS value
+FROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark
 WHERE 1 = 1
   AND {{room_type}}
 
@@ -442,8 +448,8 @@ UNION ALL
 SELECT
     room_type,
     'P90 price' AS metric,
-    p90_price::numeric AS value
-FROM analytics.mart_room_type_benchmark
+    CAST(p90_price AS FLOAT64) AS value
+FROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark
 WHERE 1 = 1
   AND {{room_type}}
 
@@ -459,7 +465,7 @@ Hotel room `0.9%`. Visualization: Pie.
 SELECT
     room_type,
     listing_count
-FROM analytics.mart_room_type_benchmark
+FROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark
 WHERE 1 = 1
   AND {{room_type}}
 ORDER BY listing_count DESC;
@@ -474,7 +480,7 @@ Visualization: Bar.
 SELECT
     minimum_nights_band,
     COUNT(*) AS listings
-FROM analytics.dim_listings
+FROM analytics.dim_listings AS dim_listings
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -499,7 +505,7 @@ Visualization: Bar.
 SELECT
     price_band,
     AVG(pct_active) AS active_share
-FROM analytics.mart_price_bands
+FROM analytics.mart_price_bands AS mart_price_bands
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -524,7 +530,7 @@ Visualization: Bar.
 SELECT
     price_band,
     AVG(pct_superhost) AS superhost_share
-FROM analytics.mart_price_bands
+FROM analytics.mart_price_bands AS mart_price_bands
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -557,7 +563,7 @@ SELECT
     avg_sentiment,
     pct_superhost,
     pct_active
-FROM analytics.mart_room_type_benchmark
+FROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark
 WHERE 1 = 1
   AND {{room_type}}
 ORDER BY listing_count DESC;
@@ -594,7 +600,7 @@ Expected: `410,283`.
 
 ```sql
 SELECT COUNT(*) AS total_reviews
-FROM analytics.fct_reviews
+FROM analytics.fct_reviews AS fct_reviews
 WHERE 1 = 1
   AND {{review_date}}
   AND {{review_sentiment}}
@@ -607,9 +613,8 @@ Expected: `0.5668` (56.7%). Fixed card: no variables.
 
 ```sql
 SELECT
-    COUNT(*) FILTER (WHERE review_sentiment = 'positive')::numeric
-        / NULLIF(COUNT(*), 0) AS positive_share
-FROM analytics.fct_reviews;
+    SAFE_DIVIDE(COUNTIF(review_sentiment = 'positive'), COUNT(*)) AS positive_share
+FROM analytics.fct_reviews AS fct_reviews;
 ```
 
 ### 3.3 KPI - Negative Review Share
@@ -618,9 +623,8 @@ Expected: `0.0733` (7.3%). Fixed card: no variables.
 
 ```sql
 SELECT
-    COUNT(*) FILTER (WHERE review_sentiment = 'negative')::numeric
-        / NULLIF(COUNT(*), 0) AS negative_share
-FROM analytics.fct_reviews;
+    SAFE_DIVIDE(COUNTIF(review_sentiment = 'negative'), COUNT(*)) AS negative_share
+FROM analytics.fct_reviews AS fct_reviews;
 ```
 
 ### 3.4 KPI - Avg Sentiment Score
@@ -629,7 +633,7 @@ Expected: `0.494`.
 
 ```sql
 SELECT AVG(sentiment_score) AS avg_sentiment_score
-FROM analytics.fct_reviews
+FROM analytics.fct_reviews AS fct_reviews
 WHERE 1 = 1
   AND {{review_date}}
   AND {{review_sentiment}}
@@ -642,7 +646,7 @@ Expected: `47,356`.
 
 ```sql
 SELECT COUNT(*) AS reviews_2021
-FROM analytics.fct_reviews
+FROM analytics.fct_reviews AS fct_reviews
 WHERE review_year = 2021
   AND {{review_date}}
   AND {{review_sentiment}}
@@ -657,7 +661,7 @@ Expected 2021-10: `5,110`. Visualization: Line.
 SELECT
     review_month,
     COUNT(*) AS reviews
-FROM analytics.fct_reviews
+FROM analytics.fct_reviews AS fct_reviews
 WHERE review_month <= DATE '2021-10-01'
   AND {{review_date}}
   AND {{review_sentiment}}
@@ -675,7 +679,7 @@ Unknown `384`. Visualization: Pie.
 SELECT
     review_sentiment,
     COUNT(*) AS reviews
-FROM analytics.fct_reviews
+FROM analytics.fct_reviews AS fct_reviews
 WHERE 1 = 1
   AND {{review_date}}
   AND {{review_sentiment}}
@@ -694,7 +698,7 @@ SELECT
     review_month,
     review_sentiment,
     COUNT(*) AS reviews
-FROM analytics.fct_reviews
+FROM analytics.fct_reviews AS fct_reviews
 WHERE review_month <= DATE '2021-10-01'
   AND {{review_date}}
   AND {{review_sentiment}}
@@ -714,17 +718,17 @@ and `room_type` → `l.room_type`.
 
 ```sql
 SELECT
-    l.room_type,
+    dim_listings.room_type,
     COUNT(*) AS reviews
-FROM analytics.fct_reviews AS r
-LEFT JOIN analytics.dim_listings AS l
-    ON r.listing_id = l.listing_id
+FROM analytics.fct_reviews AS fct_reviews
+INNER JOIN analytics.dim_listings AS dim_listings
+    ON fct_reviews.listing_id = dim_listings.listing_id
 WHERE 1 = 1
   AND {{review_date}}
   AND {{review_sentiment}}
   AND {{has_comment}}
   AND {{room_type}}
-GROUP BY l.room_type
+GROUP BY dim_listings.room_type
 ORDER BY reviews DESC;
 ```
 
@@ -735,7 +739,7 @@ Expected: `409,697` comments (99.9%). Visualization: Histogram on
 
 ```sql
 SELECT review_length
-FROM analytics.fct_reviews
+FROM analytics.fct_reviews AS fct_reviews
 WHERE has_comment = TRUE
   AND {{review_date}}
   AND {{review_sentiment}}
@@ -752,7 +756,7 @@ Bed `19,276`; Bathroom `17,805`; WiFi `8,810`; Breakfast `6,585`.
 SELECT
     topic,
     SUM(mentions) AS mentions
-FROM analytics.mart_review_topics
+FROM analytics.mart_review_topics AS mart_review_topics
 WHERE 1 = 1
   AND {{review_month}}
   AND {{topic}}
@@ -771,7 +775,7 @@ SELECT
     month_start,
     topic,
     AVG(mention_rate) AS avg_mention_rate
-FROM analytics.mart_review_topics
+FROM analytics.mart_review_topics AS mart_review_topics
 WHERE month_start BETWEEN DATE '2019-11-01' AND DATE '2021-10-01'
   AND {{review_month}}
   AND {{topic}}
@@ -789,7 +793,7 @@ Breakfast `5.4%`; Transport `4.5%`; WiFi `3.9%`; Bathroom `3.2%`.
 SELECT
     topic,
     AVG(pct_negative) AS avg_pct_negative
-FROM analytics.mart_review_topics
+FROM analytics.mart_review_topics AS mart_review_topics
 WHERE 1 = 1
   AND {{review_month}}
   AND {{topic}}
@@ -809,7 +813,7 @@ SELECT
     mention_rate,
     avg_sentiment,
     pct_negative
-FROM analytics.mart_review_topics
+FROM analytics.mart_review_topics AS mart_review_topics
 WHERE month_start BETWEEN DATE '2020-11-01' AND DATE '2021-10-01'
   AND {{review_month}}
   AND {{topic}}
@@ -873,7 +877,7 @@ Expected: `14,111`.
 
 ```sql
 SELECT COUNT(*) AS total_hosts
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_superhost}}
@@ -886,7 +890,7 @@ Expected: `1,920` (13.6%).
 
 ```sql
 SELECT COUNT(*) AS superhosts
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE is_superhost = TRUE
   AND {{host_segment}}
   AND {{listing_count}};
@@ -898,7 +902,7 @@ Expected: `12,666`.
 
 ```sql
 SELECT COUNT(*) AS single_listing_hosts
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE host_segment = 'Single listing'
   AND {{is_superhost}}
   AND {{listing_count}};
@@ -911,7 +915,7 @@ Expected: `204` (Professional `144` + Large professional `46` + Enterprise
 
 ```sql
 SELECT COUNT(*) AS professional_plus_hosts
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE host_segment IN ('Professional', 'Large professional', 'Enterprise')
   AND {{is_superhost}}
   AND {{listing_count}};
@@ -923,7 +927,7 @@ Expected: `29.08`.
 
 ```sql
 SELECT AVG(total_reviews) AS avg_reviews_per_host
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_superhost}}
@@ -939,7 +943,7 @@ Large professional `46`; Enterprise `14`.
 SELECT
     host_segment,
     COUNT(*) AS hosts
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_superhost}}
@@ -956,7 +960,7 @@ Expected: `1.00`, `2.32`, `6.16`, `12.59`, `34.50`.
 SELECT
     host_segment,
     AVG(listing_count) AS avg_listings
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_superhost}}
@@ -973,7 +977,7 @@ Expected: `18.7`, `81.0`, `267.3`, `508.6`, `800.1`.
 SELECT
     host_segment,
     AVG(total_reviews) AS avg_reviews
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_superhost}}
@@ -989,10 +993,10 @@ dashboard filter can narrow it further.
 
 ```sql
 SELECT
-    DATE_TRUNC('month', host_created_at)::date AS month_start,
+    DATE_TRUNC(DATE(host_created_at), MONTH) AS month_start,
     COUNT(*) AS new_hosts
-FROM analytics.dim_hosts
-WHERE host_created_at >= DATE '2015-01-01'
+FROM analytics.dim_hosts AS dim_hosts
+WHERE DATE(host_created_at) >= DATE '2015-01-01'
   AND {{host_created_at}}
 GROUP BY 1
 ORDER BY 1;
@@ -1006,7 +1010,7 @@ Expected average reviews: superhost `96.7`; non-superhost `18.4`.
 SELECT
     is_superhost,
     AVG(total_reviews) AS avg_reviews
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE 1 = 1
   AND {{host_segment}}
   AND {{listing_count}}
@@ -1024,7 +1028,7 @@ SELECT
     host_segment,
     is_superhost,
     COUNT(*) AS hosts
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE 1 = 1
   AND {{host_segment}}
   AND {{listing_count}}
@@ -1038,7 +1042,7 @@ Visualization: Histogram on `listing_count`.
 
 ```sql
 SELECT listing_count
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_superhost}}
@@ -1059,12 +1063,11 @@ SELECT
     total_reviews,
     avg_reviews_per_listing,
     avg_sentiment
-FROM analytics.mart_host_performance
+FROM analytics.mart_host_performance AS mart_host_performance
 WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_superhost}}
   AND {{listing_count}}
-  [[AND LOWER(host_name) LIKE '%' || LOWER({{host_name}}) || '%']]
 ORDER BY total_reviews DESC
 LIMIT 100;
 ```
@@ -1102,7 +1105,7 @@ Expected: `17,499` unfiltered.
 
 ```sql
 SELECT COUNT(*) AS listings
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -1111,7 +1114,6 @@ WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_active_last_12m}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']];
 ```
 
 ### 5.2 KPI - Avg Price in View
@@ -1120,7 +1122,7 @@ Expected: `70.41` unfiltered.
 
 ```sql
 SELECT AVG(price) AS avg_price
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE NOT is_price_outlier
   AND {{room_type}}
   AND {{price_band}}
@@ -1129,7 +1131,6 @@ WHERE NOT is_price_outlier
   AND {{host_segment}}
   AND {{is_active_last_12m}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']];
 ```
 
 ### 5.3 KPI - Avg Reviews in View
@@ -1138,7 +1139,7 @@ Expected: `23.45` unfiltered.
 
 ```sql
 SELECT AVG(review_count) AS avg_reviews
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -1147,7 +1148,6 @@ WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_active_last_12m}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']];
 ```
 
 ### 5.4 KPI - Active Listings in View
@@ -1157,7 +1157,7 @@ omitted: this card is defined by active status.
 
 ```sql
 SELECT COUNT(*) AS active_listings
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE is_active_last_12m = TRUE
   AND {{room_type}}
   AND {{price_band}}
@@ -1165,7 +1165,6 @@ WHERE is_active_last_12m = TRUE
   AND {{is_superhost}}
   AND {{host_segment}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']];
 ```
 
 ### 5.5 KPI - Zero-review Listings
@@ -1174,7 +1173,7 @@ Expected: `3,254` unfiltered.
 
 ```sql
 SELECT COUNT(*) AS zero_review_listings
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE review_count = 0
   AND {{room_type}}
   AND {{price_band}}
@@ -1183,7 +1182,6 @@ WHERE review_count = 0
   AND {{host_segment}}
   AND {{is_active_last_12m}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']];
 ```
 
 ### 5.6 Chart - Price vs Review Count
@@ -1195,7 +1193,7 @@ fixed to keep the point count around `6,050`.
 SELECT
     price,
     review_count
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE NOT is_price_outlier
   AND is_active_last_12m = TRUE
   AND {{room_type}}
@@ -1204,7 +1202,6 @@ WHERE NOT is_price_outlier
   AND {{is_superhost}}
   AND {{host_segment}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']];
 ```
 
 ### 5.7 Chart - Listings by Room Type
@@ -1216,7 +1213,7 @@ Hotel room `165`.
 SELECT
     room_type,
     COUNT(*) AS listings
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -1225,7 +1222,6 @@ WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_active_last_12m}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']]
 GROUP BY room_type
 ORDER BY listings DESC;
 ```
@@ -1239,7 +1235,7 @@ Expected: `<30` `2,509`; `30-49` `4,849`; `50-74` `4,319`; `75-99` `2,551`;
 SELECT
     price_band,
     COUNT(*) AS listings
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -1248,7 +1244,6 @@ WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_active_last_12m}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']]
 GROUP BY price_band
 ORDER BY CASE price_band
     WHEN '<30' THEN 1
@@ -1267,7 +1262,7 @@ Visualization: Histogram on `review_count`.
 
 ```sql
 SELECT review_count
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -1276,7 +1271,6 @@ WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_active_last_12m}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']];
 ```
 
 ### 5.10 Chart - Active Listings by Host Segment
@@ -1288,14 +1282,13 @@ Large professional `396`; Enterprise `261`.
 SELECT
     host_segment,
     COUNT(*) AS active_listings
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE is_active_last_12m = TRUE
   AND {{room_type}}
   AND {{price_band}}
   AND {{minimum_nights_band}}
   AND {{is_superhost}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']]
 GROUP BY host_segment
 ORDER BY active_listings DESC;
 ```
@@ -1308,7 +1301,7 @@ Expected: `1` `4,045`; `2-6` `10,027`; `7-29` `2,078`; `30+` `1,349`.
 SELECT
     minimum_nights_band,
     COUNT(*) AS listings
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -1317,7 +1310,6 @@ WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_active_last_12m}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']]
 GROUP BY minimum_nights_band
 ORDER BY CASE minimum_nights_band
     WHEN '1' THEN 1
@@ -1349,7 +1341,7 @@ SELECT
     last_review_date,
     is_active_last_12m,
     days_since_last_review
-FROM analytics.mart_listing_performance
+FROM analytics.mart_listing_performance AS mart_listing_performance
 WHERE 1 = 1
   AND {{room_type}}
   AND {{price_band}}
@@ -1358,7 +1350,6 @@ WHERE 1 = 1
   AND {{host_segment}}
   AND {{is_active_last_12m}}
   AND {{price}}
-  [[AND LOWER(listing_name) LIKE '%' || LOWER({{listing_name}}) || '%']]
 ORDER BY review_count DESC
 LIMIT 200;
 ```
@@ -1440,11 +1431,11 @@ in the card section.
 
 ### SQL sanity checks
 
-Run the same queries directly in psql by removing the `{{...}}` and `[[...]]`
-filter lines. For example:
+Run the same queries in BigQuery by removing the `{{...}}` filter lines. For
+example:
 
 ```powershell
-docker compose exec postgres psql -U postgres -d airbnb -c "SELECT COUNT(*) FROM analytics.mart_listing_performance;"
+bq query --use_legacy_sql=false "SELECT COUNT(*) FROM ``orbital-scene-422012-h0.analytics.mart_listing_performance``"
 ```
 
 Expected: `17499`.
@@ -1452,7 +1443,7 @@ Expected: `17499`.
 For a filtered check:
 
 ```powershell
-docker compose exec postgres psql -U postgres -d airbnb -c "SELECT COUNT(*) FROM analytics.dim_listings WHERE room_type = 'Entire home/apt';"
+bq query --use_legacy_sql=false "SELECT COUNT(*) FROM ``orbital-scene-422012-h0.analytics.dim_listings`` WHERE room_type = 'Entire home/apt'"
 ```
 
 Expected: `9890`.
@@ -1462,8 +1453,9 @@ Expected: `9890`.
 ## Notes and limits
 
 1. **Native SQL cards do not inherit dashboard filters automatically.** Every
-   filter needs a template tag and a mapping. Query-builder cards are still the
-   better choice for simple counts and averages.
+   filter needs a template tag and a mapping. On BigQuery each card must also
+   alias its table and set the tag's full `table.column` alias; otherwise the
+   driver emits an invalid backticked dataset path.
 2. **Fixed KPI cards** (median price, positive/negative share) have no
    variables and will not respond to dashboard filters. That is intentional.
 3. **Aggregated marts are narrower than the base tables.** `mart_price_bands`
@@ -1473,7 +1465,7 @@ Expected: `9890`.
    sentiment filters. Use `fct_reviews` or the joined review model for those.
 5. **The price band and minimum-night `CASE` sorts** keep the bars in logical
    order. Do not remove them; alphabetical sorting puts `100-149` before
-   `30-49`.
+   `30-49` in some databases.
 6. **The 2021-11 month is partial.** Supply marts include it; review data ends
    in 2021-10. The fixed `<= DATE '2021-10-01'` clauses protect review trends.
 7. **Relative date filters are evaluated against today.** Always use absolute

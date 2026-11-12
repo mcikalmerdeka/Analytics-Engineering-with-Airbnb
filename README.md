@@ -24,15 +24,43 @@ This project showcases the end-to-end process of building a data analytics pipel
 3. **Workflow Orchestration**: Using Dagster to orchestrate the data pipeline
 4. **Data Visualization**: Creating dashboards with Metabase
 
+## Two versions
+
+| | Postgres Version | BigQuery Version |
+| --- | --- | --- |
+| Warehouse | PostgreSQL 17 in Docker (`airbnb` database) | Google BigQuery (`orbital-scene-422012-h0`) |
+| dbt adapter | `dbt-postgres` | `dbt-bigquery` |
+| Local Docker | Postgres + Metabase + pgAdmin | Postgres app DB + Metabase + pgAdmin |
+| Runbook | [`Postgres Version/docs/RUNBOOK.md`](Postgres%20Version/docs/RUNBOOK.md) | [`BigQuery Version/docs/RUNBOOK.md`](BigQuery%20Version/docs/RUNBOOK.md) |
+
+Both versions keep the same dbt model names, grains, tests, seeds, snapshots,
+Dagster asset graph, and Metabase dashboards. The BigQuery version moves all
+analytics data into four datasets (`raw`, `staging`, `analytics`, `snapshots`)
+and keeps local PostgreSQL only as the Metabase application database.
+
 ## Technology Stack
 
-- **Database**: PostgreSQL (running locally through Docker)
+- **Warehouse**: BigQuery (`BigQuery Version/`) or PostgreSQL (`Postgres Version/`)
 - **Transformation**: dbt (data build tool)
 - **Orchestration**: Dagster
 - **Visualization**: Metabase
-- **Infrastructure**: Docker for containerization
+- **Infrastructure**: Docker for the local Metabase stack and pgAdmin
 
 ## Project Structure
+
+```
+BigQuery Version/
+├── pyproject.toml                # uv workspace + dbt-bigquery
+├── profiles.yml                  # dbt-bigquery connection (gitignored)
+├── compose.yaml                  # Metabase app DB + Metabase + pgAdmin
+├── docker/init/                  # Creates only the metabase application database
+├── data/raw/                     # Raw CSVs (gitignored; loaded with bq load)
+├── airbnb_dbt/                   # BigQuery dbt project
+├── airbnb_dagster_project/       # Dagster orchestration
+├── metabase/                     # definitions, filters, export, backups
+├── scripts/                      # provisioning, loading, validation, Metabase
+└── sql/                          # BigQuery data checks
+```
 
 ```
 Postgres Version/

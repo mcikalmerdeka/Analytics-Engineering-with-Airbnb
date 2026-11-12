@@ -1,14 +1,13 @@
 # Metabase Dashboard Filter Automation
 
-**Status:** applied on 2026-11-07 against Metabase `v0.64.3.5`;
+**Status:** applied on 2026-11-12 against Metabase `v0.64.3.5` and BigQuery;
 post-apply verification passed with 0 failures.
 
-**Verdict:** the 22 Field Filter dashboard filters on the four remaining
-dashboards are now created and mapped entirely through the Metabase API. No
-manual UI mapping was required. The only work that cannot be done purely by
-adding dashboard parameters is the two text-search filters (`Host name`,
-`Listing name`), because their target cards do not yet contain a text template
-tag.
+**Verdict:** the 23 Field Filter dashboard filters on all five dashboards are
+created and mapped entirely through the Metabase API. No manual UI mapping was
+required. The only work that cannot be done purely by adding dashboard
+parameters is the two text-search filters (`Host name`, `Listing name`),
+because their target cards do not yet contain a text template tag.
 
 ---
 
@@ -16,10 +15,10 @@ tag.
 
 | Layer | Implementation |
 | --- | --- |
-| Warehouse | PostgreSQL 17 in Docker (host port `5433`, database `airbnb`) |
-| Transformation | dbt Core 1.12 / dbt-postgres 1.11; staging → intermediate → analytics marts |
+| Warehouse | Google BigQuery `orbital-scene-422012-h0`, datasets `raw`/`staging`/`analytics`/`snapshots` |
+| Transformation | dbt Core 1.12 / dbt-bigquery 1.12; staging → intermediate → analytics marts |
 | Orchestration | Dagster 1.13 at port `3001`; one `@dbt_assets` asset runs `dbt build` |
-| BI | Metabase OSS `v0.64.3.5`, app DB stored in PostgreSQL (`metabase` database) |
+| BI | Metabase OSS `v0.64.3.5`, app DB stored in local PostgreSQL (`metabase` database) |
 | Analytics models | 3 staging views, 3 intermediate views, 12 analytics relations (dims, facts, marts) |
 | Metabase content | root collection `Airbnb Analytics` → 5 subcollections → 66 saved questions → 5 dashboards |
 | Persistence | `metabase/definitions.json` (seed input), `metabase/export/` (JSON snapshot), `metabase/backups/*.dump` (exact restore) |
@@ -27,8 +26,10 @@ tag.
 Everything relevant to filtering is already in place:
 
 - Every question is native SQL with Field Filter template tags.
+- Every card aliases its BigQuery table and each tag stores the full
+  `table.column` alias, which is required by the BigQuery driver.
 - Every card's `parameters` array mirrors its tags.
-- Every tag is bound to a numeric Metabase field ID.
+- Every tag is bound to a numeric Metabase field ID resolved from live metadata.
 - Dashboard/card IDs are stable and documented.
 
 ---
@@ -39,19 +40,18 @@ Live API audit after the apply (`GET /api/dashboard/{id}`):
 
 | # | Dashboard | Cards | Dashboard filters | Mapped cards |
 | ---: | --- | ---: | --- | ---: |
-| 1 | Executive Overview | 14 | `Date` (`date/all-options`) | 6 |
+| 1 | Executive Overview | 14 | `Month range` (`date/all-options`) | 6 |
 | 2 | Supply and Pricing | 13 | 5 | 38 |
 | 3 | Guest Experience | 14 | 6 | 33 |
 | 4 | Host Portfolio | 13 | 4 | 32 |
 | 5 | Listing Explorer | 12 | 7 | 80 |
 
 The Executive filter is mapped to the six `month_start` trend cards. KPIs and
-all-time mix cards intentionally have no date variable. It was not changed.
+all-time mix cards intentionally have no date variable.
 
-All tags on the four remaining dashboards already exist. The tags, mapped
-fields, and widget types match `docs/METABASE_SQL_WITH_FILTERS.md`. In other
-words, the cards are filter-ready; only the dashboard-level parameters and
-their `parameter_mappings` are missing.
+All tags on all five dashboards exist. The tags, mapped fields, and widget types
+match `docs/METABASE_SQL_WITH_FILTERS.md`. The dashboard-level parameters and
+their `parameter_mappings` are created by the filter script.
 
 ---
 
@@ -196,8 +196,8 @@ to one bar, which is expected.
 
 | Scope | Filters | Mappings |
 | --- | ---: | ---: |
-| Four dashboards, Field Filters only | 22 | 183 |
-| Plus text search (after card edits) | 24 | 185 |
+| Five dashboards, Field Filters only | 23 | 189 |
+| Plus text search (after card edits) | 25 | 191 |
 
 ---
 
@@ -225,7 +225,7 @@ The seeder deliberately omitted text-search variables. To add them:
 
 This is automatable, but it edits saved questions (`PUT /api/card/{id}`), so it
 carries more risk than adding dashboard parameters. Recommendation: ship the
-22 Field Filters first, then decide on the two text filters as a separate
+23 Field Filters first, then decide on the two text filters as a separate
 change.
 
 ---
@@ -233,7 +233,7 @@ change.
 ## 6. Implementation design
 
 The implementation is `scripts/add_dashboard_filters.py`. It does not modify the
-existing seeder and only touches the four dashboards listed above:
+existing seeder and only touches the five dashboards listed above:
 
 1. Load `.env`; use `127.0.0.1`.
 2. Discover each dashboard by name inside its collection.
@@ -289,7 +289,7 @@ Suggested mapping:
 - Existing mappings for other filters are preserved.
 - Existing dashcards keep their IDs, positions, visualization settings, and
   inline parameters.
-- The Executive Overview is not touched.
+- Executive Overview filters are managed like every other dashboard.
 - Re-running after a manual edit keeps manual parameters that the script does
   not manage.
 
@@ -327,7 +327,7 @@ Suggested mapping:
 - [x] Guest: 6 filters, 33 mappings; topic cards only accept month and topic.
 - [x] Host: 4 core filters, 32 mappings; 4.9 accepts only the date filter.
 - [x] Listing: 7 core filters, 80 mappings; 5.10 has no host-segment filter.
-- [x] Executive remains at 1 filter and 6 mappings.
+- [x] Executive: 1 filter and 6 mappings.
 - [x] Every representative filter returns rows and every baseline still runs.
 - [x] `KPI - Total Listings` (Supply) returns 17,499 unfiltered, 7,233 for
   `Private room`, and 2,738 for superhost.
