@@ -15,7 +15,7 @@
           "name": "KPI - Total Listings",
           "description": "Count of listings in the 2021-11-19 Airbnb Berlin snapshot. One row per listing; use this as the denominator for listing-level shares.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS total_listings\nFROM analytics.dim_listings;",
+          "sql": "SELECT COUNT(*) AS total_listings\nFROM analytics.dim_listings AS dim_listings;",
           "source": "dim_listings",
           "tags": [],
           "visualization_settings": {}
@@ -25,7 +25,7 @@
           "name": "KPI - Total Hosts",
           "description": "Count of host profiles in the snapshot. One row per host; hosts with no listings are retained.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS total_hosts\nFROM analytics.dim_hosts;",
+          "sql": "SELECT COUNT(*) AS total_hosts\nFROM analytics.dim_hosts AS dim_hosts;",
           "source": "dim_hosts",
           "tags": [],
           "visualization_settings": {}
@@ -35,7 +35,7 @@
           "name": "KPI - Total Reviews",
           "description": "Count of distinct reviews in the review fact. One row per review; duplicate reviews are removed upstream.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS total_reviews\nFROM analytics.fct_reviews;",
+          "sql": "SELECT COUNT(*) AS total_reviews\nFROM analytics.fct_reviews AS fct_reviews;",
           "source": "fct_reviews",
           "tags": [],
           "visualization_settings": {}
@@ -45,7 +45,7 @@
           "name": "KPI - Active Listings (12m)",
           "description": "Listings with at least one review in the trailing 12 months ending 2021-11-19. One row per listing; this is not a review count.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS active_listings\nFROM analytics.mart_listing_performance\nWHERE is_active_last_12m = TRUE;",
+          "sql": "SELECT COUNT(*) AS active_listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE is_active_last_12m = TRUE;",
           "source": "mart_listing_performance",
           "tags": [],
           "visualization_settings": {}
@@ -55,7 +55,7 @@
           "name": "KPI - Avg Nightly Price",
           "description": "Average source nightly price across listings, excluding zero-price and p99.5 outliers. One row per listing; the source currency is not normalized.",
           "display": "scalar",
-          "sql": "SELECT AVG(price) AS avg_nightly_price\nFROM analytics.dim_listings\nWHERE NOT is_price_outlier;",
+          "sql": "SELECT AVG(price) AS avg_nightly_price\nFROM analytics.dim_listings AS dim_listings\nWHERE NOT is_price_outlier;",
           "source": "dim_listings",
           "tags": [],
           "visualization_settings": {}
@@ -65,14 +65,15 @@
           "name": "Chart - Supply and Host Growth",
           "description": "Monthly cumulative listing and host counts from the dbt month spine. One row per month; values are cumulative, not new additions.",
           "display": "line",
-          "sql": "SELECT\n    month_start,\n    'Cumulative listings' AS metric,\n    CAST(cumulative_listings AS FLOAT64) AS value\nFROM analytics.mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nUNION ALL\n\nSELECT\n    month_start,\n    'Cumulative hosts' AS metric,\n    CAST(cumulative_hosts AS FLOAT64) AS value\nFROM analytics.mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nORDER BY month_start, metric;",
+          "sql": "SELECT\n    month_start,\n    'Cumulative listings' AS metric,\n    CAST(cumulative_listings AS FLOAT64) AS value\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nUNION ALL\n\nSELECT\n    month_start,\n    'Cumulative hosts' AS metric,\n    CAST(cumulative_hosts AS FLOAT64) AS value\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nORDER BY month_start, metric;",
           "source": "mart_executive_kpis",
           "tags": [
             {
               "name": "month_start",
               "widget_type": "date/all-options",
               "display_name": "Month Start",
-              "field": "analytics.mart_executive_kpis.month_start"
+              "field": "analytics.mart_executive_kpis.month_start",
+              "alias": "mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -91,14 +92,15 @@
           "name": "Chart - New Listings per Month",
           "description": "Listings created in each month, through 2021-10 to exclude the partial snapshot month. One row per month.",
           "display": "bar",
-          "sql": "SELECT\n    month_start,\n    new_listings\nFROM analytics.mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
+          "sql": "SELECT\n    month_start,\n    new_listings\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
           "source": "mart_executive_kpis",
           "tags": [
             {
               "name": "month_start",
               "widget_type": "date/all-options",
               "display_name": "Month Start",
-              "field": "analytics.mart_executive_kpis.month_start"
+              "field": "analytics.mart_executive_kpis.month_start",
+              "alias": "mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -115,14 +117,15 @@
           "name": "Chart - Monthly Reviews",
           "description": "Reviews submitted per month through 2021-10. One row per month; early months have few or zero reviews.",
           "display": "line",
-          "sql": "SELECT\n    month_start,\n    reviews\nFROM analytics.mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
+          "sql": "SELECT\n    month_start,\n    reviews\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
           "source": "mart_executive_kpis",
           "tags": [
             {
               "name": "month_start",
               "widget_type": "date/all-options",
               "display_name": "Month Start",
-              "field": "analytics.mart_executive_kpis.month_start"
+              "field": "analytics.mart_executive_kpis.month_start",
+              "alias": "mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -140,7 +143,7 @@
           "name": "Chart - Room Type Mix",
           "description": "Listings by standardized room type in the current snapshot. One row per room type.",
           "display": "pie",
-          "sql": "SELECT\n    room_type,\n    COUNT(*) AS listings\nFROM analytics.dim_listings\nGROUP BY room_type\nORDER BY listings DESC;",
+          "sql": "SELECT\n    room_type,\n    COUNT(*) AS listings\nFROM analytics.dim_listings AS dim_listings\nGROUP BY room_type\nORDER BY listings DESC;",
           "source": "dim_listings",
           "tags": [],
           "visualization_settings": {
@@ -153,7 +156,7 @@
           "name": "Chart - Sentiment Mix",
           "description": "Reviews by source sentiment category. One row per review; unknown means the source did not provide a sentiment.",
           "display": "pie",
-          "sql": "SELECT\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews\nGROUP BY review_sentiment\nORDER BY reviews DESC;",
+          "sql": "SELECT\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nGROUP BY review_sentiment\nORDER BY reviews DESC;",
           "source": "fct_reviews",
           "tags": [],
           "visualization_settings": {
@@ -166,14 +169,15 @@
           "name": "Chart - Avg Sentiment Trend",
           "description": "Monthly mean sentiment score (positive=1, neutral=0, negative=-1) through 2021-10. One row per month; unknown reviews are excluded from the mean.",
           "display": "line",
-          "sql": "SELECT\n    month_start,\n    avg_sentiment\nFROM analytics.mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
+          "sql": "SELECT\n    month_start,\n    avg_sentiment\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
           "source": "mart_executive_kpis",
           "tags": [
             {
               "name": "month_start",
               "widget_type": "date/all-options",
               "display_name": "Month Start",
-              "field": "analytics.mart_executive_kpis.month_start"
+              "field": "analytics.mart_executive_kpis.month_start",
+              "alias": "mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -191,14 +195,15 @@
           "name": "Chart - Superhost Share Trend",
           "description": "Share of cumulative listings whose host is a superhost, by month through 2021-10. One row per month.",
           "display": "line",
-          "sql": "SELECT\n    month_start,\n    superhost_share\nFROM analytics.mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
+          "sql": "SELECT\n    month_start,\n    superhost_share\nFROM analytics.mart_executive_kpis AS mart_executive_kpis\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start;",
           "source": "mart_executive_kpis",
           "tags": [
             {
               "name": "month_start",
               "widget_type": "date/all-options",
               "display_name": "Month Start",
-              "field": "analytics.mart_executive_kpis.month_start"
+              "field": "analytics.mart_executive_kpis.month_start",
+              "alias": "mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -216,14 +221,15 @@
           "name": "Chart - Review Volume by Room Type",
           "description": "Monthly reviews by listing room type through 2021-10. One row per month and room type; each review belongs to one room type.",
           "display": "line",
-          "sql": "SELECT\n    month_start,\n    room_type,\n    reviews\nFROM analytics.mart_market_monthly\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start, room_type;",
+          "sql": "SELECT\n    month_start,\n    room_type,\n    reviews\nFROM analytics.mart_market_monthly AS mart_market_monthly\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start, room_type;",
           "source": "mart_market_monthly",
           "tags": [
             {
               "name": "month_start",
               "widget_type": "date/all-options",
               "display_name": "Month Start",
-              "field": "analytics.mart_market_monthly.month_start"
+              "field": "analytics.mart_market_monthly.month_start",
+              "alias": "mart_market_monthly.month_start"
             }
           ],
           "visualization_settings": {
@@ -242,7 +248,7 @@
           "name": "Chart - Listing Age Cohorts",
           "description": "Listings by age cohort as of 2021-11-19. One row per listing; cohorts are derived from listing creation date.",
           "display": "bar",
-          "sql": "SELECT\n    listing_age_cohort,\n    COUNT(*) AS listings\nFROM analytics.dim_listings\nGROUP BY listing_age_cohort\nORDER BY listings DESC;",
+          "sql": "SELECT\n    listing_age_cohort,\n    COUNT(*) AS listings\nFROM analytics.dim_listings AS dim_listings\nGROUP BY listing_age_cohort\nORDER BY listings DESC;",
           "source": "dim_listings",
           "tags": [],
           "visualization_settings": {
@@ -269,38 +275,43 @@
           "name": "KPI - Total Listings",
           "description": "Count of listings matching the selected Supply filters. One row per listing; use this as the denominator for supply shares on this dashboard.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS total_listings\nFROM analytics.dim_listings\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}};",
+          "sql": "SELECT COUNT(*) AS total_listings\nFROM analytics.dim_listings AS dim_listings\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}};",
           "source": "dim_listings",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.dim_listings.room_type"
+              "field": "analytics.dim_listings.room_type",
+              "alias": "dim_listings.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.dim_listings.price_band"
+              "field": "analytics.dim_listings.price_band",
+              "alias": "dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.dim_listings.minimum_nights_band"
+              "field": "analytics.dim_listings.minimum_nights_band",
+              "alias": "dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.dim_listings.is_superhost"
+              "field": "analytics.dim_listings.is_superhost",
+              "alias": "dim_listings.is_superhost"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.dim_listings.price"
+              "field": "analytics.dim_listings.price",
+              "alias": "dim_listings.price"
             }
           ],
           "visualization_settings": {}
@@ -310,7 +321,7 @@
           "name": "KPI - Median Nightly Price",
           "description": "Median source nightly price across non-outlier listings. One row per listing; robust to extreme prices. Fixed card, not filtered by the dashboard.",
           "display": "scalar",
-          "sql": "SELECT\n    MAX(median_price) AS median_price\nFROM (\n    SELECT\n        PERCENTILE_CONT(price, 0.5) OVER () AS median_price\n    FROM analytics.dim_listings\nWHERE NOT is_price_outlier\n);",
+          "sql": "SELECT\n    MAX(median_price) AS median_price\nFROM (\n    SELECT\n        PERCENTILE_CONT(price, 0.5) OVER () AS median_price\n    FROM analytics.dim_listings AS dim_listings\nWHERE NOT is_price_outlier\n);",
           "source": "dim_listings",
           "tags": [],
           "visualization_settings": {}
@@ -320,38 +331,43 @@
           "name": "KPI - Avg Nightly Price (excl. outliers)",
           "description": "Mean source nightly price across non-outlier listings matching the selected filters. One row per listing; sensitive to high prices.",
           "display": "scalar",
-          "sql": "SELECT AVG(price) AS avg_nightly_price\nFROM analytics.dim_listings\nWHERE NOT is_price_outlier\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}};",
+          "sql": "SELECT AVG(price) AS avg_nightly_price\nFROM analytics.dim_listings AS dim_listings\nWHERE NOT is_price_outlier\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}};",
           "source": "dim_listings",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.dim_listings.room_type"
+              "field": "analytics.dim_listings.room_type",
+              "alias": "dim_listings.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.dim_listings.price_band"
+              "field": "analytics.dim_listings.price_band",
+              "alias": "dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.dim_listings.minimum_nights_band"
+              "field": "analytics.dim_listings.minimum_nights_band",
+              "alias": "dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.dim_listings.is_superhost"
+              "field": "analytics.dim_listings.is_superhost",
+              "alias": "dim_listings.is_superhost"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.dim_listings.price"
+              "field": "analytics.dim_listings.price",
+              "alias": "dim_listings.price"
             }
           ],
           "visualization_settings": {}
@@ -361,38 +377,43 @@
           "name": "KPI - Outlier Listings",
           "description": "Listings flagged as zero-price or above the p99.5 price for their room type. One row per listing; outliers stay in the data and are excluded from price averages.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS outlier_listings\nFROM analytics.dim_listings\nWHERE is_price_outlier = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}};",
+          "sql": "SELECT COUNT(*) AS outlier_listings\nFROM analytics.dim_listings AS dim_listings\nWHERE is_price_outlier = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}};",
           "source": "dim_listings",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.dim_listings.room_type"
+              "field": "analytics.dim_listings.room_type",
+              "alias": "dim_listings.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.dim_listings.price_band"
+              "field": "analytics.dim_listings.price_band",
+              "alias": "dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.dim_listings.minimum_nights_band"
+              "field": "analytics.dim_listings.minimum_nights_band",
+              "alias": "dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.dim_listings.is_superhost"
+              "field": "analytics.dim_listings.is_superhost",
+              "alias": "dim_listings.is_superhost"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.dim_listings.price"
+              "field": "analytics.dim_listings.price",
+              "alias": "dim_listings.price"
             }
           ],
           "visualization_settings": {}
@@ -402,32 +423,36 @@
           "name": "KPI - Superhost Listings",
           "description": "Listings whose host is a superhost. One row per listing; 15 hosts have unknown superhost status and are excluded from the true-filter count.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS superhost_listings\nFROM analytics.dim_listings\nWHERE is_superhost = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{price}};",
+          "sql": "SELECT COUNT(*) AS superhost_listings\nFROM analytics.dim_listings AS dim_listings\nWHERE is_superhost = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{price}};",
           "source": "dim_listings",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.dim_listings.room_type"
+              "field": "analytics.dim_listings.room_type",
+              "alias": "dim_listings.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.dim_listings.price_band"
+              "field": "analytics.dim_listings.price_band",
+              "alias": "dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.dim_listings.minimum_nights_band"
+              "field": "analytics.dim_listings.minimum_nights_band",
+              "alias": "dim_listings.minimum_nights_band"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.dim_listings.price"
+              "field": "analytics.dim_listings.price",
+              "alias": "dim_listings.price"
             }
           ],
           "visualization_settings": {}
@@ -437,38 +462,43 @@
           "name": "Chart - Listings by Price Band",
           "description": "Listings by derived price band, in band order. One row per listing; the chart collapses to one bar when the Price band filter is applied.",
           "display": "bar",
-          "sql": "SELECT\n    price_band,\n    COUNT(*) AS listings\nFROM analytics.dim_listings\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
+          "sql": "SELECT\n    price_band,\n    COUNT(*) AS listings\nFROM analytics.dim_listings AS dim_listings\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
           "source": "dim_listings",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.dim_listings.room_type"
+              "field": "analytics.dim_listings.room_type",
+              "alias": "dim_listings.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.dim_listings.price_band"
+              "field": "analytics.dim_listings.price_band",
+              "alias": "dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.dim_listings.minimum_nights_band"
+              "field": "analytics.dim_listings.minimum_nights_band",
+              "alias": "dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.dim_listings.is_superhost"
+              "field": "analytics.dim_listings.is_superhost",
+              "alias": "dim_listings.is_superhost"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.dim_listings.price"
+              "field": "analytics.dim_listings.price",
+              "alias": "dim_listings.price"
             }
           ],
           "visualization_settings": {
@@ -485,20 +515,22 @@
           "name": "Chart - Price Band by Room Type",
           "description": "Listings by price band and room type. One row per price band and room type; the spine is zero-filled, so all 28 combinations exist.",
           "display": "bar",
-          "sql": "SELECT\n    price_band,\n    room_type,\n    SUM(listing_count) AS listings\nFROM analytics.mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band, room_type\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND, room_type;",
+          "sql": "SELECT\n    price_band,\n    room_type,\n    SUM(listing_count) AS listings\nFROM analytics.mart_price_bands AS mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band, room_type\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND, room_type;",
           "source": "mart_price_bands",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_price_bands.room_type"
+              "field": "analytics.mart_price_bands.room_type",
+              "alias": "mart_price_bands.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_price_bands.price_band"
+              "field": "analytics.mart_price_bands.price_band",
+              "alias": "mart_price_bands.price_band"
             }
           ],
           "visualization_settings": {
@@ -516,14 +548,15 @@
           "name": "Chart - Room Type Price Benchmark",
           "description": "Median and p90 source nightly price by room type, excluding outliers. One row per room type; p90 shows the high-price tail.",
           "display": "bar",
-          "sql": "SELECT\n    room_type,\n    'Median price' AS metric,\n    CAST(median_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nUNION ALL\n\nSELECT\n    room_type,\n    'P90 price' AS metric,\n    CAST(p90_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nORDER BY room_type, metric;",
+          "sql": "SELECT\n    room_type,\n    'Median price' AS metric,\n    CAST(median_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nUNION ALL\n\nSELECT\n    room_type,\n    'P90 price' AS metric,\n    CAST(p90_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nORDER BY room_type, metric;",
           "source": "mart_room_type_benchmark",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_room_type_benchmark.room_type"
+              "field": "analytics.mart_room_type_benchmark.room_type",
+              "alias": "mart_room_type_benchmark.room_type"
             }
           ],
           "visualization_settings": {
@@ -541,14 +574,15 @@
           "name": "Chart - Supply Share by Room Type",
           "description": "Share of the 17,499-listing snapshot by room type. One row per room type; shares sum to 100%.",
           "display": "pie",
-          "sql": "SELECT\n    room_type,\n    listing_count\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\nORDER BY listing_count DESC;",
+          "sql": "SELECT\n    room_type,\n    listing_count\nFROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\nORDER BY listing_count DESC;",
           "source": "mart_room_type_benchmark",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_room_type_benchmark.room_type"
+              "field": "analytics.mart_room_type_benchmark.room_type",
+              "alias": "mart_room_type_benchmark.room_type"
             }
           ],
           "visualization_settings": {
@@ -561,38 +595,43 @@
           "name": "Chart - Minimum Nights Distribution",
           "description": "Listings by minimum-night band. One row per listing; zero minimum nights are normalized to one upstream.",
           "display": "bar",
-          "sql": "SELECT\n    minimum_nights_band,\n    COUNT(*) AS listings\nFROM analytics.dim_listings\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}}\nGROUP BY minimum_nights_band\nORDER BY CASE minimum_nights_band\n    WHEN '1' THEN 1\n    WHEN '2-6' THEN 2\n    WHEN '7-29' THEN 3\n    ELSE 4\nEND;",
+          "sql": "SELECT\n    minimum_nights_band,\n    COUNT(*) AS listings\nFROM analytics.dim_listings AS dim_listings\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}}\nGROUP BY minimum_nights_band\nORDER BY CASE minimum_nights_band\n    WHEN '1' THEN 1\n    WHEN '2-6' THEN 2\n    WHEN '7-29' THEN 3\n    ELSE 4\nEND;",
           "source": "dim_listings",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.dim_listings.room_type"
+              "field": "analytics.dim_listings.room_type",
+              "alias": "dim_listings.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.dim_listings.price_band"
+              "field": "analytics.dim_listings.price_band",
+              "alias": "dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.dim_listings.minimum_nights_band"
+              "field": "analytics.dim_listings.minimum_nights_band",
+              "alias": "dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.dim_listings.is_superhost"
+              "field": "analytics.dim_listings.is_superhost",
+              "alias": "dim_listings.is_superhost"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.dim_listings.price"
+              "field": "analytics.dim_listings.price",
+              "alias": "dim_listings.price"
             }
           ],
           "visualization_settings": {
@@ -609,20 +648,22 @@
           "name": "Chart - Active Share by Price Band",
           "description": "Unweighted average of room-type active shares within each price band. One row per price band; active means a review in the trailing 12 months.",
           "display": "bar",
-          "sql": "SELECT\n    price_band,\n    AVG(pct_active) AS active_share\nFROM analytics.mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
+          "sql": "SELECT\n    price_band,\n    AVG(pct_active) AS active_share\nFROM analytics.mart_price_bands AS mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
           "source": "mart_price_bands",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_price_bands.room_type"
+              "field": "analytics.mart_price_bands.room_type",
+              "alias": "mart_price_bands.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_price_bands.price_band"
+              "field": "analytics.mart_price_bands.price_band",
+              "alias": "mart_price_bands.price_band"
             }
           ],
           "visualization_settings": {
@@ -639,20 +680,22 @@
           "name": "Chart - Superhost Share by Price Band",
           "description": "Unweighted average of room-type superhost shares within each price band. One row per price band; not a listing-weighted share.",
           "display": "bar",
-          "sql": "SELECT\n    price_band,\n    AVG(pct_superhost) AS superhost_share\nFROM analytics.mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
+          "sql": "SELECT\n    price_band,\n    AVG(pct_superhost) AS superhost_share\nFROM analytics.mart_price_bands AS mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
           "source": "mart_price_bands",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_price_bands.room_type"
+              "field": "analytics.mart_price_bands.room_type",
+              "alias": "mart_price_bands.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_price_bands.price_band"
+              "field": "analytics.mart_price_bands.price_band",
+              "alias": "mart_price_bands.price_band"
             }
           ],
           "visualization_settings": {
@@ -669,14 +712,15 @@
           "name": "Table - Room Type Benchmark",
           "description": "One row per room type with supply share, price distribution, review volume, sentiment, superhost share, and active share.",
           "display": "table",
-          "sql": "SELECT\n    room_type,\n    listing_count,\n    share_of_supply,\n    avg_price,\n    median_price,\n    p90_price,\n    avg_reviews,\n    median_reviews,\n    avg_sentiment,\n    pct_superhost,\n    pct_active\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\nORDER BY listing_count DESC;",
+          "sql": "SELECT\n    room_type,\n    listing_count,\n    share_of_supply,\n    avg_price,\n    median_price,\n    p90_price,\n    avg_reviews,\n    median_reviews,\n    avg_sentiment,\n    pct_superhost,\n    pct_active\nFROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\nORDER BY listing_count DESC;",
           "source": "mart_room_type_benchmark",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_room_type_benchmark.room_type"
+              "field": "analytics.mart_room_type_benchmark.room_type",
+              "alias": "mart_room_type_benchmark.room_type"
             }
           ],
           "visualization_settings": {}
@@ -696,26 +740,29 @@
           "name": "KPI - Total Reviews",
           "description": "Count of distinct reviews matching the selected Guest filters. One row per review; duplicate reviews are removed upstream.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS total_reviews\nFROM analytics.fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
+          "sql": "SELECT COUNT(*) AS total_reviews\nFROM analytics.fct_reviews AS fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
           "source": "fct_reviews",
           "tags": [
             {
               "name": "review_date",
               "widget_type": "date/all-options",
               "display_name": "Review Date",
-              "field": "analytics.fct_reviews.review_date"
+              "field": "analytics.fct_reviews.review_date",
+              "alias": "fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
               "widget_type": "string/=",
               "display_name": "Review Sentiment",
-              "field": "analytics.fct_reviews.review_sentiment"
+              "field": "analytics.fct_reviews.review_sentiment",
+              "alias": "fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
               "widget_type": "boolean/=",
               "display_name": "Has Comment",
-              "field": "analytics.fct_reviews.has_comment"
+              "field": "analytics.fct_reviews.has_comment",
+              "alias": "fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {}
@@ -725,7 +772,7 @@
           "name": "KPI - Positive Review Share",
           "description": "Positive reviews divided by all reviews. One row per review; the denominator includes neutral, negative, and unknown sentiment. Fixed card.",
           "display": "scalar",
-          "sql": "SELECT\n    SAFE_DIVIDE(COUNTIF(review_sentiment = 'positive'), COUNT(*)) AS positive_share\nFROM analytics.fct_reviews;",
+          "sql": "SELECT\n    SAFE_DIVIDE(COUNTIF(review_sentiment = 'positive'), COUNT(*)) AS positive_share\nFROM analytics.fct_reviews AS fct_reviews;",
           "source": "fct_reviews",
           "tags": [],
           "visualization_settings": {}
@@ -735,7 +782,7 @@
           "name": "KPI - Negative Review Share",
           "description": "Negative reviews divided by all reviews. One row per review; the denominator includes positive, neutral, and unknown sentiment. Fixed card.",
           "display": "scalar",
-          "sql": "SELECT\n    SAFE_DIVIDE(COUNTIF(review_sentiment = 'negative'), COUNT(*)) AS negative_share\nFROM analytics.fct_reviews;",
+          "sql": "SELECT\n    SAFE_DIVIDE(COUNTIF(review_sentiment = 'negative'), COUNT(*)) AS negative_share\nFROM analytics.fct_reviews AS fct_reviews;",
           "source": "fct_reviews",
           "tags": [],
           "visualization_settings": {}
@@ -745,26 +792,29 @@
           "name": "KPI - Avg Sentiment Score",
           "description": "Mean sentiment score (positive=1, neutral=0, negative=-1) for the filtered reviews. One row per review; unknown reviews are excluded.",
           "display": "scalar",
-          "sql": "SELECT AVG(sentiment_score) AS avg_sentiment_score\nFROM analytics.fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
+          "sql": "SELECT AVG(sentiment_score) AS avg_sentiment_score\nFROM analytics.fct_reviews AS fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
           "source": "fct_reviews",
           "tags": [
             {
               "name": "review_date",
               "widget_type": "date/all-options",
               "display_name": "Review Date",
-              "field": "analytics.fct_reviews.review_date"
+              "field": "analytics.fct_reviews.review_date",
+              "alias": "fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
               "widget_type": "string/=",
               "display_name": "Review Sentiment",
-              "field": "analytics.fct_reviews.review_sentiment"
+              "field": "analytics.fct_reviews.review_sentiment",
+              "alias": "fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
               "widget_type": "boolean/=",
               "display_name": "Has Comment",
-              "field": "analytics.fct_reviews.has_comment"
+              "field": "analytics.fct_reviews.has_comment",
+              "alias": "fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {}
@@ -774,26 +824,29 @@
           "name": "KPI - Reviews in 2021",
           "description": "Reviews submitted in calendar year 2021 matching the selected filters. One row per review.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS reviews_2021\nFROM analytics.fct_reviews\nWHERE review_year = 2021\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
+          "sql": "SELECT COUNT(*) AS reviews_2021\nFROM analytics.fct_reviews AS fct_reviews\nWHERE review_year = 2021\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
           "source": "fct_reviews",
           "tags": [
             {
               "name": "review_date",
               "widget_type": "date/all-options",
               "display_name": "Review Date",
-              "field": "analytics.fct_reviews.review_date"
+              "field": "analytics.fct_reviews.review_date",
+              "alias": "fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
               "widget_type": "string/=",
               "display_name": "Review Sentiment",
-              "field": "analytics.fct_reviews.review_sentiment"
+              "field": "analytics.fct_reviews.review_sentiment",
+              "alias": "fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
               "widget_type": "boolean/=",
               "display_name": "Has Comment",
-              "field": "analytics.fct_reviews.has_comment"
+              "field": "analytics.fct_reviews.has_comment",
+              "alias": "fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {}
@@ -803,26 +856,29 @@
           "name": "Chart - Review Volume by Month",
           "description": "Reviews submitted per month through 2021-10. One row per month; 2021-11 is excluded because review data ends in October.",
           "display": "line",
-          "sql": "SELECT\n    review_month,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews\nWHERE review_month <= DATE '2021-10-01'\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_month\nORDER BY review_month;",
+          "sql": "SELECT\n    review_month,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nWHERE review_month <= DATE '2021-10-01'\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_month\nORDER BY review_month;",
           "source": "fct_reviews",
           "tags": [
             {
               "name": "review_date",
               "widget_type": "date/all-options",
               "display_name": "Review Date",
-              "field": "analytics.fct_reviews.review_date"
+              "field": "analytics.fct_reviews.review_date",
+              "alias": "fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
               "widget_type": "string/=",
               "display_name": "Review Sentiment",
-              "field": "analytics.fct_reviews.review_sentiment"
+              "field": "analytics.fct_reviews.review_sentiment",
+              "alias": "fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
               "widget_type": "boolean/=",
               "display_name": "Has Comment",
-              "field": "analytics.fct_reviews.has_comment"
+              "field": "analytics.fct_reviews.has_comment",
+              "alias": "fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {
@@ -840,26 +896,29 @@
           "name": "Chart - Sentiment Mix",
           "description": "Reviews by source sentiment category. One row per review; unknown means no source sentiment.",
           "display": "pie",
-          "sql": "SELECT\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_sentiment\nORDER BY reviews DESC;",
+          "sql": "SELECT\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_sentiment\nORDER BY reviews DESC;",
           "source": "fct_reviews",
           "tags": [
             {
               "name": "review_date",
               "widget_type": "date/all-options",
               "display_name": "Review Date",
-              "field": "analytics.fct_reviews.review_date"
+              "field": "analytics.fct_reviews.review_date",
+              "alias": "fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
               "widget_type": "string/=",
               "display_name": "Review Sentiment",
-              "field": "analytics.fct_reviews.review_sentiment"
+              "field": "analytics.fct_reviews.review_sentiment",
+              "alias": "fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
               "widget_type": "boolean/=",
               "display_name": "Has Comment",
-              "field": "analytics.fct_reviews.has_comment"
+              "field": "analytics.fct_reviews.has_comment",
+              "alias": "fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {
@@ -872,26 +931,29 @@
           "name": "Chart - Sentiment by Month",
           "description": "Reviews by month and sentiment category through 2021-10. One row per month and sentiment.",
           "display": "bar",
-          "sql": "SELECT\n    review_month,\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews\nWHERE review_month <= DATE '2021-10-01'\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_month, review_sentiment\nORDER BY review_month, review_sentiment;",
+          "sql": "SELECT\n    review_month,\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nWHERE review_month <= DATE '2021-10-01'\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_month, review_sentiment\nORDER BY review_month, review_sentiment;",
           "source": "fct_reviews",
           "tags": [
             {
               "name": "review_date",
               "widget_type": "date/all-options",
               "display_name": "Review Date",
-              "field": "analytics.fct_reviews.review_date"
+              "field": "analytics.fct_reviews.review_date",
+              "alias": "fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
               "widget_type": "string/=",
               "display_name": "Review Sentiment",
-              "field": "analytics.fct_reviews.review_sentiment"
+              "field": "analytics.fct_reviews.review_sentiment",
+              "alias": "fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
               "widget_type": "boolean/=",
               "display_name": "Has Comment",
-              "field": "analytics.fct_reviews.has_comment"
+              "field": "analytics.fct_reviews.has_comment",
+              "alias": "fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {
@@ -909,32 +971,36 @@
           "name": "Chart - Reviews by Room Type",
           "description": "Reviews grouped by the room type of the reviewed listing. One row per review; each review belongs to one listing and one room type.",
           "display": "bar",
-          "sql": "SELECT\n    dim_listings.room_type,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews\nINNER JOIN analytics.dim_listings\n    ON fct_reviews.listing_id = dim_listings.listing_id\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\n  AND {{room_type}}\nGROUP BY dim_listings.room_type\nORDER BY reviews DESC;",
+          "sql": "SELECT\n    dim_listings.room_type,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nINNER JOIN analytics.dim_listings AS dim_listings\n    ON fct_reviews.listing_id = dim_listings.listing_id\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\n  AND {{room_type}}\nGROUP BY dim_listings.room_type\nORDER BY reviews DESC;",
           "source": "fct_reviews",
           "tags": [
             {
               "name": "review_date",
               "widget_type": "date/all-options",
               "display_name": "Review Date",
-              "field": "analytics.fct_reviews.review_date"
+              "field": "analytics.fct_reviews.review_date",
+              "alias": "fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
               "widget_type": "string/=",
               "display_name": "Review Sentiment",
-              "field": "analytics.fct_reviews.review_sentiment"
+              "field": "analytics.fct_reviews.review_sentiment",
+              "alias": "fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
               "widget_type": "boolean/=",
               "display_name": "Has Comment",
-              "field": "analytics.fct_reviews.has_comment"
+              "field": "analytics.fct_reviews.has_comment",
+              "alias": "fct_reviews.has_comment"
             },
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.dim_listings.room_type"
+              "field": "analytics.dim_listings.room_type",
+              "alias": "dim_listings.room_type"
             }
           ],
           "visualization_settings": {
@@ -951,26 +1017,29 @@
           "name": "Chart - Review Length",
           "description": "Distribution of comment length in characters for reviews with comments. One row per review; reviews without comments are excluded.",
           "display": "bar",
-          "sql": "SELECT review_length\nFROM analytics.fct_reviews\nWHERE has_comment = TRUE\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
+          "sql": "SELECT review_length\nFROM analytics.fct_reviews AS fct_reviews\nWHERE has_comment = TRUE\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
           "source": "fct_reviews",
           "tags": [
             {
               "name": "review_date",
               "widget_type": "date/all-options",
               "display_name": "Review Date",
-              "field": "analytics.fct_reviews.review_date"
+              "field": "analytics.fct_reviews.review_date",
+              "alias": "fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
               "widget_type": "string/=",
               "display_name": "Review Sentiment",
-              "field": "analytics.fct_reviews.review_sentiment"
+              "field": "analytics.fct_reviews.review_sentiment",
+              "alias": "fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
               "widget_type": "boolean/=",
               "display_name": "Has Comment",
-              "field": "analytics.fct_reviews.has_comment"
+              "field": "analytics.fct_reviews.has_comment",
+              "alias": "fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {}
@@ -980,20 +1049,22 @@
           "name": "Chart - Topic Mentions",
           "description": "Keyword-topic mentions across review comments. One row per month and topic in the source; totals exceed the review count because one review can mention multiple topics.",
           "display": "bar",
-          "sql": "SELECT\n    topic,\n    SUM(mentions) AS mentions\nFROM analytics.mart_review_topics\nWHERE 1 = 1\n  AND {{review_month}}\n  AND {{topic}}\nGROUP BY topic\nORDER BY mentions DESC;",
+          "sql": "SELECT\n    topic,\n    SUM(mentions) AS mentions\nFROM analytics.mart_review_topics AS mart_review_topics\nWHERE 1 = 1\n  AND {{review_month}}\n  AND {{topic}}\nGROUP BY topic\nORDER BY mentions DESC;",
           "source": "mart_review_topics",
           "tags": [
             {
               "name": "review_month",
               "widget_type": "date/all-options",
               "display_name": "Review Month",
-              "field": "analytics.mart_review_topics.month_start"
+              "field": "analytics.mart_review_topics.month_start",
+              "alias": "mart_review_topics.month_start"
             },
             {
               "name": "topic",
               "widget_type": "string/=",
               "display_name": "Topic",
-              "field": "analytics.mart_review_topics.topic"
+              "field": "analytics.mart_review_topics.topic",
+              "alias": "mart_review_topics.topic"
             }
           ],
           "visualization_settings": {
@@ -1010,20 +1081,22 @@
           "name": "Chart - Topic Mention Rate Trend",
           "description": "Average monthly share of comment-bearing reviews that mention each topic, for the last 24 complete months. One row per month and topic; unweighted average of monthly rates.",
           "display": "line",
-          "sql": "SELECT\n    month_start,\n    topic,\n    AVG(mention_rate) AS avg_mention_rate\nFROM analytics.mart_review_topics\nWHERE month_start BETWEEN DATE '2019-11-01' AND DATE '2021-10-01'\n  AND {{review_month}}\n  AND {{topic}}\nGROUP BY month_start, topic\nORDER BY month_start, topic;",
+          "sql": "SELECT\n    month_start,\n    topic,\n    AVG(mention_rate) AS avg_mention_rate\nFROM analytics.mart_review_topics AS mart_review_topics\nWHERE month_start BETWEEN DATE '2019-11-01' AND DATE '2021-10-01'\n  AND {{review_month}}\n  AND {{topic}}\nGROUP BY month_start, topic\nORDER BY month_start, topic;",
           "source": "mart_review_topics",
           "tags": [
             {
               "name": "review_month",
               "widget_type": "date/all-options",
               "display_name": "Review Month",
-              "field": "analytics.mart_review_topics.month_start"
+              "field": "analytics.mart_review_topics.month_start",
+              "alias": "mart_review_topics.month_start"
             },
             {
               "name": "topic",
               "widget_type": "string/=",
               "display_name": "Topic",
-              "field": "analytics.mart_review_topics.topic"
+              "field": "analytics.mart_review_topics.topic",
+              "alias": "mart_review_topics.topic"
             }
           ],
           "visualization_settings": {
@@ -1042,20 +1115,22 @@
           "name": "Chart - Negative Mentions by Topic",
           "description": "Average share of topic mentions with negative sentiment, by topic. One row per month and topic rolled up; unweighted average across months.",
           "display": "bar",
-          "sql": "SELECT\n    topic,\n    AVG(pct_negative) AS avg_pct_negative\nFROM analytics.mart_review_topics\nWHERE 1 = 1\n  AND {{review_month}}\n  AND {{topic}}\nGROUP BY topic\nORDER BY avg_pct_negative DESC;",
+          "sql": "SELECT\n    topic,\n    AVG(pct_negative) AS avg_pct_negative\nFROM analytics.mart_review_topics AS mart_review_topics\nWHERE 1 = 1\n  AND {{review_month}}\n  AND {{topic}}\nGROUP BY topic\nORDER BY avg_pct_negative DESC;",
           "source": "mart_review_topics",
           "tags": [
             {
               "name": "review_month",
               "widget_type": "date/all-options",
               "display_name": "Review Month",
-              "field": "analytics.mart_review_topics.month_start"
+              "field": "analytics.mart_review_topics.month_start",
+              "alias": "mart_review_topics.month_start"
             },
             {
               "name": "topic",
               "widget_type": "string/=",
               "display_name": "Topic",
-              "field": "analytics.mart_review_topics.topic"
+              "field": "analytics.mart_review_topics.topic",
+              "alias": "mart_review_topics.topic"
             }
           ],
           "visualization_settings": {
@@ -1072,20 +1147,22 @@
           "name": "Table - Topic Detail",
           "description": "Monthly topic mentions, mention rate, average sentiment, and negative share for the last 12 complete months. One row per month and topic.",
           "display": "table",
-          "sql": "SELECT\n    month_start,\n    topic,\n    mentions,\n    mention_rate,\n    avg_sentiment,\n    pct_negative\nFROM analytics.mart_review_topics\nWHERE month_start BETWEEN DATE '2020-11-01' AND DATE '2021-10-01'\n  AND {{review_month}}\n  AND {{topic}}\nORDER BY mentions DESC\nLIMIT 1000;",
+          "sql": "SELECT\n    month_start,\n    topic,\n    mentions,\n    mention_rate,\n    avg_sentiment,\n    pct_negative\nFROM analytics.mart_review_topics AS mart_review_topics\nWHERE month_start BETWEEN DATE '2020-11-01' AND DATE '2021-10-01'\n  AND {{review_month}}\n  AND {{topic}}\nORDER BY mentions DESC\nLIMIT 1000;",
           "source": "mart_review_topics",
           "tags": [
             {
               "name": "review_month",
               "widget_type": "date/all-options",
               "display_name": "Review Month",
-              "field": "analytics.mart_review_topics.month_start"
+              "field": "analytics.mart_review_topics.month_start",
+              "alias": "mart_review_topics.month_start"
             },
             {
               "name": "topic",
               "widget_type": "string/=",
               "display_name": "Topic",
-              "field": "analytics.mart_review_topics.topic"
+              "field": "analytics.mart_review_topics.topic",
+              "alias": "mart_review_topics.topic"
             }
           ],
           "visualization_settings": {}
@@ -1105,26 +1182,29 @@
           "name": "KPI - Total Hosts",
           "description": "Count of host profiles matching the selected Host filters. One row per host; hosts with no listings are retained.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS total_hosts\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}};",
+          "sql": "SELECT COUNT(*) AS total_hosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}};",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_host_performance.is_superhost"
+              "field": "analytics.mart_host_performance.is_superhost",
+              "alias": "mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1134,20 +1214,22 @@
           "name": "KPI - Superhosts",
           "description": "Hosts whose superhost flag is true. One row per host; 15 hosts with unknown status are excluded.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS superhosts\nFROM analytics.mart_host_performance\nWHERE is_superhost = TRUE\n  AND {{host_segment}}\n  AND {{listing_count}};",
+          "sql": "SELECT COUNT(*) AS superhosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE is_superhost = TRUE\n  AND {{host_segment}}\n  AND {{listing_count}};",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1157,20 +1239,22 @@
           "name": "KPI - Single-listing Hosts",
           "description": "Hosts with exactly one listing in the snapshot. One row per host; this is a host count, not a listing count.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS single_listing_hosts\nFROM analytics.mart_host_performance\nWHERE host_segment = 'Single listing'\n  AND {{is_superhost}}\n  AND {{listing_count}};",
+          "sql": "SELECT COUNT(*) AS single_listing_hosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE host_segment = 'Single listing'\n  AND {{is_superhost}}\n  AND {{listing_count}};",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_host_performance.is_superhost"
+              "field": "analytics.mart_host_performance.is_superhost",
+              "alias": "mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1180,20 +1264,22 @@
           "name": "KPI - Professional+ Hosts",
           "description": "Hosts in the Professional, Large professional, or Enterprise segments. One row per host; segments are based on listing count.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS professional_plus_hosts\nFROM analytics.mart_host_performance\nWHERE host_segment IN ('Professional', 'Large professional', 'Enterprise')\n  AND {{is_superhost}}\n  AND {{listing_count}};",
+          "sql": "SELECT COUNT(*) AS professional_plus_hosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE host_segment IN ('Professional', 'Large professional', 'Enterprise')\n  AND {{is_superhost}}\n  AND {{listing_count}};",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_host_performance.is_superhost"
+              "field": "analytics.mart_host_performance.is_superhost",
+              "alias": "mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1203,26 +1289,29 @@
           "name": "KPI - Avg Reviews per Host",
           "description": "Mean total reviews per host across all of the host's listings. One row per host; not a per-listing average.",
           "display": "scalar",
-          "sql": "SELECT AVG(total_reviews) AS avg_reviews_per_host\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}};",
+          "sql": "SELECT AVG(total_reviews) AS avg_reviews_per_host\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}};",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_host_performance.is_superhost"
+              "field": "analytics.mart_host_performance.is_superhost",
+              "alias": "mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1232,26 +1321,29 @@
           "name": "Chart - Hosts by Segment",
           "description": "Hosts by portfolio segment. One row per host; these are host-grain counts and will not match listing-grain segment counts.",
           "display": "bar",
-          "sql": "SELECT\n    host_segment,\n    COUNT(*) AS hosts\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY hosts DESC;",
+          "sql": "SELECT\n    host_segment,\n    COUNT(*) AS hosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY hosts DESC;",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_host_performance.is_superhost"
+              "field": "analytics.mart_host_performance.is_superhost",
+              "alias": "mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1268,26 +1360,29 @@
           "name": "Chart - Avg Listings per Host by Segment",
           "description": "Mean number of listings per host within each segment. One row per host; host-grain calculation.",
           "display": "bar",
-          "sql": "SELECT\n    host_segment,\n    AVG(listing_count) AS avg_listings\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY avg_listings DESC;",
+          "sql": "SELECT\n    host_segment,\n    AVG(listing_count) AS avg_listings\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY avg_listings DESC;",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_host_performance.is_superhost"
+              "field": "analytics.mart_host_performance.is_superhost",
+              "alias": "mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1304,26 +1399,29 @@
           "name": "Chart - Avg Reviews per Host by Segment",
           "description": "Mean total reviews per host within each segment. One row per host; host-grain calculation.",
           "display": "bar",
-          "sql": "SELECT\n    host_segment,\n    AVG(total_reviews) AS avg_reviews\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY avg_reviews DESC;",
+          "sql": "SELECT\n    host_segment,\n    AVG(total_reviews) AS avg_reviews\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY avg_reviews DESC;",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_host_performance.is_superhost"
+              "field": "analytics.mart_host_performance.is_superhost",
+              "alias": "mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1340,14 +1438,15 @@
           "name": "Chart - New Hosts per Month",
           "description": "Host profiles created per month from 2015 onward. One row per host; this is new hosts, not cumulative hosts.",
           "display": "line",
-          "sql": "SELECT\n    DATE_TRUNC(DATE(host_created_at), MONTH) AS month_start,\n    COUNT(*) AS new_hosts\nFROM analytics.dim_hosts\nWHERE DATE(host_created_at) >= DATE '2015-01-01'\n  AND {{host_created_at}}\nGROUP BY 1\nORDER BY 1;",
+          "sql": "SELECT\n    DATE_TRUNC(DATE(host_created_at), MONTH) AS month_start,\n    COUNT(*) AS new_hosts\nFROM analytics.dim_hosts AS dim_hosts\nWHERE DATE(host_created_at) >= DATE '2015-01-01'\n  AND {{host_created_at}}\nGROUP BY 1\nORDER BY 1;",
           "source": "dim_hosts",
           "tags": [
             {
               "name": "host_created_at",
               "widget_type": "date/all-options",
               "display_name": "Host Created At",
-              "field": "analytics.dim_hosts.host_created_at"
+              "field": "analytics.dim_hosts.host_created_at",
+              "alias": "dim_hosts.host_created_at"
             }
           ],
           "visualization_settings": {
@@ -1365,20 +1464,22 @@
           "name": "Chart - Superhost Performance",
           "description": "Average total reviews per host for superhosts vs non-superhosts. One row per host; includes an unclassified group for 15 hosts with unknown status.",
           "display": "bar",
-          "sql": "SELECT\n    is_superhost,\n    AVG(total_reviews) AS avg_reviews\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{listing_count}}\nGROUP BY is_superhost\nORDER BY is_superhost NULLS LAST;",
+          "sql": "SELECT\n    is_superhost,\n    AVG(total_reviews) AS avg_reviews\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{listing_count}}\nGROUP BY is_superhost\nORDER BY is_superhost NULLS LAST;",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1395,20 +1496,22 @@
           "name": "Chart - Hosts by Segment and Superhost",
           "description": "Host counts by segment and superhost status. One row per host; the stacked bars sum to the host total.",
           "display": "bar",
-          "sql": "SELECT\n    host_segment,\n    is_superhost,\n    COUNT(*) AS hosts\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{listing_count}}\nGROUP BY host_segment, is_superhost\nORDER BY host_segment, is_superhost NULLS LAST;",
+          "sql": "SELECT\n    host_segment,\n    is_superhost,\n    COUNT(*) AS hosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{listing_count}}\nGROUP BY host_segment, is_superhost\nORDER BY host_segment, is_superhost NULLS LAST;",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1426,26 +1529,29 @@
           "name": "Chart - Portfolio Size",
           "description": "Distribution of hosts by number of listings. One row per host; most hosts have one listing and the maximum is 75.",
           "display": "bar",
-          "sql": "SELECT listing_count\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}};",
+          "sql": "SELECT listing_count\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}};",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_host_performance.is_superhost"
+              "field": "analytics.mart_host_performance.is_superhost",
+              "alias": "mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1455,26 +1561,29 @@
           "name": "Table - Top Hosts",
           "description": "Top 100 hosts by total reviews with portfolio size, active listings, and sentiment. One row per host.",
           "display": "table",
-          "sql": "SELECT\n    host_name,\n    host_segment,\n    is_superhost,\n    listing_count,\n    active_listing_count,\n    total_reviews,\n    avg_reviews_per_listing,\n    avg_sentiment\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nORDER BY total_reviews DESC\nLIMIT 100;",
+          "sql": "SELECT\n    host_name,\n    host_segment,\n    is_superhost,\n    listing_count,\n    active_listing_count,\n    total_reviews,\n    avg_reviews_per_listing,\n    avg_sentiment\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nORDER BY total_reviews DESC\nLIMIT 100;",
           "source": "mart_host_performance",
           "tags": [
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_host_performance.host_segment"
+              "field": "analytics.mart_host_performance.host_segment",
+              "alias": "mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_host_performance.is_superhost"
+              "field": "analytics.mart_host_performance.is_superhost",
+              "alias": "mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
               "widget_type": "number/=",
               "display_name": "Listing Count",
-              "field": "analytics.mart_host_performance.listing_count"
+              "field": "analytics.mart_host_performance.listing_count",
+              "alias": "mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1494,50 +1603,57 @@
           "name": "KPI - Listings in View",
           "description": "Count of listings matching the selected Listing Explorer filters. One row per listing; responds to every dashboard filter and is the denominator for listing-level shares.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS listings\nFROM analytics.mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
+          "sql": "SELECT COUNT(*) AS listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
               "widget_type": "boolean/=",
               "display_name": "Is Active Last 12m",
-              "field": "analytics.mart_listing_performance.is_active_last_12m"
+              "field": "analytics.mart_listing_performance.is_active_last_12m",
+              "alias": "mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1547,50 +1663,57 @@
           "name": "KPI - Avg Price in View",
           "description": "Mean source nightly price of filtered listings, excluding outliers. One row per listing; currency is not normalized.",
           "display": "scalar",
-          "sql": "SELECT AVG(price) AS avg_price\nFROM analytics.mart_listing_performance\nWHERE NOT is_price_outlier\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
+          "sql": "SELECT AVG(price) AS avg_price\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE NOT is_price_outlier\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
               "widget_type": "boolean/=",
               "display_name": "Is Active Last 12m",
-              "field": "analytics.mart_listing_performance.is_active_last_12m"
+              "field": "analytics.mart_listing_performance.is_active_last_12m",
+              "alias": "mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1600,50 +1723,57 @@
           "name": "KPI - Avg Reviews in View",
           "description": "Mean lifetime review count per filtered listing. One row per listing; this is not a monthly review rate.",
           "display": "scalar",
-          "sql": "SELECT AVG(review_count) AS avg_reviews\nFROM analytics.mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
+          "sql": "SELECT AVG(review_count) AS avg_reviews\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
               "widget_type": "boolean/=",
               "display_name": "Is Active Last 12m",
-              "field": "analytics.mart_listing_performance.is_active_last_12m"
+              "field": "analytics.mart_listing_performance.is_active_last_12m",
+              "alias": "mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1653,44 +1783,50 @@
           "name": "KPI - Active Listings in View",
           "description": "Filtered listings with at least one review in the trailing 12 months. One row per listing; the Active last 12m filter is fixed to true.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS active_listings\nFROM analytics.mart_listing_performance\nWHERE is_active_last_12m = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{price}}",
+          "sql": "SELECT COUNT(*) AS active_listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE is_active_last_12m = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{price}}",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1700,50 +1836,57 @@
           "name": "KPI - Zero-review Listings",
           "description": "Filtered listings with no reviews. One row per listing; includes new and inactive listings.",
           "display": "scalar",
-          "sql": "SELECT COUNT(*) AS zero_review_listings\nFROM analytics.mart_listing_performance\nWHERE review_count = 0\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
+          "sql": "SELECT COUNT(*) AS zero_review_listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE review_count = 0\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
               "widget_type": "boolean/=",
               "display_name": "Is Active Last 12m",
-              "field": "analytics.mart_listing_performance.is_active_last_12m"
+              "field": "analytics.mart_listing_performance.is_active_last_12m",
+              "alias": "mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1753,44 +1896,50 @@
           "name": "Chart - Price vs Review Count",
           "description": "Scatter of active, non-outlier listings: nightly price versus lifetime review count. One point per listing; not a time series.",
           "display": "scatter",
-          "sql": "SELECT\n    price,\n    review_count\nFROM analytics.mart_listing_performance\nWHERE NOT is_price_outlier\n  AND is_active_last_12m = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{price}}",
+          "sql": "SELECT\n    price,\n    review_count\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE NOT is_price_outlier\n  AND is_active_last_12m = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{price}}",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -1807,50 +1956,57 @@
           "name": "Chart - Listings by Room Type",
           "description": "Filtered listings by room type. One row per listing; the chart collapses to one bar when the Room type filter is applied.",
           "display": "bar",
-          "sql": "SELECT\n    room_type,\n    COUNT(*) AS listings\nFROM analytics.mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nGROUP BY room_type\nORDER BY listings DESC;",
+          "sql": "SELECT\n    room_type,\n    COUNT(*) AS listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nGROUP BY room_type\nORDER BY listings DESC;",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
               "widget_type": "boolean/=",
               "display_name": "Is Active Last 12m",
-              "field": "analytics.mart_listing_performance.is_active_last_12m"
+              "field": "analytics.mart_listing_performance.is_active_last_12m",
+              "alias": "mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -1867,50 +2023,57 @@
           "name": "Chart - Listings by Price Band",
           "description": "Filtered listings by price band. One row per listing; the chart collapses to one bar when the Price band filter is applied.",
           "display": "bar",
-          "sql": "SELECT\n    price_band,\n    COUNT(*) AS listings\nFROM analytics.mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
+          "sql": "SELECT\n    price_band,\n    COUNT(*) AS listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
               "widget_type": "boolean/=",
               "display_name": "Is Active Last 12m",
-              "field": "analytics.mart_listing_performance.is_active_last_12m"
+              "field": "analytics.mart_listing_performance.is_active_last_12m",
+              "alias": "mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -1927,50 +2090,57 @@
           "name": "Chart - Review Count Distribution",
           "description": "Distribution of lifetime review counts across filtered listings. One row per listing; helpful for spotting the long tail of highly reviewed listings.",
           "display": "bar",
-          "sql": "SELECT review_count\nFROM analytics.mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
+          "sql": "SELECT review_count\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
               "widget_type": "boolean/=",
               "display_name": "Is Active Last 12m",
-              "field": "analytics.mart_listing_performance.is_active_last_12m"
+              "field": "analytics.mart_listing_performance.is_active_last_12m",
+              "alias": "mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1980,38 +2150,43 @@
           "name": "Chart - Active Listings by Host Segment",
           "description": "Active filtered listings by host portfolio segment. One row per listing; this is listing-grain, not host-grain.",
           "display": "bar",
-          "sql": "SELECT\n    host_segment,\n    COUNT(*) AS active_listings\nFROM analytics.mart_listing_performance\nWHERE is_active_last_12m = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}}\nGROUP BY host_segment\nORDER BY active_listings DESC;",
+          "sql": "SELECT\n    host_segment,\n    COUNT(*) AS active_listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE is_active_last_12m = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}}\nGROUP BY host_segment\nORDER BY active_listings DESC;",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -2028,50 +2203,57 @@
           "name": "Chart - Listings by Minimum Nights",
           "description": "Filtered listings by minimum-night band. One row per listing; zero minimum nights are normalized to one upstream.",
           "display": "bar",
-          "sql": "SELECT\n    minimum_nights_band,\n    COUNT(*) AS listings\nFROM analytics.mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nGROUP BY minimum_nights_band\nORDER BY CASE minimum_nights_band\n    WHEN '1' THEN 1\n    WHEN '2-6' THEN 2\n    WHEN '7-29' THEN 3\n    ELSE 4\nEND;",
+          "sql": "SELECT\n    minimum_nights_band,\n    COUNT(*) AS listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nGROUP BY minimum_nights_band\nORDER BY CASE minimum_nights_band\n    WHEN '1' THEN 1\n    WHEN '2-6' THEN 2\n    WHEN '7-29' THEN 3\n    ELSE 4\nEND;",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
               "widget_type": "boolean/=",
               "display_name": "Is Active Last 12m",
-              "field": "analytics.mart_listing_performance.is_active_last_12m"
+              "field": "analytics.mart_listing_performance.is_active_last_12m",
+              "alias": "mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -2088,50 +2270,57 @@
           "name": "Table - Listing Detail",
           "description": "One row per listing with price, host, portfolio segment, activity, lifetime and 12-month reviews, sentiment, and recency for drill-down and verification.",
           "display": "table",
-          "sql": "SELECT\n    listing_id,\n    listing_name,\n    room_type,\n    price,\n    price_band,\n    minimum_nights,\n    host_name,\n    host_segment,\n    is_superhost,\n    review_count,\n    review_count_12m,\n    avg_sentiment,\n    pct_positive,\n    last_review_date,\n    is_active_last_12m,\n    days_since_last_review\nFROM analytics.mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nORDER BY review_count DESC\nLIMIT 200;",
+          "sql": "SELECT\n    listing_id,\n    listing_name,\n    room_type,\n    price,\n    price_band,\n    minimum_nights,\n    host_name,\n    host_segment,\n    is_superhost,\n    review_count,\n    review_count_12m,\n    avg_sentiment,\n    pct_positive,\n    last_review_date,\n    is_active_last_12m,\n    days_since_last_review\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nORDER BY review_count DESC\nLIMIT 200;",
           "source": "mart_listing_performance",
           "tags": [
             {
               "name": "room_type",
               "widget_type": "string/=",
               "display_name": "Room Type",
-              "field": "analytics.mart_listing_performance.room_type"
+              "field": "analytics.mart_listing_performance.room_type",
+              "alias": "mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
               "widget_type": "string/=",
               "display_name": "Price Band",
-              "field": "analytics.mart_listing_performance.price_band"
+              "field": "analytics.mart_listing_performance.price_band",
+              "alias": "mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
               "widget_type": "string/=",
               "display_name": "Minimum Nights Band",
-              "field": "analytics.mart_listing_performance.minimum_nights_band"
+              "field": "analytics.mart_listing_performance.minimum_nights_band",
+              "alias": "mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
               "widget_type": "boolean/=",
               "display_name": "Is Superhost",
-              "field": "analytics.mart_listing_performance.is_superhost"
+              "field": "analytics.mart_listing_performance.is_superhost",
+              "alias": "mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
               "widget_type": "string/=",
               "display_name": "Host Segment",
-              "field": "analytics.mart_listing_performance.host_segment"
+              "field": "analytics.mart_listing_performance.host_segment",
+              "alias": "mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
               "widget_type": "boolean/=",
               "display_name": "Is Active Last 12m",
-              "field": "analytics.mart_listing_performance.is_active_last_12m"
+              "field": "analytics.mart_listing_performance.is_active_last_12m",
+              "alias": "mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
               "widget_type": "number/=",
               "display_name": "Price",
-              "field": "analytics.mart_listing_performance.price"
+              "field": "analytics.mart_listing_performance.price",
+              "alias": "mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}

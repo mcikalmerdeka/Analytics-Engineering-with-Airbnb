@@ -161,16 +161,17 @@ def build_card_payload(
     for tag in card["tags"]:
         tag_id = str(uuid.uuid4())
         field_id = resolve_field_id(field_ids, card["name"], tag["name"], tag["field"])
-        template_tags.append(
-            {
-                "id": tag_id,
-                "type": "dimension",
-                "widget-type": tag["widget_type"],
-                "name": tag["name"],
-                "display-name": tag["display_name"],
-                "dimension": ["field", {"lib/uuid": str(uuid.uuid4())}, field_id],
-            }
-        )
+        template_tag = {
+            "id": tag_id,
+            "type": "dimension",
+            "widget-type": tag["widget_type"],
+            "name": tag["name"],
+            "display-name": tag["display_name"],
+            "dimension": ["field", {"lib/uuid": str(uuid.uuid4())}, field_id],
+        }
+        if tag.get("alias"):
+            template_tag["alias"] = tag["alias"]
+        template_tags.append(template_tag)
         parameters.append(
             {
                 "id": tag_id,
@@ -257,6 +258,35 @@ def find_card(client: MetabaseClient, collection_id: int, name: str) -> dict | N
     return None
 
 
+def tag_signature(tag: dict) -> tuple:
+    dimension = tag.get("dimension") or [None, None, None]
+    return (
+        tag.get("name"),
+        tag.get("type"),
+        tag.get("widget-type"),
+        tag.get("alias"),
+        dimension[2] if len(dimension) > 2 else None,
+    )
+
+
+def card_needs_update(existing: dict, desired: dict) -> bool:
+    existing_stage = (existing.get("dataset_query") or {}).get("stages", [{}])[0]
+    desired_stage = desired["dataset_query"]["stages"][0]
+    existing_tags = sorted(
+        (tag_signature(tag) for tag in existing_stage.get("template-tags", [])),
+        key=str,
+    )
+    desired_tags = sorted(
+        (tag_signature(tag) for tag in desired_stage.get("template-tags", [])),
+        key=str,
+    )
+    return (
+        existing_stage.get("native") != desired_stage.get("native")
+        or existing_tags != desired_tags
+        or existing.get("display") != desired.get("display")
+    )
+
+
 def resolve_card(
     client: MetabaseClient,
     collection_id: int,
@@ -271,7 +301,14 @@ def resolve_card(
 
     existing = find_card(client, collection_id, card["name"])
     if existing:
-        print(f"    card exists: {card['name']} (id={existing['id']})")
+        desired = build_card_payload(card, collection_id, database_id, field_ids)
+        detail = client.get(f"/api/card/{existing['id']}")
+        if card_needs_update(detail, desired):
+            print(f"    card update: {card['name']} (id={existing['id']})")
+            if not dry_run:
+                client.put(f"/api/card/{existing['id']}", desired)
+        else:
+            print(f"    card exists: {card['name']} (id={existing['id']})")
         return {**existing, "name": card["name"], "display": card["display"]}
 
     for alias in ALIASES.get(card["name"], []):

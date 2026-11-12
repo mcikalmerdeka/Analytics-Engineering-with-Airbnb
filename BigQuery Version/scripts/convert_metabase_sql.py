@@ -67,6 +67,28 @@ TIMESTAMP_DATE_RE = re.compile(
     r"\s*(?P<op>>=|<=|>|<|=)\s*(?P<literal>DATE\s+'[^']+')",
     re.IGNORECASE,
 )
+TABLE_ALIAS_RE = re.compile(
+    r"\b(?P<join>FROM|INNER\s+JOIN|LEFT\s+JOIN|RIGHT\s+JOIN)\s+"
+    r"analytics\.(?P<table>[A-Za-z_][A-Za-z0-9_]*)"
+    r"(?!\s+AS\b)",
+    re.IGNORECASE,
+)
+
+
+def add_table_aliases(sql: str) -> str:
+    """Alias every BigQuery table so Metabase field filters can qualify columns.
+
+    Metabase's BigQuery driver renders a field filter as `alias.column`.
+    Without a table alias the driver emits the dataset path as one quoted
+    identifier and BigQuery rejects it.
+    """
+    return TABLE_ALIAS_RE.sub(
+        lambda match: (
+            f"{match.group('join')} analytics.{match.group('table')} "
+            f"AS {match.group('table')}"
+        ),
+        sql,
+    )
 
 
 def convert_sql(sql: str) -> str:
@@ -106,6 +128,7 @@ def convert_sql(sql: str) -> str:
         ),
         sql,
     )
+    sql = add_table_aliases(sql)
     return sql
 
 
@@ -125,6 +148,8 @@ def convert_definitions(data: dict) -> dict:
             for tag in card["tags"]:
                 tag.pop("field_id", None)
                 tag["field"] = field_reference(card, tag["name"])
+                _, table, column = tag["field"].split(".", 2)
+                tag["alias"] = f"{table}.{column}"
     return data
 
 
