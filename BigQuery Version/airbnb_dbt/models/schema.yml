@@ -83,6 +83,7 @@ models:
           - accepted_values:
               arguments:
                 values: [true, false]
+                quote: false
 
       - name: is_superhost_known
         description: TRUE when the source disclosed a superhost status.
@@ -138,6 +139,7 @@ models:
           - accepted_values:
               arguments:
                 values: [true, false]
+                quote: false
 
       - name: is_superhost_known
         description: TRUE when the source disclosed a superhost status.
