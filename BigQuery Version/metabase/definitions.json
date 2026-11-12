@@ -1,7 +1,6 @@
 {
   "root_collection_id": 5,
   "root_collection_name": "Airbnb Analytics",
-  "database_id": 2,
   "dashboards": [
     {
       "key": "executive",
@@ -9,7 +8,7 @@
       "collection": "Executive Overview Collection",
       "dashboard": "Executive Overview Dashboard",
       "description": "Market-level supply, host growth, review volume, room mix, and sentiment for the Airbnb Berlin market.",
-      "skip": true,
+      "skip": false,
       "cards": [
         {
           "key": "1.1",
@@ -66,14 +65,14 @@
           "name": "Chart - Supply and Host Growth",
           "description": "Monthly cumulative listing and host counts from the dbt month spine. One row per month; values are cumulative, not new additions.",
           "display": "line",
-          "sql": "SELECT\n    month_start,\n    'Cumulative listings' AS metric,\n    cumulative_listings::numeric AS value\nFROM analytics.mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nUNION ALL\n\nSELECT\n    month_start,\n    'Cumulative hosts' AS metric,\n    cumulative_hosts::numeric AS value\nFROM analytics.mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nORDER BY month_start, metric;",
+          "sql": "SELECT\n    month_start,\n    'Cumulative listings' AS metric,\n    CAST(cumulative_listings AS FLOAT64) AS value\nFROM analytics.mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nUNION ALL\n\nSELECT\n    month_start,\n    'Cumulative hosts' AS metric,\n    CAST(cumulative_hosts AS FLOAT64) AS value\nFROM analytics.mart_executive_kpis\nWHERE 1 = 1\n  AND {{month_start}}\n\nORDER BY month_start, metric;",
           "source": "mart_executive_kpis",
           "tags": [
             {
               "name": "month_start",
-              "field_id": 122,
               "widget_type": "date/all-options",
-              "display_name": "Month Start"
+              "display_name": "Month Start",
+              "field": "analytics.mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -97,9 +96,9 @@
           "tags": [
             {
               "name": "month_start",
-              "field_id": 122,
               "widget_type": "date/all-options",
-              "display_name": "Month Start"
+              "display_name": "Month Start",
+              "field": "analytics.mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -121,9 +120,9 @@
           "tags": [
             {
               "name": "month_start",
-              "field_id": 122,
               "widget_type": "date/all-options",
-              "display_name": "Month Start"
+              "display_name": "Month Start",
+              "field": "analytics.mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -172,9 +171,9 @@
           "tags": [
             {
               "name": "month_start",
-              "field_id": 122,
               "widget_type": "date/all-options",
-              "display_name": "Month Start"
+              "display_name": "Month Start",
+              "field": "analytics.mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -197,9 +196,9 @@
           "tags": [
             {
               "name": "month_start",
-              "field_id": 122,
               "widget_type": "date/all-options",
-              "display_name": "Month Start"
+              "display_name": "Month Start",
+              "field": "analytics.mart_executive_kpis.month_start"
             }
           ],
           "visualization_settings": {
@@ -222,9 +221,9 @@
           "tags": [
             {
               "name": "month_start",
-              "field_id": 184,
               "widget_type": "date/all-options",
-              "display_name": "Month Start"
+              "display_name": "Month Start",
+              "field": "analytics.mart_market_monthly.month_start"
             }
           ],
           "visualization_settings": {
@@ -275,33 +274,33 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 95,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.dim_listings.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 97,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 100,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 103,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.dim_listings.is_superhost"
             },
             {
               "name": "price",
-              "field_id": 96,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.dim_listings.price"
             }
           ],
           "visualization_settings": {}
@@ -311,7 +310,7 @@
           "name": "KPI - Median Nightly Price",
           "description": "Median source nightly price across non-outlier listings. One row per listing; robust to extreme prices. Fixed card, not filtered by the dashboard.",
           "display": "scalar",
-          "sql": "SELECT\n    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price) AS median_price\nFROM analytics.dim_listings\nWHERE NOT is_price_outlier;",
+          "sql": "SELECT\n    MAX(median_price) AS median_price\nFROM (\n    SELECT\n        PERCENTILE_CONT(price, 0.5) OVER () AS median_price\n    FROM analytics.dim_listings\nWHERE NOT is_price_outlier\n);",
           "source": "dim_listings",
           "tags": [],
           "visualization_settings": {}
@@ -326,33 +325,33 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 95,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.dim_listings.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 97,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 100,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 103,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.dim_listings.is_superhost"
             },
             {
               "name": "price",
-              "field_id": 96,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.dim_listings.price"
             }
           ],
           "visualization_settings": {}
@@ -367,33 +366,33 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 95,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.dim_listings.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 97,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 100,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 103,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.dim_listings.is_superhost"
             },
             {
               "name": "price",
-              "field_id": 96,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.dim_listings.price"
             }
           ],
           "visualization_settings": {}
@@ -408,27 +407,27 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 95,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.dim_listings.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 97,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 100,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.dim_listings.minimum_nights_band"
             },
             {
               "name": "price",
-              "field_id": 96,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.dim_listings.price"
             }
           ],
           "visualization_settings": {}
@@ -443,33 +442,33 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 95,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.dim_listings.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 97,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 100,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 103,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.dim_listings.is_superhost"
             },
             {
               "name": "price",
-              "field_id": 96,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.dim_listings.price"
             }
           ],
           "visualization_settings": {
@@ -491,15 +490,15 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 197,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_price_bands.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 196,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_price_bands.price_band"
             }
           ],
           "visualization_settings": {
@@ -517,14 +516,14 @@
           "name": "Chart - Room Type Price Benchmark",
           "description": "Median and p90 source nightly price by room type, excluding outliers. One row per room type; p90 shows the high-price tail.",
           "display": "bar",
-          "sql": "SELECT\n    room_type,\n    'Median price' AS metric,\n    median_price::numeric AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nUNION ALL\n\nSELECT\n    room_type,\n    'P90 price' AS metric,\n    p90_price::numeric AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nORDER BY room_type, metric;",
+          "sql": "SELECT\n    room_type,\n    'Median price' AS metric,\n    CAST(median_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nUNION ALL\n\nSELECT\n    room_type,\n    'P90 price' AS metric,\n    CAST(p90_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nORDER BY room_type, metric;",
           "source": "mart_room_type_benchmark",
           "tags": [
             {
               "name": "room_type",
-              "field_id": 211,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_room_type_benchmark.room_type"
             }
           ],
           "visualization_settings": {
@@ -547,9 +546,9 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 211,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_room_type_benchmark.room_type"
             }
           ],
           "visualization_settings": {
@@ -567,33 +566,33 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 95,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.dim_listings.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 97,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.dim_listings.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 100,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.dim_listings.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 103,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.dim_listings.is_superhost"
             },
             {
               "name": "price",
-              "field_id": 96,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.dim_listings.price"
             }
           ],
           "visualization_settings": {
@@ -615,15 +614,15 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 197,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_price_bands.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 196,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_price_bands.price_band"
             }
           ],
           "visualization_settings": {
@@ -645,15 +644,15 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 197,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_price_bands.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 196,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_price_bands.price_band"
             }
           ],
           "visualization_settings": {
@@ -675,9 +674,9 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 211,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_room_type_benchmark.room_type"
             }
           ],
           "visualization_settings": {}
@@ -702,21 +701,21 @@
           "tags": [
             {
               "name": "review_date",
-              "field_id": 113,
               "widget_type": "date/all-options",
-              "display_name": "Review Date"
+              "display_name": "Review Date",
+              "field": "analytics.fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
-              "field_id": 116,
               "widget_type": "string/=",
-              "display_name": "Review Sentiment"
+              "display_name": "Review Sentiment",
+              "field": "analytics.fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
-              "field_id": 118,
               "widget_type": "boolean/=",
-              "display_name": "Has Comment"
+              "display_name": "Has Comment",
+              "field": "analytics.fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {}
@@ -726,7 +725,7 @@
           "name": "KPI - Positive Review Share",
           "description": "Positive reviews divided by all reviews. One row per review; the denominator includes neutral, negative, and unknown sentiment. Fixed card.",
           "display": "scalar",
-          "sql": "SELECT\n    COUNT(*) FILTER (WHERE review_sentiment = 'positive')::numeric\n        / NULLIF(COUNT(*), 0) AS positive_share\nFROM analytics.fct_reviews;",
+          "sql": "SELECT\n    SAFE_DIVIDE(COUNTIF(review_sentiment = 'positive'), COUNT(*)) AS positive_share\nFROM analytics.fct_reviews;",
           "source": "fct_reviews",
           "tags": [],
           "visualization_settings": {}
@@ -736,7 +735,7 @@
           "name": "KPI - Negative Review Share",
           "description": "Negative reviews divided by all reviews. One row per review; the denominator includes positive, neutral, and unknown sentiment. Fixed card.",
           "display": "scalar",
-          "sql": "SELECT\n    COUNT(*) FILTER (WHERE review_sentiment = 'negative')::numeric\n        / NULLIF(COUNT(*), 0) AS negative_share\nFROM analytics.fct_reviews;",
+          "sql": "SELECT\n    SAFE_DIVIDE(COUNTIF(review_sentiment = 'negative'), COUNT(*)) AS negative_share\nFROM analytics.fct_reviews;",
           "source": "fct_reviews",
           "tags": [],
           "visualization_settings": {}
@@ -751,21 +750,21 @@
           "tags": [
             {
               "name": "review_date",
-              "field_id": 113,
               "widget_type": "date/all-options",
-              "display_name": "Review Date"
+              "display_name": "Review Date",
+              "field": "analytics.fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
-              "field_id": 116,
               "widget_type": "string/=",
-              "display_name": "Review Sentiment"
+              "display_name": "Review Sentiment",
+              "field": "analytics.fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
-              "field_id": 118,
               "widget_type": "boolean/=",
-              "display_name": "Has Comment"
+              "display_name": "Has Comment",
+              "field": "analytics.fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {}
@@ -780,21 +779,21 @@
           "tags": [
             {
               "name": "review_date",
-              "field_id": 113,
               "widget_type": "date/all-options",
-              "display_name": "Review Date"
+              "display_name": "Review Date",
+              "field": "analytics.fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
-              "field_id": 116,
               "widget_type": "string/=",
-              "display_name": "Review Sentiment"
+              "display_name": "Review Sentiment",
+              "field": "analytics.fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
-              "field_id": 118,
               "widget_type": "boolean/=",
-              "display_name": "Has Comment"
+              "display_name": "Has Comment",
+              "field": "analytics.fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {}
@@ -809,21 +808,21 @@
           "tags": [
             {
               "name": "review_date",
-              "field_id": 113,
               "widget_type": "date/all-options",
-              "display_name": "Review Date"
+              "display_name": "Review Date",
+              "field": "analytics.fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
-              "field_id": 116,
               "widget_type": "string/=",
-              "display_name": "Review Sentiment"
+              "display_name": "Review Sentiment",
+              "field": "analytics.fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
-              "field_id": 118,
               "widget_type": "boolean/=",
-              "display_name": "Has Comment"
+              "display_name": "Has Comment",
+              "field": "analytics.fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {
@@ -846,21 +845,21 @@
           "tags": [
             {
               "name": "review_date",
-              "field_id": 113,
               "widget_type": "date/all-options",
-              "display_name": "Review Date"
+              "display_name": "Review Date",
+              "field": "analytics.fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
-              "field_id": 116,
               "widget_type": "string/=",
-              "display_name": "Review Sentiment"
+              "display_name": "Review Sentiment",
+              "field": "analytics.fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
-              "field_id": 118,
               "widget_type": "boolean/=",
-              "display_name": "Has Comment"
+              "display_name": "Has Comment",
+              "field": "analytics.fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {
@@ -878,21 +877,21 @@
           "tags": [
             {
               "name": "review_date",
-              "field_id": 113,
               "widget_type": "date/all-options",
-              "display_name": "Review Date"
+              "display_name": "Review Date",
+              "field": "analytics.fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
-              "field_id": 116,
               "widget_type": "string/=",
-              "display_name": "Review Sentiment"
+              "display_name": "Review Sentiment",
+              "field": "analytics.fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
-              "field_id": 118,
               "widget_type": "boolean/=",
-              "display_name": "Has Comment"
+              "display_name": "Has Comment",
+              "field": "analytics.fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {
@@ -915,27 +914,27 @@
           "tags": [
             {
               "name": "review_date",
-              "field_id": 113,
               "widget_type": "date/all-options",
-              "display_name": "Review Date"
+              "display_name": "Review Date",
+              "field": "analytics.fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
-              "field_id": 116,
               "widget_type": "string/=",
-              "display_name": "Review Sentiment"
+              "display_name": "Review Sentiment",
+              "field": "analytics.fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
-              "field_id": 118,
               "widget_type": "boolean/=",
-              "display_name": "Has Comment"
+              "display_name": "Has Comment",
+              "field": "analytics.fct_reviews.has_comment"
             },
             {
               "name": "room_type",
-              "field_id": 95,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.dim_listings.room_type"
             }
           ],
           "visualization_settings": {
@@ -957,21 +956,21 @@
           "tags": [
             {
               "name": "review_date",
-              "field_id": 113,
               "widget_type": "date/all-options",
-              "display_name": "Review Date"
+              "display_name": "Review Date",
+              "field": "analytics.fct_reviews.review_date"
             },
             {
               "name": "review_sentiment",
-              "field_id": 116,
               "widget_type": "string/=",
-              "display_name": "Review Sentiment"
+              "display_name": "Review Sentiment",
+              "field": "analytics.fct_reviews.review_sentiment"
             },
             {
               "name": "has_comment",
-              "field_id": 118,
               "widget_type": "boolean/=",
-              "display_name": "Has Comment"
+              "display_name": "Has Comment",
+              "field": "analytics.fct_reviews.has_comment"
             }
           ],
           "visualization_settings": {}
@@ -986,15 +985,15 @@
           "tags": [
             {
               "name": "review_month",
-              "field_id": 205,
               "widget_type": "date/all-options",
-              "display_name": "Review Month"
+              "display_name": "Review Month",
+              "field": "analytics.mart_review_topics.month_start"
             },
             {
               "name": "topic",
-              "field_id": 206,
               "widget_type": "string/=",
-              "display_name": "Topic"
+              "display_name": "Topic",
+              "field": "analytics.mart_review_topics.topic"
             }
           ],
           "visualization_settings": {
@@ -1016,15 +1015,15 @@
           "tags": [
             {
               "name": "review_month",
-              "field_id": 205,
               "widget_type": "date/all-options",
-              "display_name": "Review Month"
+              "display_name": "Review Month",
+              "field": "analytics.mart_review_topics.month_start"
             },
             {
               "name": "topic",
-              "field_id": 206,
               "widget_type": "string/=",
-              "display_name": "Topic"
+              "display_name": "Topic",
+              "field": "analytics.mart_review_topics.topic"
             }
           ],
           "visualization_settings": {
@@ -1048,15 +1047,15 @@
           "tags": [
             {
               "name": "review_month",
-              "field_id": 205,
               "widget_type": "date/all-options",
-              "display_name": "Review Month"
+              "display_name": "Review Month",
+              "field": "analytics.mart_review_topics.month_start"
             },
             {
               "name": "topic",
-              "field_id": 206,
               "widget_type": "string/=",
-              "display_name": "Topic"
+              "display_name": "Topic",
+              "field": "analytics.mart_review_topics.topic"
             }
           ],
           "visualization_settings": {
@@ -1078,15 +1077,15 @@
           "tags": [
             {
               "name": "review_month",
-              "field_id": 205,
               "widget_type": "date/all-options",
-              "display_name": "Review Month"
+              "display_name": "Review Month",
+              "field": "analytics.mart_review_topics.month_start"
             },
             {
               "name": "topic",
-              "field_id": 206,
               "widget_type": "string/=",
-              "display_name": "Topic"
+              "display_name": "Topic",
+              "field": "analytics.mart_review_topics.topic"
             }
           ],
           "visualization_settings": {}
@@ -1111,21 +1110,21 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
-              "field_id": 144,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1140,15 +1139,15 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1163,15 +1162,15 @@
           "tags": [
             {
               "name": "is_superhost",
-              "field_id": 144,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1186,15 +1185,15 @@
           "tags": [
             {
               "name": "is_superhost",
-              "field_id": 144,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1209,21 +1208,21 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
-              "field_id": 144,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1238,21 +1237,21 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
-              "field_id": 144,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1274,21 +1273,21 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
-              "field_id": 144,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1310,21 +1309,21 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
-              "field_id": 144,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1341,14 +1340,14 @@
           "name": "Chart - New Hosts per Month",
           "description": "Host profiles created per month from 2015 onward. One row per host; this is new hosts, not cumulative hosts.",
           "display": "line",
-          "sql": "SELECT\n    DATE_TRUNC('month', host_created_at)::date AS month_start,\n    COUNT(*) AS new_hosts\nFROM analytics.dim_hosts\nWHERE host_created_at >= DATE '2015-01-01'\n  AND {{host_created_at}}\nGROUP BY 1\nORDER BY 1;",
+          "sql": "SELECT\n    DATE_TRUNC(DATE(host_created_at), MONTH) AS month_start,\n    COUNT(*) AS new_hosts\nFROM analytics.dim_hosts\nWHERE DATE(host_created_at) >= DATE '2015-01-01'\n  AND {{host_created_at}}\nGROUP BY 1\nORDER BY 1;",
           "source": "dim_hosts",
           "tags": [
             {
               "name": "host_created_at",
-              "field_id": 88,
               "widget_type": "date/all-options",
-              "display_name": "Host Created At"
+              "display_name": "Host Created At",
+              "field": "analytics.dim_hosts.host_created_at"
             }
           ],
           "visualization_settings": {
@@ -1371,15 +1370,15 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1401,15 +1400,15 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {
@@ -1432,21 +1431,21 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
-              "field_id": 144,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1461,21 +1460,21 @@
           "tags": [
             {
               "name": "host_segment",
-              "field_id": 147,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_host_performance.host_segment"
             },
             {
               "name": "is_superhost",
-              "field_id": 144,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_host_performance.is_superhost"
             },
             {
               "name": "listing_count",
-              "field_id": 148,
               "widget_type": "number/=",
-              "display_name": "Listing Count"
+              "display_name": "Listing Count",
+              "field": "analytics.mart_host_performance.listing_count"
             }
           ],
           "visualization_settings": {}
@@ -1500,45 +1499,45 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
-              "field_id": 172,
               "widget_type": "boolean/=",
-              "display_name": "Is Active Last 12m"
+              "display_name": "Is Active Last 12m",
+              "field": "analytics.mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1553,45 +1552,45 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
-              "field_id": 172,
               "widget_type": "boolean/=",
-              "display_name": "Is Active Last 12m"
+              "display_name": "Is Active Last 12m",
+              "field": "analytics.mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1606,45 +1605,45 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
-              "field_id": 172,
               "widget_type": "boolean/=",
-              "display_name": "Is Active Last 12m"
+              "display_name": "Is Active Last 12m",
+              "field": "analytics.mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1659,39 +1658,39 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1706,45 +1705,45 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
-              "field_id": 172,
               "widget_type": "boolean/=",
-              "display_name": "Is Active Last 12m"
+              "display_name": "Is Active Last 12m",
+              "field": "analytics.mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1759,39 +1758,39 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -1813,45 +1812,45 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
-              "field_id": 172,
               "widget_type": "boolean/=",
-              "display_name": "Is Active Last 12m"
+              "display_name": "Is Active Last 12m",
+              "field": "analytics.mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -1873,45 +1872,45 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
-              "field_id": 172,
               "widget_type": "boolean/=",
-              "display_name": "Is Active Last 12m"
+              "display_name": "Is Active Last 12m",
+              "field": "analytics.mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -1933,45 +1932,45 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
-              "field_id": 172,
               "widget_type": "boolean/=",
-              "display_name": "Is Active Last 12m"
+              "display_name": "Is Active Last 12m",
+              "field": "analytics.mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
@@ -1986,33 +1985,33 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -2034,45 +2033,45 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
-              "field_id": 172,
               "widget_type": "boolean/=",
-              "display_name": "Is Active Last 12m"
+              "display_name": "Is Active Last 12m",
+              "field": "analytics.mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {
@@ -2094,45 +2093,45 @@
           "tags": [
             {
               "name": "room_type",
-              "field_id": 160,
               "widget_type": "string/=",
-              "display_name": "Room Type"
+              "display_name": "Room Type",
+              "field": "analytics.mart_listing_performance.room_type"
             },
             {
               "name": "price_band",
-              "field_id": 162,
               "widget_type": "string/=",
-              "display_name": "Price Band"
+              "display_name": "Price Band",
+              "field": "analytics.mart_listing_performance.price_band"
             },
             {
               "name": "minimum_nights_band",
-              "field_id": 165,
               "widget_type": "string/=",
-              "display_name": "Minimum Nights Band"
+              "display_name": "Minimum Nights Band",
+              "field": "analytics.mart_listing_performance.minimum_nights_band"
             },
             {
               "name": "is_superhost",
-              "field_id": 168,
               "widget_type": "boolean/=",
-              "display_name": "Is Superhost"
+              "display_name": "Is Superhost",
+              "field": "analytics.mart_listing_performance.is_superhost"
             },
             {
               "name": "host_segment",
-              "field_id": 169,
               "widget_type": "string/=",
-              "display_name": "Host Segment"
+              "display_name": "Host Segment",
+              "field": "analytics.mart_listing_performance.host_segment"
             },
             {
               "name": "is_active_last_12m",
-              "field_id": 172,
               "widget_type": "boolean/=",
-              "display_name": "Is Active Last 12m"
+              "display_name": "Is Active Last 12m",
+              "field": "analytics.mart_listing_performance.is_active_last_12m"
             },
             {
               "name": "price",
-              "field_id": 161,
               "widget_type": "number/=",
-              "display_name": "Price"
+              "display_name": "Price",
+              "field": "analytics.mart_listing_performance.price"
             }
           ],
           "visualization_settings": {}
