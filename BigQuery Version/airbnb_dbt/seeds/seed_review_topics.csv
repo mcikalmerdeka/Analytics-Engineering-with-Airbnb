@@ -1,12 +1,12 @@
 topic,keywords_regex
-cleanliness,sauber|\yclean\y|hygien|schmutz|\ydirty\y
-location,\ylage\y|\ylocation\y|\yzentral\y|\ycentral\y|\ynahe\y|close to|\ynear\y
-host,gastgeber|\yhost\y|\ykommunikation\y|\ycommunication\y
-check-in,check.?in|check.?out|ankunft|arrival|schlüssel|\ykey\y
-noise,\yruhig\y|\yquiet\y|\ylaut\y|\ynoisy\y|\ylärm\y|\ynoise\y
-bed,\ybett\y|\ybed\y|\ymatratze\y|\ymattress\y
-bathroom,badezimmer|\ybathroom\y|\ydusche\y|\yshower\y|\ywc\y
-kitchen,küche|\ykitchen\y
-wifi,wlan|\ywifi\y|\yinternet\y
-transport,u.?bahn|s.?bahn|\ybahn\y|\ymetro\y|\ysubway\y|\ybus\y|\ytransport\y
-breakfast,frühstück|\ybreakfast\y
+cleanliness,sauber|\bclean\b|hygien|schmutz|\bdirty\b
+location,\blage\b|\blocation\b|\bzentral\b|\bcentral\b|\bnahe\b|close to|\bnear\b
+host,gastgeber|\bhost\b|\bkommunikation\b|\bcommunication\b
+check-in,check.?in|check.?out|ankunft|arrival|schlüssel|\bkey\b
+noise,\bruhig\b|\bquiet\b|\blaut\b|\bnoisy\b|\blärm\b|\bnoise\b
+bed,\bbett\b|\bbed\b|\bmatratze\b|\bmattress\b
+bathroom,badezimmer|\bbathroom\b|\bdusche\b|\bshower\b|\bwc\b
+kitchen,küche|\bkitchen\b
+wifi,wlan|\bwifi\b|\binternet\b
+transport,u.?bahn|s.?bahn|\bbahn\b|\bmetro\b|\bsubway\b|\bbus\b|\btransport\b
+breakfast,frühstück|\bbreakfast\b

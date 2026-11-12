@@ -5,7 +5,7 @@ sources:
     description: >
       Raw data ingested from Airbnb's platform. This source contains primary datasets
       related to property listings, hosts, and customer reviews.
-    database: airbnb
+    database: orbital-scene-422012-h0
     schema: raw
     tables:
       - name: listings
@@ -16,7 +16,7 @@ sources:
         columns:
           - name: id
             description: Primary key for the listings table. Unique identifier for each listing.
-            data_type: integer
+            data_type: int64
 
           - name: listing_url
             description: The URL path component for the listing on Airbnb's website.
@@ -39,11 +39,11 @@ sources:
 
           - name: minimum_nights
             description: The minimum number of nights a guest can book the listing.
-            data_type: integer
+            data_type: int64
 
           - name: host_id
             description: Foreign key referencing the hosts table. Identifies the host of the listing.
-            data_type: integer
+            data_type: int64
 
           - name: price
             description: >
@@ -74,7 +74,7 @@ sources:
         columns:
           - name: id
             description: Primary key for the hosts table. Unique identifier for each host.
-            data_type: integer
+            data_type: int64
 
           - name: name
             description: The display name of the host on the Airbnb platform.
@@ -102,11 +102,11 @@ sources:
         columns:
           - name: listing_id
             description: Foreign key referencing the listings table. Identifies which listing the review is for.
-            data_type: integer
+            data_type: int64
 
           - name: date
             description: The date when the review was submitted.
-            data_type: datetime
+            data_type: timestamp
 
           - name: reviewer_name
             description: The name of the guest who submitted the review.
