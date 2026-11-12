@@ -33,6 +33,6 @@ SELECT
     review_text IS NOT NULL AS has_comment,
     LENGTH(review_text) AS review_length,
     EXTRACT(YEAR FROM review_date) AS review_year,
-    DATE_TRUNC(DATE(review_date), MONTH) AS review_month
+    DATE_TRUNC(review_date, MONTH) AS review_month
 FROM deduped
 WHERE duplicate_rank = 1
