@@ -1,6 +1,6 @@
 {
   "id": 100,
-  "entity_id": "qDsRe8xe5pQjvNPgT6fQM",
+  "entity_id": "Fd9ap2O6jhA34N97gdaY4",
   "name": "Chart - Listings by Room Type",
   "description": "Filtered listings by room type. One row per listing; the chart collapses to one bar when the Room type filter is applied.",
   "collection_id": 10,
@@ -12,106 +12,113 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    room_type,\n    COUNT(*) AS listings\nFROM analytics.mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nGROUP BY room_type\nORDER BY listings DESC;",
+        "native": "SELECT\n    room_type,\n    COUNT(*) AS listings\nFROM analytics.mart_listing_performance AS mart_listing_performance\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{host_segment}}\n  AND {{is_active_last_12m}}\n  AND {{price}}\nGROUP BY room_type\nORDER BY listings DESC;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Room Type",
-            "id": "b6e73fd4-2eb9-4c12-96e7-71f7836fd4c2",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "f68d56f6-f6ee-4c8b-ad5e-a1e0c65e8296"
+              },
+              160
+            ],
+            "id": "066fc413-cb47-47fb-a43f-3ee095d52b29",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "room_type",
+            "display-name": "Room Type",
+            "alias": "mart_listing_performance.room_type"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "ae532458-106d-43f8-9824-34558555f6a1"
+                "lib/uuid": "f294ab43-f576-47f5-b99d-fca66bf0a46f"
               },
-              160
-            ]
-          },
-          {
-            "display-name": "Price Band",
-            "id": "501d1d57-4b6c-4cdc-b9ab-a48802233f28",
+              162
+            ],
+            "id": "8a572657-19c4-4981-a3a1-cb733e414b41",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "price_band",
+            "display-name": "Price Band",
+            "alias": "mart_listing_performance.price_band"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "6e192dc8-3e8c-4f93-bfb1-9c08d125fdd6"
+                "lib/uuid": "1f5182d8-2313-4032-9081-79ab588583bb"
               },
-              162
-            ]
-          },
-          {
-            "display-name": "Minimum Nights Band",
-            "id": "2fb75a4c-6325-4dfc-be9e-f34f9813ac83",
+              165
+            ],
+            "id": "495bc29d-62f4-42e8-9591-df80b7098972",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "minimum_nights_band",
+            "display-name": "Minimum Nights Band",
+            "alias": "mart_listing_performance.minimum_nights_band"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "79b7e63d-17a1-465a-99b7-02070884e6ae"
+                "lib/uuid": "71bda1aa-b26e-40ea-af52-6e983a63cb6e"
               },
-              165
-            ]
-          },
-          {
-            "display-name": "Is Superhost",
-            "id": "6e9e6f02-c5d9-488f-a4fb-72ebd5e5611c",
+              168
+            ],
+            "id": "50294d38-a710-40fb-a81b-ee31801dd0b4",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "mart_listing_performance.is_superhost"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "750da18e-5349-42cb-be56-c937beac3de2"
+                "lib/uuid": "d8452a67-3c17-4815-9cfe-e77f1cad64dc"
               },
-              168
-            ]
-          },
-          {
-            "display-name": "Host Segment",
-            "id": "08b06d80-26f0-4df2-8de9-ab9adc76ef0d",
+              169
+            ],
+            "id": "c63cd2ff-c540-4f89-a29c-60ec296fcc29",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_listing_performance.host_segment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "8db59065-fbde-4664-8fb6-f0fcffc75c59"
+                "lib/uuid": "d03770f0-91f1-4dd2-967c-a40975ac2269"
               },
-              169
-            ]
-          },
-          {
-            "display-name": "Is Active Last 12m",
-            "id": "085d78d5-5667-45db-a771-03e7914cbee0",
+              172
+            ],
+            "id": "f1b0c2f3-b244-4e27-974c-f4115871e253",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "is_active_last_12m",
+            "display-name": "Is Active Last 12m",
+            "alias": "mart_listing_performance.is_active_last_12m"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "327991fa-404d-44a4-b110-46d316143624"
+                "lib/uuid": "47b9c8f9-f456-48b4-94c0-9e00284b43eb"
               },
-              172
-            ]
-          },
-          {
-            "display-name": "Price",
-            "id": "42d5ca72-9730-4c28-a89d-a4cc8f4809ba",
+              161
+            ],
+            "id": "1fdb7e7c-7ac1-41ae-965d-0dde12d5fe44",
             "type": "dimension",
             "widget-type": "number/=",
             "name": "price",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "d8d064c9-e04b-40ae-9e9b-1797bd8cfd94"
-              },
-              161
-            ]
+            "display-name": "Price",
+            "alias": "mart_listing_performance.price"
           }
         ]
       }
@@ -127,7 +134,7 @@
   },
   "parameters": [
     {
-      "id": "b6e73fd4-2eb9-4c12-96e7-71f7836fd4c2",
+      "id": "066fc413-cb47-47fb-a43f-3ee095d52b29",
       "type": "string/=",
       "target": [
         "dimension",
@@ -141,7 +148,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "501d1d57-4b6c-4cdc-b9ab-a48802233f28",
+      "id": "8a572657-19c4-4981-a3a1-cb733e414b41",
       "type": "string/=",
       "target": [
         "dimension",
@@ -155,7 +162,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "2fb75a4c-6325-4dfc-be9e-f34f9813ac83",
+      "id": "495bc29d-62f4-42e8-9591-df80b7098972",
       "type": "string/=",
       "target": [
         "dimension",
@@ -169,7 +176,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "6e9e6f02-c5d9-488f-a4fb-72ebd5e5611c",
+      "id": "50294d38-a710-40fb-a81b-ee31801dd0b4",
       "type": "boolean/=",
       "target": [
         "dimension",
@@ -183,7 +190,7 @@
       "isMultiSelect": false
     },
     {
-      "id": "08b06d80-26f0-4df2-8de9-ab9adc76ef0d",
+      "id": "c63cd2ff-c540-4f89-a29c-60ec296fcc29",
       "type": "string/=",
       "target": [
         "dimension",
@@ -197,7 +204,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "085d78d5-5667-45db-a771-03e7914cbee0",
+      "id": "f1b0c2f3-b244-4e27-974c-f4115871e253",
       "type": "boolean/=",
       "target": [
         "dimension",
@@ -211,7 +218,7 @@
       "isMultiSelect": false
     },
     {
-      "id": "42d5ca72-9730-4c28-a89d-a4cc8f4809ba",
+      "id": "1fdb7e7c-7ac1-41ae-965d-0dde12d5fe44",
       "type": "number/=",
       "target": [
         "dimension",

@@ -1,6 +1,6 @@
 {
   "id": 55,
-  "entity_id": "-T4VKmJJDx-G_bs4tAvyF",
+  "entity_id": "T5SlAUd-o7XcmnaXtom_d",
   "name": "KPI - Median Nightly Price",
   "description": "Median source nightly price across non-outlier listings. One row per listing; robust to extreme prices. Fixed card, not filtered by the dashboard.",
   "collection_id": 7,
@@ -8,14 +8,14 @@
   "query_type": "native",
   "display": "scalar",
   "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price) AS median_price\nFROM analytics.dim_listings\nWHERE NOT is_price_outlier;",
-        "lib/type": "mbql.stage/native"
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT\n    MAX(median_price) AS median_price\nFROM (\n    SELECT\n        PERCENTILE_CONT(price, 0.5) OVER () AS median_price\n    FROM analytics.dim_listings AS dim_listings\nWHERE NOT is_price_outlier\n);"
       }
-    ],
-    "lib/type": "mbql/query",
-    "database": 2
+    ]
   },
   "visualization_settings": {},
   "parameters": [],

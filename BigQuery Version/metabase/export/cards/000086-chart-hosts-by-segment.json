@@ -1,6 +1,6 @@
 {
   "id": 86,
-  "entity_id": "Nqazkpq032E8zpLzj6OPc",
+  "entity_id": "FKyuuP493DMBPW-OnWJRC",
   "name": "Chart - Hosts by Segment",
   "description": "Hosts by portfolio segment. One row per host; these are host-grain counts and will not match listing-grain segment counts.",
   "collection_id": 9,
@@ -12,50 +12,53 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    host_segment,\n    COUNT(*) AS hosts\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY hosts DESC;",
+        "native": "SELECT\n    host_segment,\n    COUNT(*) AS hosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY hosts DESC;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Host Segment",
-            "id": "3602baec-c327-46d9-ac30-2df7b65d64d3",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "7b2d9a1e-6cb4-4cf0-8517-d9a973e56695"
+              },
+              147
+            ],
+            "id": "31b48621-2d76-481a-9198-bc00c74ea938",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_host_performance.host_segment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "f4aac108-32c7-4f74-bd0a-4e1d9f4816d8"
+                "lib/uuid": "77de4ef8-04c0-4c4c-b916-aba69a7ca44c"
               },
-              147
-            ]
-          },
-          {
-            "display-name": "Is Superhost",
-            "id": "684b1bc0-de56-479e-a90e-8ba54b2649fd",
+              144
+            ],
+            "id": "8567e421-1b4e-4bf0-9cb7-0f218ca6bbc7",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "mart_host_performance.is_superhost"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "003d60e9-6cc8-4b3c-9190-6bd5242eca12"
+                "lib/uuid": "1a211506-b70b-4958-9fec-f3fb0606f72a"
               },
-              144
-            ]
-          },
-          {
-            "display-name": "Listing Count",
-            "id": "92532d09-8107-4ab4-b1c6-e3b035b2a249",
+              148
+            ],
+            "id": "65336e24-2bfa-4e07-8bb7-98df4e5a97ce",
             "type": "dimension",
             "widget-type": "number/=",
             "name": "listing_count",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "5738bbef-86ac-4ae0-8b16-0ee70bc1e30e"
-              },
-              148
-            ]
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
           }
         ]
       }
@@ -71,7 +74,7 @@
   },
   "parameters": [
     {
-      "id": "3602baec-c327-46d9-ac30-2df7b65d64d3",
+      "id": "31b48621-2d76-481a-9198-bc00c74ea938",
       "type": "string/=",
       "target": [
         "dimension",
@@ -85,7 +88,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "684b1bc0-de56-479e-a90e-8ba54b2649fd",
+      "id": "8567e421-1b4e-4bf0-9cb7-0f218ca6bbc7",
       "type": "boolean/=",
       "target": [
         "dimension",
@@ -99,7 +102,7 @@
       "isMultiSelect": false
     },
     {
-      "id": "92532d09-8107-4ab4-b1c6-e3b035b2a249",
+      "id": "65336e24-2bfa-4e07-8bb7-98df4e5a97ce",
       "type": "number/=",
       "target": [
         "dimension",

@@ -1,6 +1,6 @@
 {
   "id": 66,
-  "entity_id": "Va97V3Cb8O9fYir_FHQWf",
+  "entity_id": "cgUI2cV47UmvVy9cWCGQj",
   "name": "Table - Room Type Benchmark",
   "description": "One row per room type with supply share, price distribution, review volume, sentiment, superhost share, and active share.",
   "collection_id": 7,
@@ -12,22 +12,23 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    room_type,\n    listing_count,\n    share_of_supply,\n    avg_price,\n    median_price,\n    p90_price,\n    avg_reviews,\n    median_reviews,\n    avg_sentiment,\n    pct_superhost,\n    pct_active\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\nORDER BY listing_count DESC;",
+        "native": "SELECT\n    room_type,\n    listing_count,\n    share_of_supply,\n    avg_price,\n    median_price,\n    p90_price,\n    avg_reviews,\n    median_reviews,\n    avg_sentiment,\n    pct_superhost,\n    pct_active\nFROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\nORDER BY listing_count DESC;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Room Type",
-            "id": "344191eb-21cb-4f21-847c-8abef3865bfb",
-            "type": "dimension",
-            "widget-type": "string/=",
-            "name": "room_type",
             "dimension": [
               "field",
               {
-                "lib/uuid": "6f533bfb-ad83-4265-9afe-736c17e47db7"
+                "lib/uuid": "f0c7f337-7e0f-4ab4-b879-0ca993ea93a2"
               },
               211
-            ]
+            ],
+            "id": "e40f91e1-5e20-4b2c-85d2-ccbff00df0f4",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "display-name": "Room Type",
+            "alias": "mart_room_type_benchmark.room_type"
           }
         ]
       }
@@ -36,7 +37,7 @@
   "visualization_settings": {},
   "parameters": [
     {
-      "id": "344191eb-21cb-4f21-847c-8abef3865bfb",
+      "id": "e40f91e1-5e20-4b2c-85d2-ccbff00df0f4",
       "type": "string/=",
       "target": [
         "dimension",

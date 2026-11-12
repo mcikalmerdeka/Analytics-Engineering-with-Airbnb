@@ -1,6 +1,6 @@
 {
   "id": 88,
-  "entity_id": "FgnfkCLTwQqnBfKd-nVIo",
+  "entity_id": "Q59WsAzy9sHl4Do1TeGQ6",
   "name": "Chart - Avg Reviews per Host by Segment",
   "description": "Mean total reviews per host within each segment. One row per host; host-grain calculation.",
   "collection_id": 9,
@@ -12,50 +12,53 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    host_segment,\n    AVG(total_reviews) AS avg_reviews\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY avg_reviews DESC;",
+        "native": "SELECT\n    host_segment,\n    AVG(total_reviews) AS avg_reviews\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nGROUP BY host_segment\nORDER BY avg_reviews DESC;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Host Segment",
-            "id": "48aacfdd-431b-4cbf-9442-372566950bf6",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "89debd32-9834-43a7-bd59-809054e3317e"
+              },
+              147
+            ],
+            "id": "c1de83b0-f125-4815-b7aa-594a228c81cf",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_host_performance.host_segment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "3265516c-c001-40aa-a7f6-480f0de39aa2"
+                "lib/uuid": "16b34297-2a3f-46a6-9d04-afa1b9268586"
               },
-              147
-            ]
-          },
-          {
-            "display-name": "Is Superhost",
-            "id": "0a98a105-3508-4e5b-99a2-1fa3c94ae148",
+              144
+            ],
+            "id": "286e4502-9449-453c-8b2a-1d3964baa31b",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "mart_host_performance.is_superhost"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "7c8413f5-fbf7-4817-8f6f-2a5679f08a66"
+                "lib/uuid": "6ed9dbe0-5518-4157-b320-393c51240227"
               },
-              144
-            ]
-          },
-          {
-            "display-name": "Listing Count",
-            "id": "d9091528-c74e-4abd-a780-43e07df8d1d6",
+              148
+            ],
+            "id": "c2eddff3-f5c3-412f-b0d4-55ba00b448b7",
             "type": "dimension",
             "widget-type": "number/=",
             "name": "listing_count",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "0cc1c644-d401-44f1-a059-59ae051ef4f2"
-              },
-              148
-            ]
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
           }
         ]
       }
@@ -71,7 +74,7 @@
   },
   "parameters": [
     {
-      "id": "48aacfdd-431b-4cbf-9442-372566950bf6",
+      "id": "c1de83b0-f125-4815-b7aa-594a228c81cf",
       "type": "string/=",
       "target": [
         "dimension",
@@ -85,7 +88,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "0a98a105-3508-4e5b-99a2-1fa3c94ae148",
+      "id": "286e4502-9449-453c-8b2a-1d3964baa31b",
       "type": "boolean/=",
       "target": [
         "dimension",
@@ -99,7 +102,7 @@
       "isMultiSelect": false
     },
     {
-      "id": "d9091528-c74e-4abd-a780-43e07df8d1d6",
+      "id": "c2eddff3-f5c3-412f-b0d4-55ba00b448b7",
       "type": "number/=",
       "target": [
         "dimension",

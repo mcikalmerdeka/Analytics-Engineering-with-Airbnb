@@ -1,6 +1,6 @@
 {
   "id": 65,
-  "entity_id": "vriWw9BbB05uCIHL9CIoI",
+  "entity_id": "9u7XYMCGQCHH9p5sjyXzH",
   "name": "Chart - Superhost Share by Price Band",
   "description": "Unweighted average of room-type superhost shares within each price band. One row per price band; not a listing-weighted share.",
   "collection_id": 7,
@@ -12,36 +12,38 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    price_band,\n    AVG(pct_superhost) AS superhost_share\nFROM analytics.mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
+        "native": "SELECT\n    price_band,\n    AVG(pct_superhost) AS superhost_share\nFROM analytics.mart_price_bands AS mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Room Type",
-            "id": "007d0647-9b81-48d3-82bf-bb1daeb4cbc8",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "2eb67dac-c5d3-4ef5-8443-ba27439843ed"
+              },
+              197
+            ],
+            "id": "fd2d7f52-c394-49e3-8fa5-f6a683552818",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "room_type",
+            "display-name": "Room Type",
+            "alias": "mart_price_bands.room_type"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "e30267e2-9238-4f32-bd06-674e1b5adf98"
+                "lib/uuid": "1fa8f421-cca9-4122-a990-8b85041a0c06"
               },
-              197
-            ]
-          },
-          {
-            "display-name": "Price Band",
-            "id": "e3770bd6-9271-49b5-ad14-6e35eed4c886",
+              196
+            ],
+            "id": "37f0f89a-3ba5-4608-9e77-2a38ea2425f5",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "price_band",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "f7f440eb-73fb-4a70-a8e3-9d444e6dca9a"
-              },
-              196
-            ]
+            "display-name": "Price Band",
+            "alias": "mart_price_bands.price_band"
           }
         ]
       }
@@ -57,7 +59,7 @@
   },
   "parameters": [
     {
-      "id": "007d0647-9b81-48d3-82bf-bb1daeb4cbc8",
+      "id": "fd2d7f52-c394-49e3-8fa5-f6a683552818",
       "type": "string/=",
       "target": [
         "dimension",
@@ -71,7 +73,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "e3770bd6-9271-49b5-ad14-6e35eed4c886",
+      "id": "37f0f89a-3ba5-4608-9e77-2a38ea2425f5",
       "type": "string/=",
       "target": [
         "dimension",

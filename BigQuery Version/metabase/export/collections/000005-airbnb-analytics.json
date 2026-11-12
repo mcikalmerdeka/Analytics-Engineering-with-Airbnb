@@ -1,10 +1,10 @@
 {
   "id": 5,
-  "entity_id": "k10UWNORRi0rGnuc0LqnM",
+  "entity_id": "lu1WQR2KGHM_wP_3FWTVp",
   "name": "Airbnb Analytics",
-  "description": null,
-  "location": "/4/",
+  "description": "Airbnb analytics collections on BigQuery.",
+  "location": "/",
   "namespace": null,
-  "parent_id": 4,
+  "parent_id": null,
   "archived": false
 }

@@ -1,6 +1,6 @@
 {
   "id": 53,
-  "entity_id": "szrHd_EXQ5d3fc8rGcDQV",
+  "entity_id": "r7rGioKqlumo54KZSc_eH",
   "name": "Chart - Listing Age Cohorts",
   "description": "Listings by age cohort as of 2021-11-19. One row per listing; cohorts are derived from listing creation date.",
   "collection_id": 6,
@@ -8,18 +8,16 @@
   "query_type": "native",
   "display": "bar",
   "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    listing_age_cohort,\n    COUNT(*) AS listings\nFROM analytics.dim_listings\nGROUP BY listing_age_cohort\nORDER BY listings DESC;",
-        "lib/type": "mbql.stage/native"
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT\n    listing_age_cohort,\n    COUNT(*) AS listings\nFROM analytics.dim_listings AS dim_listings\nGROUP BY listing_age_cohort\nORDER BY listings DESC;"
       }
-    ],
-    "lib/type": "mbql/query",
-    "database": 2
+    ]
   },
   "visualization_settings": {
-    "graph.show_values": true,
-    "graph.x_axis.scale": "ordinal",
     "graph.dimensions": [
       "listing_age_cohort"
     ],

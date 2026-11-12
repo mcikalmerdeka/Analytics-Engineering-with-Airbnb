@@ -1,6 +1,6 @@
 {
   "id": 52,
-  "entity_id": "A2WhRqHD3yz-tSlsFg7dR",
+  "entity_id": "ybB_o54bqoI5uWa3VMo9s",
   "name": "Chart - Review Volume by Room Type",
   "description": "Monthly reviews by listing room type through 2021-10. One row per month and room type; each review belongs to one room type.",
   "collection_id": 6,
@@ -8,45 +8,46 @@
   "query_type": "native",
   "display": "line",
   "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
     "stages": [
       {
+        "native": "SELECT\n    month_start,\n    room_type,\n    reviews\nFROM analytics.mart_market_monthly AS mart_market_monthly\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start, room_type;",
         "lib/type": "mbql.stage/native",
-        "native": "SELECT\n    month_start,\n    room_type,\n    reviews\nFROM analytics.mart_market_monthly\nWHERE month_start <= DATE '2021-10-01'\n  AND {{month_start}}\nORDER BY month_start, room_type;",
         "template-tags": [
           {
-            "id": "0643714b-6051-41c8-aa1f-fdec0515df23",
-            "type": "dimension",
-            "widget-type": "date/month-year",
-            "name": "month_start",
-            "display-name": "Month Start",
             "dimension": [
               "field",
               {
-                "lib/uuid": "bbfbbaac-de85-44c4-bacb-b356c7f6edaf"
+                "lib/uuid": "d80bb5eb-4a8e-4493-9e3a-4b0f729dc37f"
               },
               184
-            ]
+            ],
+            "id": "0fc80614-4964-4641-8233-f3e9a8c89af5",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "month_start",
+            "display-name": "Month Start",
+            "alias": "mart_market_monthly.month_start"
           }
         ]
       }
-    ],
-    "lib/type": "mbql/query",
-    "database": 2
+    ]
   },
   "visualization_settings": {
-    "graph.x_axis.scale": "timeseries",
     "graph.dimensions": [
       "month_start",
       "room_type"
     ],
+    "graph.x_axis.scale": "timeseries",
     "graph.metrics": [
       "reviews"
     ]
   },
   "parameters": [
     {
-      "id": "0643714b-6051-41c8-aa1f-fdec0515df23",
-      "type": "date/month-year",
+      "id": "0fc80614-4964-4641-8233-f3e9a8c89af5",
+      "type": "date/all-options",
       "target": [
         "dimension",
         [

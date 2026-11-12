@@ -1,6 +1,6 @@
 {
   "id": 67,
-  "entity_id": "9G2V-Pd07p8FOetbsv9X3",
+  "entity_id": "ojxVL33nq8vDDmyl_vMwI",
   "name": "KPI - Total Reviews",
   "description": "Count of distinct reviews matching the selected Guest filters. One row per review; duplicate reviews are removed upstream.",
   "collection_id": 8,
@@ -12,50 +12,53 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT COUNT(*) AS total_reviews\nFROM analytics.fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
+        "native": "SELECT COUNT(*) AS total_reviews\nFROM analytics.fct_reviews AS fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}};",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Review Date",
-            "id": "260be8cc-dc6b-4507-a15c-c93283952bfd",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "109f8411-87bb-4b53-a7d1-84a1377e8d55"
+              },
+              113
+            ],
+            "id": "7cb5e7d7-57b9-4eec-bd2f-99c177a47b7b",
             "type": "dimension",
             "widget-type": "date/all-options",
             "name": "review_date",
+            "display-name": "Review Date",
+            "alias": "fct_reviews.review_date"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "8eeab8e3-aa31-437c-a196-2ae0a1528d1b"
+                "lib/uuid": "85a48990-6962-4633-a925-14629861f882"
               },
-              113
-            ]
-          },
-          {
-            "display-name": "Review Sentiment",
-            "id": "4e71fe23-25ea-40f8-83d4-e7a795cc205a",
+              116
+            ],
+            "id": "6cd77aa0-63cf-42fb-826b-6fa5833706bc",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "review_sentiment",
+            "display-name": "Review Sentiment",
+            "alias": "fct_reviews.review_sentiment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "eb42e1c5-5c47-48da-be79-23909e53d62c"
+                "lib/uuid": "ca3893b2-958d-4fe6-b2f7-d19aa0c2b953"
               },
-              116
-            ]
-          },
-          {
-            "display-name": "Has Comment",
-            "id": "9cac8120-1776-4dc8-ba00-4d7910acff5b",
+              118
+            ],
+            "id": "be117503-ad85-4839-a224-220ba9fdc243",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "has_comment",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "379967e6-43fd-42be-8378-785dbbefbce7"
-              },
-              118
-            ]
+            "display-name": "Has Comment",
+            "alias": "fct_reviews.has_comment"
           }
         ]
       }
@@ -64,7 +67,7 @@
   "visualization_settings": {},
   "parameters": [
     {
-      "id": "260be8cc-dc6b-4507-a15c-c93283952bfd",
+      "id": "7cb5e7d7-57b9-4eec-bd2f-99c177a47b7b",
       "type": "date/all-options",
       "target": [
         "dimension",
@@ -78,7 +81,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "4e71fe23-25ea-40f8-83d4-e7a795cc205a",
+      "id": "6cd77aa0-63cf-42fb-826b-6fa5833706bc",
       "type": "string/=",
       "target": [
         "dimension",
@@ -92,7 +95,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "9cac8120-1776-4dc8-ba00-4d7910acff5b",
+      "id": "be117503-ad85-4839-a224-220ba9fdc243",
       "type": "boolean/=",
       "target": [
         "dimension",

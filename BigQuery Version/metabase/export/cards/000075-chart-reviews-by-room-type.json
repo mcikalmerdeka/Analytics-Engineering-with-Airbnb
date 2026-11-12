@@ -1,6 +1,6 @@
 {
   "id": 75,
-  "entity_id": "9yqOBX-BQgEYSB2A9SR3j",
+  "entity_id": "Lo4FML2rdb237nWjjCTo7",
   "name": "Chart - Reviews by Room Type",
   "description": "Reviews grouped by the room type of the reviewed listing. One row per review; each review belongs to one listing and one room type.",
   "collection_id": 8,
@@ -12,64 +12,68 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    dim_listings.room_type,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews\nINNER JOIN analytics.dim_listings\n    ON fct_reviews.listing_id = dim_listings.listing_id\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\n  AND {{room_type}}\nGROUP BY dim_listings.room_type\nORDER BY reviews DESC;",
+        "native": "SELECT\n    dim_listings.room_type,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nINNER JOIN analytics.dim_listings AS dim_listings\n    ON fct_reviews.listing_id = dim_listings.listing_id\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\n  AND {{room_type}}\nGROUP BY dim_listings.room_type\nORDER BY reviews DESC;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Review Date",
-            "id": "e5a51dfc-5016-472b-83a1-b2c933b8d7b6",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "6dc6ecb8-f6d4-49ff-b559-810cd0176581"
+              },
+              113
+            ],
+            "id": "3e87d42b-f917-4ec8-acac-338ce3563f1d",
             "type": "dimension",
             "widget-type": "date/all-options",
             "name": "review_date",
+            "display-name": "Review Date",
+            "alias": "fct_reviews.review_date"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "85e56707-f55b-4e19-b635-318adc4202d8"
+                "lib/uuid": "e4ae6256-78b7-4c6f-8e1e-b1ddd991e84c"
               },
-              113
-            ]
-          },
-          {
-            "display-name": "Review Sentiment",
-            "id": "2a1fa0d2-da0c-4f7d-bce9-462ea145e223",
+              116
+            ],
+            "id": "886d8b6a-b09f-43a6-b29d-803c14fb24a7",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "review_sentiment",
+            "display-name": "Review Sentiment",
+            "alias": "fct_reviews.review_sentiment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "5ed40273-5d25-4269-8c90-91f2df48971f"
+                "lib/uuid": "6ef81c9a-1498-4eef-93e5-73830a262a76"
               },
-              116
-            ]
-          },
-          {
-            "display-name": "Has Comment",
-            "id": "857ccedb-1c07-4a04-8cfb-27e0299e9b90",
+              118
+            ],
+            "id": "bfecb9f0-6d7a-4fb8-867d-a675810191f4",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "has_comment",
+            "display-name": "Has Comment",
+            "alias": "fct_reviews.has_comment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "bf40fcab-b9d2-4822-9962-3b91814285cd"
+                "lib/uuid": "d1b85ad5-7975-456c-98c9-6594a8891a11"
               },
-              118
-            ]
-          },
-          {
-            "display-name": "Room Type",
-            "id": "491baeea-9d17-4ac1-9ae3-3fe0fb3218a8",
+              95
+            ],
+            "id": "2c1b2daf-c8ec-4a33-ade5-1e26e54c8b58",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "room_type",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "1c1c7359-88d7-4d2e-988c-247f24497637"
-              },
-              95
-            ]
+            "display-name": "Room Type",
+            "alias": "dim_listings.room_type"
           }
         ]
       }
@@ -85,7 +89,7 @@
   },
   "parameters": [
     {
-      "id": "e5a51dfc-5016-472b-83a1-b2c933b8d7b6",
+      "id": "3e87d42b-f917-4ec8-acac-338ce3563f1d",
       "type": "date/all-options",
       "target": [
         "dimension",
@@ -99,7 +103,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "2a1fa0d2-da0c-4f7d-bce9-462ea145e223",
+      "id": "886d8b6a-b09f-43a6-b29d-803c14fb24a7",
       "type": "string/=",
       "target": [
         "dimension",
@@ -113,7 +117,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "857ccedb-1c07-4a04-8cfb-27e0299e9b90",
+      "id": "bfecb9f0-6d7a-4fb8-867d-a675810191f4",
       "type": "boolean/=",
       "target": [
         "dimension",
@@ -127,7 +131,7 @@
       "isMultiSelect": false
     },
     {
-      "id": "491baeea-9d17-4ac1-9ae3-3fe0fb3218a8",
+      "id": "2c1b2daf-c8ec-4a33-ade5-1e26e54c8b58",
       "type": "string/=",
       "target": [
         "dimension",

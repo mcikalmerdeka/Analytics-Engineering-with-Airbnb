@@ -1,6 +1,6 @@
 {
   "id": 93,
-  "entity_id": "-FiGB1h2ASH-AwzvOU_oU",
+  "entity_id": "6aKK1cCOwFNqR8hBCMkB_",
   "name": "Table - Top Hosts",
   "description": "Top 100 hosts by total reviews with portfolio size, active listings, and sentiment. One row per host.",
   "collection_id": 9,
@@ -12,50 +12,53 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    host_name,\n    host_segment,\n    is_superhost,\n    listing_count,\n    active_listing_count,\n    total_reviews,\n    avg_reviews_per_listing,\n    avg_sentiment\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nORDER BY total_reviews DESC\nLIMIT 100;",
+        "native": "SELECT\n    host_name,\n    host_segment,\n    is_superhost,\n    listing_count,\n    active_listing_count,\n    total_reviews,\n    avg_reviews_per_listing,\n    avg_sentiment\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}}\nORDER BY total_reviews DESC\nLIMIT 100;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Host Segment",
-            "id": "d3fa9333-5e06-4dbf-bc8e-434c854ec414",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "5cd84aa6-c76d-4d3e-b39d-e6431542b672"
+              },
+              147
+            ],
+            "id": "94da437a-369d-4534-88a6-9fafeeb56554",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_host_performance.host_segment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "833d9a70-88c1-4a3e-81c3-c75389fb37e0"
+                "lib/uuid": "e4f8a3f9-43a3-40f7-acc1-930b093ce373"
               },
-              147
-            ]
-          },
-          {
-            "display-name": "Is Superhost",
-            "id": "d22d3a44-9654-4646-8912-f9681eeccd5a",
+              144
+            ],
+            "id": "5791e4b3-e5c5-4da3-9370-08566f163001",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "mart_host_performance.is_superhost"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "7b0bfeed-4881-4007-9791-2a80a7626dc6"
+                "lib/uuid": "f3db196f-236f-4a6b-9d1f-d35d742bbb66"
               },
-              144
-            ]
-          },
-          {
-            "display-name": "Listing Count",
-            "id": "c26268fd-fa45-4859-9ebc-1fc6e8b6c877",
+              148
+            ],
+            "id": "18180122-1afe-45d5-9bb9-d427259cfd8a",
             "type": "dimension",
             "widget-type": "number/=",
             "name": "listing_count",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "f847342a-c1f7-4ca4-b31a-2ec1d55b1100"
-              },
-              148
-            ]
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
           }
         ]
       }
@@ -64,7 +67,7 @@
   "visualization_settings": {},
   "parameters": [
     {
-      "id": "d3fa9333-5e06-4dbf-bc8e-434c854ec414",
+      "id": "94da437a-369d-4534-88a6-9fafeeb56554",
       "type": "string/=",
       "target": [
         "dimension",
@@ -78,7 +81,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "d22d3a44-9654-4646-8912-f9681eeccd5a",
+      "id": "5791e4b3-e5c5-4da3-9370-08566f163001",
       "type": "boolean/=",
       "target": [
         "dimension",
@@ -92,7 +95,7 @@
       "isMultiSelect": false
     },
     {
-      "id": "c26268fd-fa45-4859-9ebc-1fc6e8b6c877",
+      "id": "18180122-1afe-45d5-9bb9-d427259cfd8a",
       "type": "number/=",
       "target": [
         "dimension",

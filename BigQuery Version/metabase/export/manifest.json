@@ -1,8 +1,8 @@
 {
-  "exported_at": "2026-11-07T09:17:02+00:00",
+  "exported_at": "2026-11-12T07:16:08+00:00",
   "metabase_url": "http://127.0.0.1:3000",
   "metabase_version": "v0.64.3.5",
-  "root_collection_id": 5,
+  "root_collection_id": 7,
   "root_collection_name": "Airbnb Analytics",
   "include_archived": false,
   "counts": {

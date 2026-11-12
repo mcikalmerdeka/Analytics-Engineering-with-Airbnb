@@ -6,8 +6,8 @@ This folder keeps the Metabase work reproducible outside the running container.
 metabase/
 ├── README.md
 ├── .gitignore
-├── definitions.json          # 66 documented cards and 5 dashboards
-├── dashboard_filters.json    # dashboard filter specs for the four non-Executive dashboards
+├── definitions.json          # 66 documented cards and 5 dashboards, BigQuery SQL
+├── dashboard_filters.json    # dashboard filter specs for all five dashboards
 ├── backups/                  # gitignored pg_dump files
 │   └── .gitkeep
 └── export/                   # committed, Git-friendly JSON snapshot
@@ -21,8 +21,8 @@ metabase/
 
 | Artifact | What it contains | Current size | Commit to Git? |
 | --- | --- | ---: | --- |
-| `metabase/backups/*.dump` | Full Metabase application database (users, settings, collections, questions, dashboards) | ~1.1 MB per dump; app DB is 25 MB | **No** |
-| `metabase/export/**/*.json` | Collections, questions/models, dashboards, SQL, visualization settings, filter mappings | 26.5 KB for 14 cards + 1 dashboard; under 1 MB for the full 66-card set | **Yes** |
+| `metabase/backups/*.dump` | Full Metabase application database (users, settings, collections, questions, dashboards) | ~1.3 MB per dump | **No** |
+| `metabase/export/**/*.json` | Collections, questions/models, dashboards, BigQuery SQL, visualization settings, filter mappings | ~309 KB for the full 66-card set | **Yes** |
 | `.env` | `METABASE_URL`, `METABASE_API_KEY` | Tiny | **No** |
 
 The JSON export is deliberately cleaned: timestamps, view counts, last-editor
@@ -36,7 +36,7 @@ The local `.env` already contains `METABASE_URL` and `METABASE_API_KEY`. The
 key is in the Administrators group so it can read every collection. Never commit
 `.env`.
 
-From `Postgres Version/`:
+From `BigQuery Version/`:
 
 ```powershell
 uv run python scripts\export_metabase.py
@@ -45,7 +45,7 @@ uv run python scripts\export_metabase.py
 The script:
 
 1. Reads `METABASE_URL` and `METABASE_API_KEY` from `.env`.
-2. Starts at collection `5` (`Airbnb Analytics`).
+2. Finds the top-level `Airbnb Analytics` collection by name.
 3. Recursively walks subcollections.
 4. Fetches every question, model, and dashboard through the Metabase API.
 5. Rewrites `metabase/export/` and `metabase/export/manifest.json`.
@@ -54,7 +54,7 @@ Options:
 
 ```powershell
 # Export a different root collection
-uv run python scripts\export_metabase.py --collection-id 5
+uv run python scripts\export_metabase.py --collection-name "Airbnb Analytics"
 
 # Include archived items
 uv run python scripts\export_metabase.py --include-archived
@@ -75,7 +75,7 @@ dashboards through the Metabase API:
 # Preview what would be created
 uv run python scripts\seed_metabase.py --dry-run
 
-# Create everything (Executive Overview is skipped because it already exists)
+# Create or update everything
 uv run python scripts\seed_metabase.py
 
 # Work on one dashboard only
@@ -87,12 +87,14 @@ uv run python scripts\seed_metabase.py --dashboard supply --relayout
 
 The seeder is idempotent by name:
 
-- Existing cards are reused; it does not overwrite a card that already has the
-  documented name.
+- Existing cards are reused and updated when their SQL or Field Filter tags
+  change; unrelated cards are left alone.
 - The four partially-created Supply cards are adopted and renamed to the
   documented `KPI - ...` names.
-- Missing cards are created with native SQL and Field Filter template tags.
-- The Executive Overview dashboard is not touched.
+- Missing cards are created with BigQuery native SQL and Field Filter template
+  tags. Every card aliases its tables so the BigQuery driver can qualify
+  filter columns.
+- All five dashboards, including Executive Overview, are seeded.
 - Dashboard filters are **not** created in this pass. The cards are
   filter-ready; run `scripts/add_dashboard_filters.py` after seeding to create
   and map them.
@@ -108,10 +110,9 @@ uv run python scripts\export_metabase.py
 
 ### Add the dashboard filters
 
-`metabase/dashboard_filters.json` contains the filter specs for Supply and
-Pricing, Guest Experience, Host Portfolio, and Listing Explorer. The script
-creates the dashboard parameters and maps them to every card that exposes the
-matching template tag:
+`metabase/dashboard_filters.json` contains the filter specs for all five
+dashboards, including Executive Overview. The script creates the dashboard
+parameters and maps them to every card that exposes the matching template tag:
 
 ```powershell
 # Preview the full plan; no writes
@@ -120,14 +121,13 @@ uv run python scripts\add_dashboard_filters.py --dry-run
 # Apply one dashboard first
 uv run python scripts\add_dashboard_filters.py --dashboard supply
 
-# Apply all four
+# Apply all five
 uv run python scripts\add_dashboard_filters.py
 ```
 
 The script is idempotent by filter slug and preserves unrelated parameters,
-mappings, layout, and tabs. It does not touch the Executive Overview dashboard,
-which already has its manual date filter. Take an application-database backup
-before the first real run. The full analysis is in
+mappings, layout, and tabs. Take an application-database backup before the
+first real run. The full analysis is in
 [`docs/METABASE_FILTER_AUTOMATION.md`](../docs/METABASE_FILTER_AUTOMATION.md).
 
 ### Create or replace the API key manually
@@ -136,7 +136,7 @@ If the key is lost:
 
 1. Open Metabase → **Admin** → **Settings** → **Authentication** → **API Keys**.
 2. **Create API Key**, name it `git-export`, assign the **Administrators** group.
-3. Copy the key into `Postgres Version/.env`:
+3. Copy the key into `BigQuery Version/.env`:
 
 ```dotenv
 METABASE_URL=http://127.0.0.1:3000
@@ -164,7 +164,8 @@ Restore (destructive — replaces the current Metabase app DB):
 
 Type `RESTORE` when prompted, or pass `-Force`. The script stops Metabase,
 recreates the `metabase` database, restores the dump, and waits for
-`/api/health`. The analytics `airbnb` database is not touched.
+`/api/health`. The analytics warehouse is BigQuery; it is not touched by the
+restore. The local `airbnb` database remains empty.
 
 When to use each:
 

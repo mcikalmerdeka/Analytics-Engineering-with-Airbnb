@@ -1,6 +1,6 @@
 {
   "id": 44,
-  "entity_id": "88H2QrfYpAleCbUzWZa5p",
+  "entity_id": "m3aR_vFxI5HdxGou-8MbM",
   "name": "KPI - Avg Nightly Price",
   "description": "Average source nightly price across listings, excluding zero-price and p99.5 outliers. One row per listing; the source currency is not normalized.",
   "collection_id": 6,
@@ -8,18 +8,16 @@
   "query_type": "native",
   "display": "scalar",
   "dataset_query": {
+    "lib/type": "mbql/query",
+    "database": 2,
     "stages": [
       {
-        "native": "SELECT AVG(price) AS avg_nightly_price\nFROM analytics.dim_listings\nWHERE NOT is_price_outlier;",
-        "lib/type": "mbql.stage/native"
+        "lib/type": "mbql.stage/native",
+        "native": "SELECT AVG(price) AS avg_nightly_price\nFROM analytics.dim_listings AS dim_listings\nWHERE NOT is_price_outlier;"
       }
-    ],
-    "lib/type": "mbql/query",
-    "database": 2
+    ]
   },
-  "visualization_settings": {
-    "scalar.segments": []
-  },
+  "visualization_settings": {},
   "parameters": [],
   "parameter_mappings": [],
   "database_id": 2,

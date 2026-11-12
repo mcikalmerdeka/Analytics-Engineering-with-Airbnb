@@ -1,6 +1,6 @@
 {
   "id": 60,
-  "entity_id": "29uYSTQJyI6KMuleAUUn2",
+  "entity_id": "NUV4j_loG8Fp3rJeN6qfF",
   "name": "Chart - Price Band by Room Type",
   "description": "Listings by price band and room type. One row per price band and room type; the spine is zero-filled, so all 28 combinations exist.",
   "collection_id": 7,
@@ -12,36 +12,38 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    price_band,\n    room_type,\n    SUM(listing_count) AS listings\nFROM analytics.mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band, room_type\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND, room_type;",
+        "native": "SELECT\n    price_band,\n    room_type,\n    SUM(listing_count) AS listings\nFROM analytics.mart_price_bands AS mart_price_bands\nWHERE 1 = 1\n  AND {{room_type}}\n  AND {{price_band}}\nGROUP BY price_band, room_type\nORDER BY CASE price_band\n    WHEN '<30' THEN 1\n    WHEN '30-49' THEN 2\n    WHEN '50-74' THEN 3\n    WHEN '75-99' THEN 4\n    WHEN '100-149' THEN 5\n    WHEN '150-249' THEN 6\n    ELSE 7\nEND, room_type;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Room Type",
-            "id": "87f87e4b-b800-4c08-bfad-6db81ab9c974",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "4844a451-d6ca-4d92-8581-a9eea74cb76c"
+              },
+              197
+            ],
+            "id": "93d9ea77-1237-48b6-a540-82fda9255630",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "room_type",
+            "display-name": "Room Type",
+            "alias": "mart_price_bands.room_type"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "edc298a8-0cdf-47ef-ac03-bb595551bd1a"
+                "lib/uuid": "e393dc14-edce-428f-b679-e23d93888275"
               },
-              197
-            ]
-          },
-          {
-            "display-name": "Price Band",
-            "id": "afb49391-971b-46b6-8f5d-8ca33d7546b4",
+              196
+            ],
+            "id": "e54c5b26-d62e-4b6e-9d04-69e038c9a9f9",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "price_band",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "497f9d45-8b7d-4293-9c11-f119ab4ec73a"
-              },
-              196
-            ]
+            "display-name": "Price Band",
+            "alias": "mart_price_bands.price_band"
           }
         ]
       }
@@ -58,7 +60,7 @@
   },
   "parameters": [
     {
-      "id": "87f87e4b-b800-4c08-bfad-6db81ab9c974",
+      "id": "93d9ea77-1237-48b6-a540-82fda9255630",
       "type": "string/=",
       "target": [
         "dimension",
@@ -72,7 +74,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "afb49391-971b-46b6-8f5d-8ca33d7546b4",
+      "id": "e54c5b26-d62e-4b6e-9d04-69e038c9a9f9",
       "type": "string/=",
       "target": [
         "dimension",

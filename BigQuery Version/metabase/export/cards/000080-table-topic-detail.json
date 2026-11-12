@@ -1,6 +1,6 @@
 {
   "id": 80,
-  "entity_id": "xtmuaKiRm17Tz3I9w-cCZ",
+  "entity_id": "H0mjgaAU9p0PrT1ZXtEze",
   "name": "Table - Topic Detail",
   "description": "Monthly topic mentions, mention rate, average sentiment, and negative share for the last 12 complete months. One row per month and topic.",
   "collection_id": 8,
@@ -12,36 +12,38 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    month_start,\n    topic,\n    mentions,\n    mention_rate,\n    avg_sentiment,\n    pct_negative\nFROM analytics.mart_review_topics\nWHERE month_start BETWEEN DATE '2020-11-01' AND DATE '2021-10-01'\n  AND {{review_month}}\n  AND {{topic}}\nORDER BY mentions DESC\nLIMIT 1000;",
+        "native": "SELECT\n    month_start,\n    topic,\n    mentions,\n    mention_rate,\n    avg_sentiment,\n    pct_negative\nFROM analytics.mart_review_topics AS mart_review_topics\nWHERE month_start BETWEEN DATE '2020-11-01' AND DATE '2021-10-01'\n  AND {{review_month}}\n  AND {{topic}}\nORDER BY mentions DESC\nLIMIT 1000;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Review Month",
-            "id": "127521f8-c714-42df-9e4c-0e6cdc3d2620",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "7569206d-e4c2-43fd-9b1b-27a071319982"
+              },
+              205
+            ],
+            "id": "19a3c1da-28e1-480b-bd07-6b511100328d",
             "type": "dimension",
             "widget-type": "date/all-options",
             "name": "review_month",
+            "display-name": "Review Month",
+            "alias": "mart_review_topics.month_start"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "6802d1bc-3be5-4cba-b7ea-351f9e409f2c"
+                "lib/uuid": "c3f3493a-5e9d-4194-aed5-1d36324e8b89"
               },
-              205
-            ]
-          },
-          {
-            "display-name": "Topic",
-            "id": "69fbf153-11b3-4957-a7e2-3b77a2513e8f",
+              206
+            ],
+            "id": "d2fdeaa1-1a53-4265-91f2-7ea67de8d3f3",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "topic",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "0403b56b-a59d-4c3d-b452-25ab3c959347"
-              },
-              206
-            ]
+            "display-name": "Topic",
+            "alias": "mart_review_topics.topic"
           }
         ]
       }
@@ -50,7 +52,7 @@
   "visualization_settings": {},
   "parameters": [
     {
-      "id": "127521f8-c714-42df-9e4c-0e6cdc3d2620",
+      "id": "19a3c1da-28e1-480b-bd07-6b511100328d",
       "type": "date/all-options",
       "target": [
         "dimension",
@@ -64,7 +66,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "69fbf153-11b3-4957-a7e2-3b77a2513e8f",
+      "id": "d2fdeaa1-1a53-4265-91f2-7ea67de8d3f3",
       "type": "string/=",
       "target": [
         "dimension",

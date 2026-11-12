@@ -1,6 +1,6 @@
 {
   "id": 92,
-  "entity_id": "9xN1S5phaGJX7NmibbcdD",
+  "entity_id": "i4gaI7_hbliCTvBnYROBy",
   "name": "Chart - Portfolio Size",
   "description": "Distribution of hosts by number of listings. One row per host; most hosts have one listing and the maximum is 75.",
   "collection_id": 9,
@@ -12,50 +12,53 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT listing_count\nFROM analytics.mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}};",
+        "native": "SELECT listing_count\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE 1 = 1\n  AND {{host_segment}}\n  AND {{is_superhost}}\n  AND {{listing_count}};",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Host Segment",
-            "id": "5816ea70-cda1-45c1-be6d-11f8f2be9c55",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "431112b6-c8a2-4a98-9efe-dfc21b302d70"
+              },
+              147
+            ],
+            "id": "8607af18-3e09-4bcc-8fda-2c502c982db3",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_host_performance.host_segment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "2d2fa724-516a-4c50-b0fc-d22e48e3bc0a"
+                "lib/uuid": "62a47f60-f94f-4e0a-be92-6d56d22ecc96"
               },
-              147
-            ]
-          },
-          {
-            "display-name": "Is Superhost",
-            "id": "96c6fb99-343f-4281-baf8-53e5b693d955",
+              144
+            ],
+            "id": "400d8643-bdb3-472f-aa0f-0a925c5f3e87",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "mart_host_performance.is_superhost"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "5a037adc-3a94-41ab-917f-e0ab87081f8e"
+                "lib/uuid": "5f5dc468-3bfd-4c2e-9a24-02a434f014a8"
               },
-              144
-            ]
-          },
-          {
-            "display-name": "Listing Count",
-            "id": "97833530-b209-4320-ab56-3d197d1fc458",
+              148
+            ],
+            "id": "a498d966-5906-4e50-9c9e-17bf71c7abcd",
             "type": "dimension",
             "widget-type": "number/=",
             "name": "listing_count",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "c692a478-fa0e-4eb6-b8f1-6ac4258c3988"
-              },
-              148
-            ]
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
           }
         ]
       }
@@ -64,7 +67,7 @@
   "visualization_settings": {},
   "parameters": [
     {
-      "id": "5816ea70-cda1-45c1-be6d-11f8f2be9c55",
+      "id": "8607af18-3e09-4bcc-8fda-2c502c982db3",
       "type": "string/=",
       "target": [
         "dimension",
@@ -78,7 +81,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "96c6fb99-343f-4281-baf8-53e5b693d955",
+      "id": "400d8643-bdb3-472f-aa0f-0a925c5f3e87",
       "type": "boolean/=",
       "target": [
         "dimension",
@@ -92,7 +95,7 @@
       "isMultiSelect": false
     },
     {
-      "id": "97833530-b209-4320-ab56-3d197d1fc458",
+      "id": "a498d966-5906-4e50-9c9e-17bf71c7abcd",
       "type": "number/=",
       "target": [
         "dimension",

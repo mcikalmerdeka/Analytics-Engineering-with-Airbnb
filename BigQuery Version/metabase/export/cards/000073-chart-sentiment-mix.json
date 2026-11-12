@@ -1,6 +1,6 @@
 {
   "id": 73,
-  "entity_id": "GKu7nkp0ecMiKwnaQqJUi",
+  "entity_id": "EJdLdmVJq_dZKCSog6BKl",
   "name": "Chart - Sentiment Mix",
   "description": "Reviews by source sentiment category. One row per review; unknown means no source sentiment.",
   "collection_id": 8,
@@ -12,50 +12,53 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_sentiment\nORDER BY reviews DESC;",
+        "native": "SELECT\n    review_sentiment,\n    COUNT(*) AS reviews\nFROM analytics.fct_reviews AS fct_reviews\nWHERE 1 = 1\n  AND {{review_date}}\n  AND {{review_sentiment}}\n  AND {{has_comment}}\nGROUP BY review_sentiment\nORDER BY reviews DESC;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Review Date",
-            "id": "402bcb2e-d9e5-4281-8790-b54e37424e59",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "3828d4e5-ffd8-41b8-b4ec-f3870a482d80"
+              },
+              113
+            ],
+            "id": "48cdd9b3-5a21-4f5c-82bd-03c86b9c3424",
             "type": "dimension",
             "widget-type": "date/all-options",
             "name": "review_date",
+            "display-name": "Review Date",
+            "alias": "fct_reviews.review_date"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "ca1c6cb2-276c-4fad-8f87-d1c3eccd315b"
+                "lib/uuid": "3bfcb746-a1d2-42a8-b5d3-ebe45b822425"
               },
-              113
-            ]
-          },
-          {
-            "display-name": "Review Sentiment",
-            "id": "f57beea0-977c-46ca-8d2f-16fa1e31ff9a",
+              116
+            ],
+            "id": "c665a4b4-4075-4706-b19d-34f6685f1714",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "review_sentiment",
+            "display-name": "Review Sentiment",
+            "alias": "fct_reviews.review_sentiment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "4c985721-c8f3-45cf-a6f1-806df3aa3216"
+                "lib/uuid": "ffc9dfa0-3293-46fd-9ec7-e98c1a462777"
               },
-              116
-            ]
-          },
-          {
-            "display-name": "Has Comment",
-            "id": "06838584-91b3-47c5-98ec-5790d9c08d6b",
+              118
+            ],
+            "id": "d3f3da0d-e140-4b23-bb0f-6e0afce476ea",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "has_comment",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "1a276572-c215-45af-b82b-37e268d6706a"
-              },
-              118
-            ]
+            "display-name": "Has Comment",
+            "alias": "fct_reviews.has_comment"
           }
         ]
       }
@@ -67,7 +70,7 @@
   },
   "parameters": [
     {
-      "id": "402bcb2e-d9e5-4281-8790-b54e37424e59",
+      "id": "48cdd9b3-5a21-4f5c-82bd-03c86b9c3424",
       "type": "date/all-options",
       "target": [
         "dimension",
@@ -81,7 +84,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "f57beea0-977c-46ca-8d2f-16fa1e31ff9a",
+      "id": "c665a4b4-4075-4706-b19d-34f6685f1714",
       "type": "string/=",
       "target": [
         "dimension",
@@ -95,7 +98,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "06838584-91b3-47c5-98ec-5790d9c08d6b",
+      "id": "d3f3da0d-e140-4b23-bb0f-6e0afce476ea",
       "type": "boolean/=",
       "target": [
         "dimension",

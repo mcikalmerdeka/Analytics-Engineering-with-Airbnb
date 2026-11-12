@@ -1,6 +1,6 @@
 {
   "id": 82,
-  "entity_id": "g6pMvandN7ttaiBT1YnLR",
+  "entity_id": "XpaR9NznZTUOG_SeZNXcd",
   "name": "KPI - Superhosts",
   "description": "Hosts whose superhost flag is true. One row per host; 15 hosts with unknown status are excluded.",
   "collection_id": 9,
@@ -12,36 +12,38 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT COUNT(*) AS superhosts\nFROM analytics.mart_host_performance\nWHERE is_superhost = TRUE\n  AND {{host_segment}}\n  AND {{listing_count}};",
+        "native": "SELECT COUNT(*) AS superhosts\nFROM analytics.mart_host_performance AS mart_host_performance\nWHERE is_superhost = TRUE\n  AND {{host_segment}}\n  AND {{listing_count}};",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Host Segment",
-            "id": "4649f76c-dbc1-42b3-bbaa-cdc5e585b0ab",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "5d257ec7-b746-45a9-aaf2-c2191e501ab7"
+              },
+              147
+            ],
+            "id": "faf56b82-3f13-4714-aec5-387a74640d58",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "host_segment",
+            "display-name": "Host Segment",
+            "alias": "mart_host_performance.host_segment"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "caeedd2f-c068-4801-b6b5-7397479eb79c"
+                "lib/uuid": "a36be964-1482-4106-b5c9-b352249c7433"
               },
-              147
-            ]
-          },
-          {
-            "display-name": "Listing Count",
-            "id": "9d516773-1a47-410d-9349-01ad9598caeb",
+              148
+            ],
+            "id": "2a76bd20-40e7-495e-8e2b-8c15e7870e17",
             "type": "dimension",
             "widget-type": "number/=",
             "name": "listing_count",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "32a4c6a7-caaf-4770-ba18-3df700dfaee9"
-              },
-              148
-            ]
+            "display-name": "Listing Count",
+            "alias": "mart_host_performance.listing_count"
           }
         ]
       }
@@ -50,7 +52,7 @@
   "visualization_settings": {},
   "parameters": [
     {
-      "id": "4649f76c-dbc1-42b3-bbaa-cdc5e585b0ab",
+      "id": "faf56b82-3f13-4714-aec5-387a74640d58",
       "type": "string/=",
       "target": [
         "dimension",
@@ -64,7 +66,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "9d516773-1a47-410d-9349-01ad9598caeb",
+      "id": "2a76bd20-40e7-495e-8e2b-8c15e7870e17",
       "type": "number/=",
       "target": [
         "dimension",

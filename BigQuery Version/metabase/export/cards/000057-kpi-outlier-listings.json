@@ -1,6 +1,6 @@
 {
   "id": 57,
-  "entity_id": "WUtFM-Opr5-4lQJx6x8P2",
+  "entity_id": "0wCUnWA0VRFeiJOJyJu3S",
   "name": "KPI - Outlier Listings",
   "description": "Listings flagged as zero-price or above the p99.5 price for their room type. One row per listing; outliers stay in the data and are excluded from price averages.",
   "collection_id": 7,
@@ -12,78 +12,83 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT COUNT(*) AS outlier_listings\nFROM analytics.dim_listings\nWHERE is_price_outlier = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}};",
+        "native": "SELECT COUNT(*) AS outlier_listings\nFROM analytics.dim_listings AS dim_listings\nWHERE is_price_outlier = TRUE\n  AND {{room_type}}\n  AND {{price_band}}\n  AND {{minimum_nights_band}}\n  AND {{is_superhost}}\n  AND {{price}};",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Room Type",
-            "id": "4f0c6bec-912f-4451-bb83-7fce4aa91804",
+            "dimension": [
+              "field",
+              {
+                "lib/uuid": "464836f4-8185-4c00-bee7-028b05e78257"
+              },
+              95
+            ],
+            "id": "6713720d-c92e-4394-a044-badaaeb4356c",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "room_type",
+            "display-name": "Room Type",
+            "alias": "dim_listings.room_type"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "eecffe0f-8c8b-40cf-8ae8-873835b81cb1"
+                "lib/uuid": "63134248-1193-4065-a846-8e3775e6f319"
               },
-              95
-            ]
-          },
-          {
-            "display-name": "Price Band",
-            "id": "b0f6f58c-afd3-440f-927b-74308046bbac",
+              97
+            ],
+            "id": "109b4cdf-3843-4cba-9a24-96460af2b0df",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "price_band",
+            "display-name": "Price Band",
+            "alias": "dim_listings.price_band"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "a077f3b7-1721-4fb7-a805-9d85e43a078e"
+                "lib/uuid": "4f6131fd-aa8f-4827-92a7-1c5bbdf41476"
               },
-              97
-            ]
-          },
-          {
-            "display-name": "Minimum Nights Band",
-            "id": "5aafdf8e-a655-4545-8e29-466ff32e141f",
+              100
+            ],
+            "id": "8774360b-e6d0-467a-92a6-f1bfe31c2f31",
             "type": "dimension",
             "widget-type": "string/=",
             "name": "minimum_nights_band",
+            "display-name": "Minimum Nights Band",
+            "alias": "dim_listings.minimum_nights_band"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "2444e719-0a00-4d9e-88cc-38f07f8cba26"
+                "lib/uuid": "5eb1b00a-012d-4e02-9f7b-f82b5b5e50e5"
               },
-              100
-            ]
-          },
-          {
-            "display-name": "Is Superhost",
-            "id": "938c674a-c64b-463c-b7d2-22c808912725",
+              103
+            ],
+            "id": "03df4244-3bb6-469f-965e-05b8d03eaf5c",
             "type": "dimension",
             "widget-type": "boolean/=",
             "name": "is_superhost",
+            "display-name": "Is Superhost",
+            "alias": "dim_listings.is_superhost"
+          },
+          {
             "dimension": [
               "field",
               {
-                "lib/uuid": "b67ab1c7-d83a-4e95-b3d2-b389b86ddcc1"
+                "lib/uuid": "a8fa9471-f790-4c73-9df1-c8f813c5c905"
               },
-              103
-            ]
-          },
-          {
-            "display-name": "Price",
-            "id": "46f5da7a-3b50-4227-9400-f34181946314",
+              96
+            ],
+            "id": "461d4ace-a664-49e0-a47a-18696b785202",
             "type": "dimension",
             "widget-type": "number/=",
             "name": "price",
-            "dimension": [
-              "field",
-              {
-                "lib/uuid": "d7ee4573-6b41-44f1-b106-268c0c8e0d4d"
-              },
-              96
-            ]
+            "display-name": "Price",
+            "alias": "dim_listings.price"
           }
         ]
       }
@@ -92,7 +97,7 @@
   "visualization_settings": {},
   "parameters": [
     {
-      "id": "4f0c6bec-912f-4451-bb83-7fce4aa91804",
+      "id": "6713720d-c92e-4394-a044-badaaeb4356c",
       "type": "string/=",
       "target": [
         "dimension",
@@ -106,7 +111,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "b0f6f58c-afd3-440f-927b-74308046bbac",
+      "id": "109b4cdf-3843-4cba-9a24-96460af2b0df",
       "type": "string/=",
       "target": [
         "dimension",
@@ -120,7 +125,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "5aafdf8e-a655-4545-8e29-466ff32e141f",
+      "id": "8774360b-e6d0-467a-92a6-f1bfe31c2f31",
       "type": "string/=",
       "target": [
         "dimension",
@@ -134,7 +139,7 @@
       "isMultiSelect": true
     },
     {
-      "id": "938c674a-c64b-463c-b7d2-22c808912725",
+      "id": "03df4244-3bb6-469f-965e-05b8d03eaf5c",
       "type": "boolean/=",
       "target": [
         "dimension",
@@ -148,7 +153,7 @@
       "isMultiSelect": false
     },
     {
-      "id": "46f5da7a-3b50-4227-9400-f34181946314",
+      "id": "461d4ace-a664-49e0-a47a-18696b785202",
       "type": "number/=",
       "target": [
         "dimension",

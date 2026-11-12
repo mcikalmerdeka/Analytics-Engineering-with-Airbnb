@@ -1,6 +1,6 @@
 {
   "id": 61,
-  "entity_id": "4mygIPIQqq4P34ldDdA3g",
+  "entity_id": "Ff8Bwx37xlBqvQOc6cClh",
   "name": "Chart - Room Type Price Benchmark",
   "description": "Median and p90 source nightly price by room type, excluding outliers. One row per room type; p90 shows the high-price tail.",
   "collection_id": 7,
@@ -12,22 +12,23 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    room_type,\n    'Median price' AS metric,\n    median_price::numeric AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nUNION ALL\n\nSELECT\n    room_type,\n    'P90 price' AS metric,\n    p90_price::numeric AS value\nFROM analytics.mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nORDER BY room_type, metric;",
+        "native": "SELECT\n    room_type,\n    'Median price' AS metric,\n    CAST(median_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nUNION ALL\n\nSELECT\n    room_type,\n    'P90 price' AS metric,\n    CAST(p90_price AS FLOAT64) AS value\nFROM analytics.mart_room_type_benchmark AS mart_room_type_benchmark\nWHERE 1 = 1\n  AND {{room_type}}\n\nORDER BY room_type, metric;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Room Type",
-            "id": "866b7b4d-b5be-4a12-9da5-ab0bf5385e6a",
-            "type": "dimension",
-            "widget-type": "string/=",
-            "name": "room_type",
             "dimension": [
               "field",
               {
-                "lib/uuid": "2e6ba10d-bf63-4510-935c-6df3a4080885"
+                "lib/uuid": "49f48cb0-a596-4344-aa06-a3252da1b9ef"
               },
               211
-            ]
+            ],
+            "id": "25ec5080-171e-4db2-9d78-99a014565046",
+            "type": "dimension",
+            "widget-type": "string/=",
+            "name": "room_type",
+            "display-name": "Room Type",
+            "alias": "mart_room_type_benchmark.room_type"
           }
         ]
       }
@@ -44,7 +45,7 @@
   },
   "parameters": [
     {
-      "id": "866b7b4d-b5be-4a12-9da5-ab0bf5385e6a",
+      "id": "25ec5080-171e-4db2-9d78-99a014565046",
       "type": "string/=",
       "target": [
         "dimension",

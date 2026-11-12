@@ -1,12 +1,12 @@
 {
   "id": 6,
-  "entity_id": "NpjMZdROZYRrSt5ZspiXc",
+  "entity_id": "07xBEt5v1Wg1p7-ztnJTK",
   "name": "Listing Explorer Dashboard",
   "description": "One-row-per-listing drill-down for price, activity, review volume, and sentiment.",
   "collection_id": 10,
   "parameters": [
     {
-      "id": "58bf2675",
+      "id": "b9dda8c4",
       "name": "Room type",
       "slug": "room_type",
       "type": "string/=",
@@ -16,7 +16,7 @@
       "default": null
     },
     {
-      "id": "d1eb1783",
+      "id": "428274ad",
       "name": "Price band",
       "slug": "price_band",
       "type": "string/=",
@@ -26,7 +26,7 @@
       "default": null
     },
     {
-      "id": "60547d59",
+      "id": "67b646f9",
       "name": "Minimum nights band",
       "slug": "minimum_nights_band",
       "type": "string/=",
@@ -36,7 +36,7 @@
       "default": null
     },
     {
-      "id": "b12e3364",
+      "id": "abb1e0f4",
       "name": "Superhost",
       "slug": "is_superhost",
       "type": "boolean/=",
@@ -46,7 +46,7 @@
       "default": null
     },
     {
-      "id": "ccbb9b18",
+      "id": "24222366",
       "name": "Host segment",
       "slug": "host_segment",
       "type": "string/=",
@@ -56,7 +56,7 @@
       "default": null
     },
     {
-      "id": "ddb7550b",
+      "id": "d4d3f966",
       "name": "Active last 12m",
       "slug": "is_active_last_12m",
       "type": "boolean/=",
@@ -66,7 +66,7 @@
       "default": null
     },
     {
-      "id": "6522c1a8",
+      "id": "76c2255a",
       "name": "Price range",
       "slug": "price",
       "type": "number/between",
@@ -81,107 +81,8 @@
   "archived": false,
   "dashcards": [
     {
-      "id": 96,
-      "entity_id": "uV5GqCilJMnpc4wSPyJ3y",
-      "card_id": 99,
-      "dashboard_tab_id": null,
-      "row": 3,
-      "col": 0,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "58bf2675",
-          "card_id": 99,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "room_type"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "d1eb1783",
-          "card_id": 99,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "price_band"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "60547d59",
-          "card_id": 99,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "minimum_nights_band"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "b12e3364",
-          "card_id": 99,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "is_superhost"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "ccbb9b18",
-          "card_id": 99,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "host_segment"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "6522c1a8",
-          "card_id": 99,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "price"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Price vs Review Count"
-    },
-    {
       "id": 92,
-      "entity_id": "PqIH09uKsYwNwFIX19PuZ",
+      "entity_id": "SqzMQ3aO6ZB_VVa05RLSO",
       "card_id": 95,
       "dashboard_tab_id": null,
       "row": 0,
@@ -190,7 +91,7 @@
       "size_y": 3,
       "parameter_mappings": [
         {
-          "parameter_id": "58bf2675",
+          "parameter_id": "b9dda8c4",
           "card_id": 95,
           "target": [
             "dimension",
@@ -204,7 +105,7 @@
           ]
         },
         {
-          "parameter_id": "d1eb1783",
+          "parameter_id": "428274ad",
           "card_id": 95,
           "target": [
             "dimension",
@@ -218,7 +119,7 @@
           ]
         },
         {
-          "parameter_id": "60547d59",
+          "parameter_id": "67b646f9",
           "card_id": 95,
           "target": [
             "dimension",
@@ -232,7 +133,7 @@
           ]
         },
         {
-          "parameter_id": "b12e3364",
+          "parameter_id": "abb1e0f4",
           "card_id": 95,
           "target": [
             "dimension",
@@ -246,7 +147,7 @@
           ]
         },
         {
-          "parameter_id": "ccbb9b18",
+          "parameter_id": "24222366",
           "card_id": 95,
           "target": [
             "dimension",
@@ -260,7 +161,7 @@
           ]
         },
         {
-          "parameter_id": "ddb7550b",
+          "parameter_id": "d4d3f966",
           "card_id": 95,
           "target": [
             "dimension",
@@ -274,7 +175,7 @@
           ]
         },
         {
-          "parameter_id": "6522c1a8",
+          "parameter_id": "76c2255a",
           "card_id": 95,
           "target": [
             "dimension",
@@ -293,121 +194,8 @@
       "card_name": "KPI - Avg Price in View"
     },
     {
-      "id": 98,
-      "entity_id": "yEjN988frkcH9M18YiTlG",
-      "card_id": 101,
-      "dashboard_tab_id": null,
-      "row": 9,
-      "col": 0,
-      "size_x": 12,
-      "size_y": 6,
-      "parameter_mappings": [
-        {
-          "parameter_id": "58bf2675",
-          "card_id": 101,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "room_type"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "d1eb1783",
-          "card_id": 101,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "price_band"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "60547d59",
-          "card_id": 101,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "minimum_nights_band"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "b12e3364",
-          "card_id": 101,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "is_superhost"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "ccbb9b18",
-          "card_id": 101,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "host_segment"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "ddb7550b",
-          "card_id": 101,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "is_active_last_12m"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "6522c1a8",
-          "card_id": 101,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "price"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "Chart - Listings by Price Band"
-    },
-    {
       "id": 100,
-      "entity_id": "35DrS1yU7d4hIXbcvFikZ",
+      "entity_id": "3dHHIsY3er-n0r48vu0i3",
       "card_id": 103,
       "dashboard_tab_id": null,
       "row": 15,
@@ -416,7 +204,7 @@
       "size_y": 6,
       "parameter_mappings": [
         {
-          "parameter_id": "58bf2675",
+          "parameter_id": "b9dda8c4",
           "card_id": 103,
           "target": [
             "dimension",
@@ -430,7 +218,7 @@
           ]
         },
         {
-          "parameter_id": "d1eb1783",
+          "parameter_id": "428274ad",
           "card_id": 103,
           "target": [
             "dimension",
@@ -444,7 +232,7 @@
           ]
         },
         {
-          "parameter_id": "60547d59",
+          "parameter_id": "67b646f9",
           "card_id": 103,
           "target": [
             "dimension",
@@ -458,7 +246,7 @@
           ]
         },
         {
-          "parameter_id": "b12e3364",
+          "parameter_id": "abb1e0f4",
           "card_id": 103,
           "target": [
             "dimension",
@@ -472,7 +260,7 @@
           ]
         },
         {
-          "parameter_id": "6522c1a8",
+          "parameter_id": "76c2255a",
           "card_id": 103,
           "target": [
             "dimension",
@@ -491,121 +279,8 @@
       "card_name": "Chart - Active Listings by Host Segment"
     },
     {
-      "id": 91,
-      "entity_id": "PGhqPFJs76uZkHHD_8LW4",
-      "card_id": 94,
-      "dashboard_tab_id": null,
-      "row": 0,
-      "col": 0,
-      "size_x": 5,
-      "size_y": 3,
-      "parameter_mappings": [
-        {
-          "parameter_id": "58bf2675",
-          "card_id": 94,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "room_type"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "d1eb1783",
-          "card_id": 94,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "price_band"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "60547d59",
-          "card_id": 94,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "minimum_nights_band"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "b12e3364",
-          "card_id": 94,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "is_superhost"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "ccbb9b18",
-          "card_id": 94,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "host_segment"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "ddb7550b",
-          "card_id": 94,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "is_active_last_12m"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "6522c1a8",
-          "card_id": 94,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "price"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "KPI - Listings in View"
-    },
-    {
       "id": 93,
-      "entity_id": "GXz3-77xc0q3YSHvCn1VC",
+      "entity_id": "jAzDKsP9cx8IgD9JLIaNm",
       "card_id": 96,
       "dashboard_tab_id": null,
       "row": 0,
@@ -614,7 +289,7 @@
       "size_y": 3,
       "parameter_mappings": [
         {
-          "parameter_id": "58bf2675",
+          "parameter_id": "b9dda8c4",
           "card_id": 96,
           "target": [
             "dimension",
@@ -628,7 +303,7 @@
           ]
         },
         {
-          "parameter_id": "d1eb1783",
+          "parameter_id": "428274ad",
           "card_id": 96,
           "target": [
             "dimension",
@@ -642,7 +317,7 @@
           ]
         },
         {
-          "parameter_id": "60547d59",
+          "parameter_id": "67b646f9",
           "card_id": 96,
           "target": [
             "dimension",
@@ -656,7 +331,7 @@
           ]
         },
         {
-          "parameter_id": "b12e3364",
+          "parameter_id": "abb1e0f4",
           "card_id": 96,
           "target": [
             "dimension",
@@ -670,7 +345,7 @@
           ]
         },
         {
-          "parameter_id": "ccbb9b18",
+          "parameter_id": "24222366",
           "card_id": 96,
           "target": [
             "dimension",
@@ -684,7 +359,7 @@
           ]
         },
         {
-          "parameter_id": "ddb7550b",
+          "parameter_id": "d4d3f966",
           "card_id": 96,
           "target": [
             "dimension",
@@ -698,7 +373,7 @@
           ]
         },
         {
-          "parameter_id": "6522c1a8",
+          "parameter_id": "76c2255a",
           "card_id": 96,
           "target": [
             "dimension",
@@ -717,18 +392,18 @@
       "card_name": "KPI - Avg Reviews in View"
     },
     {
-      "id": 94,
-      "entity_id": "eCs8lVJ_dTRLEmImJrDXH",
-      "card_id": 97,
+      "id": 96,
+      "entity_id": "6e7azeApDFAOLmP-Ymthn",
+      "card_id": 99,
       "dashboard_tab_id": null,
-      "row": 0,
-      "col": 15,
-      "size_x": 5,
-      "size_y": 3,
+      "row": 3,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
       "parameter_mappings": [
         {
-          "parameter_id": "58bf2675",
-          "card_id": 97,
+          "parameter_id": "b9dda8c4",
+          "card_id": 99,
           "target": [
             "dimension",
             [
@@ -741,8 +416,8 @@
           ]
         },
         {
-          "parameter_id": "d1eb1783",
-          "card_id": 97,
+          "parameter_id": "428274ad",
+          "card_id": 99,
           "target": [
             "dimension",
             [
@@ -755,8 +430,8 @@
           ]
         },
         {
-          "parameter_id": "60547d59",
-          "card_id": 97,
+          "parameter_id": "67b646f9",
+          "card_id": 99,
           "target": [
             "dimension",
             [
@@ -769,8 +444,8 @@
           ]
         },
         {
-          "parameter_id": "b12e3364",
-          "card_id": 97,
+          "parameter_id": "abb1e0f4",
+          "card_id": 99,
           "target": [
             "dimension",
             [
@@ -783,8 +458,8 @@
           ]
         },
         {
-          "parameter_id": "ccbb9b18",
-          "card_id": 97,
+          "parameter_id": "24222366",
+          "card_id": 99,
           "target": [
             "dimension",
             [
@@ -797,8 +472,8 @@
           ]
         },
         {
-          "parameter_id": "6522c1a8",
-          "card_id": 97,
+          "parameter_id": "76c2255a",
+          "card_id": 99,
           "target": [
             "dimension",
             [
@@ -813,124 +488,11 @@
       ],
       "visualization_settings": {},
       "inline_parameters": [],
-      "card_name": "KPI - Active Listings in View"
-    },
-    {
-      "id": 95,
-      "entity_id": "0B0g--4ZVX5g8pWq42v7K",
-      "card_id": 98,
-      "dashboard_tab_id": null,
-      "row": 0,
-      "col": 20,
-      "size_x": 4,
-      "size_y": 3,
-      "parameter_mappings": [
-        {
-          "parameter_id": "58bf2675",
-          "card_id": 98,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "room_type"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "d1eb1783",
-          "card_id": 98,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "price_band"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "60547d59",
-          "card_id": 98,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "minimum_nights_band"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "b12e3364",
-          "card_id": 98,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "is_superhost"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "ccbb9b18",
-          "card_id": 98,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "host_segment"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "ddb7550b",
-          "card_id": 98,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "is_active_last_12m"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        },
-        {
-          "parameter_id": "6522c1a8",
-          "card_id": 98,
-          "target": [
-            "dimension",
-            [
-              "template-tag",
-              "price"
-            ],
-            {
-              "stage-number": 0
-            }
-          ]
-        }
-      ],
-      "visualization_settings": {},
-      "inline_parameters": [],
-      "card_name": "KPI - Zero-review Listings"
+      "card_name": "Chart - Price vs Review Count"
     },
     {
       "id": 97,
-      "entity_id": "TD3AH2iKXY6R7f1WCSSAn",
+      "entity_id": "2RaxL6x5UH0sk_1jUkP_C",
       "card_id": 100,
       "dashboard_tab_id": null,
       "row": 3,
@@ -939,7 +501,7 @@
       "size_y": 6,
       "parameter_mappings": [
         {
-          "parameter_id": "58bf2675",
+          "parameter_id": "b9dda8c4",
           "card_id": 100,
           "target": [
             "dimension",
@@ -953,7 +515,7 @@
           ]
         },
         {
-          "parameter_id": "d1eb1783",
+          "parameter_id": "428274ad",
           "card_id": 100,
           "target": [
             "dimension",
@@ -967,7 +529,7 @@
           ]
         },
         {
-          "parameter_id": "60547d59",
+          "parameter_id": "67b646f9",
           "card_id": 100,
           "target": [
             "dimension",
@@ -981,7 +543,7 @@
           ]
         },
         {
-          "parameter_id": "b12e3364",
+          "parameter_id": "abb1e0f4",
           "card_id": 100,
           "target": [
             "dimension",
@@ -995,7 +557,7 @@
           ]
         },
         {
-          "parameter_id": "ccbb9b18",
+          "parameter_id": "24222366",
           "card_id": 100,
           "target": [
             "dimension",
@@ -1009,7 +571,7 @@
           ]
         },
         {
-          "parameter_id": "ddb7550b",
+          "parameter_id": "d4d3f966",
           "card_id": 100,
           "target": [
             "dimension",
@@ -1023,7 +585,7 @@
           ]
         },
         {
-          "parameter_id": "6522c1a8",
+          "parameter_id": "76c2255a",
           "card_id": 100,
           "target": [
             "dimension",
@@ -1042,8 +604,121 @@
       "card_name": "Chart - Listings by Room Type"
     },
     {
+      "id": 98,
+      "entity_id": "VOe5vCTnT8oq-PRHY9_sI",
+      "card_id": 101,
+      "dashboard_tab_id": null,
+      "row": 9,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 6,
+      "parameter_mappings": [
+        {
+          "parameter_id": "b9dda8c4",
+          "card_id": 101,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "room_type"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "428274ad",
+          "card_id": 101,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "price_band"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "67b646f9",
+          "card_id": 101,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "minimum_nights_band"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "abb1e0f4",
+          "card_id": 101,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "24222366",
+          "card_id": 101,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "d4d3f966",
+          "card_id": 101,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_active_last_12m"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "76c2255a",
+          "card_id": 101,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "price"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "Chart - Listings by Price Band"
+    },
+    {
       "id": 99,
-      "entity_id": "PIjAS3LxUekJtNAY4E_Yu",
+      "entity_id": "B972Kj_fXTz2yU7rY6AJ3",
       "card_id": 102,
       "dashboard_tab_id": null,
       "row": 9,
@@ -1052,7 +727,7 @@
       "size_y": 6,
       "parameter_mappings": [
         {
-          "parameter_id": "58bf2675",
+          "parameter_id": "b9dda8c4",
           "card_id": 102,
           "target": [
             "dimension",
@@ -1066,7 +741,7 @@
           ]
         },
         {
-          "parameter_id": "d1eb1783",
+          "parameter_id": "428274ad",
           "card_id": 102,
           "target": [
             "dimension",
@@ -1080,7 +755,7 @@
           ]
         },
         {
-          "parameter_id": "60547d59",
+          "parameter_id": "67b646f9",
           "card_id": 102,
           "target": [
             "dimension",
@@ -1094,7 +769,7 @@
           ]
         },
         {
-          "parameter_id": "b12e3364",
+          "parameter_id": "abb1e0f4",
           "card_id": 102,
           "target": [
             "dimension",
@@ -1108,7 +783,7 @@
           ]
         },
         {
-          "parameter_id": "ccbb9b18",
+          "parameter_id": "24222366",
           "card_id": 102,
           "target": [
             "dimension",
@@ -1122,7 +797,7 @@
           ]
         },
         {
-          "parameter_id": "ddb7550b",
+          "parameter_id": "d4d3f966",
           "card_id": 102,
           "target": [
             "dimension",
@@ -1136,7 +811,7 @@
           ]
         },
         {
-          "parameter_id": "6522c1a8",
+          "parameter_id": "76c2255a",
           "card_id": 102,
           "target": [
             "dimension",
@@ -1156,7 +831,7 @@
     },
     {
       "id": 101,
-      "entity_id": "SNN6P2bhVywqDS-cBfZN-",
+      "entity_id": "J-noCkL-OHV0ruvbxRIjE",
       "card_id": 104,
       "dashboard_tab_id": null,
       "row": 15,
@@ -1165,7 +840,7 @@
       "size_y": 6,
       "parameter_mappings": [
         {
-          "parameter_id": "58bf2675",
+          "parameter_id": "b9dda8c4",
           "card_id": 104,
           "target": [
             "dimension",
@@ -1179,7 +854,7 @@
           ]
         },
         {
-          "parameter_id": "d1eb1783",
+          "parameter_id": "428274ad",
           "card_id": 104,
           "target": [
             "dimension",
@@ -1193,7 +868,7 @@
           ]
         },
         {
-          "parameter_id": "60547d59",
+          "parameter_id": "67b646f9",
           "card_id": 104,
           "target": [
             "dimension",
@@ -1207,7 +882,7 @@
           ]
         },
         {
-          "parameter_id": "b12e3364",
+          "parameter_id": "abb1e0f4",
           "card_id": 104,
           "target": [
             "dimension",
@@ -1221,7 +896,7 @@
           ]
         },
         {
-          "parameter_id": "ccbb9b18",
+          "parameter_id": "24222366",
           "card_id": 104,
           "target": [
             "dimension",
@@ -1235,7 +910,7 @@
           ]
         },
         {
-          "parameter_id": "ddb7550b",
+          "parameter_id": "d4d3f966",
           "card_id": 104,
           "target": [
             "dimension",
@@ -1249,7 +924,7 @@
           ]
         },
         {
-          "parameter_id": "6522c1a8",
+          "parameter_id": "76c2255a",
           "card_id": 104,
           "target": [
             "dimension",
@@ -1268,8 +943,333 @@
       "card_name": "Chart - Listings by Minimum Nights"
     },
     {
+      "id": 94,
+      "entity_id": "EIIOOhSMbIjvNjkxvX7Qx",
+      "card_id": 97,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 15,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [
+        {
+          "parameter_id": "b9dda8c4",
+          "card_id": 97,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "room_type"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "428274ad",
+          "card_id": 97,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "price_band"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "67b646f9",
+          "card_id": 97,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "minimum_nights_band"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "abb1e0f4",
+          "card_id": 97,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "24222366",
+          "card_id": 97,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "76c2255a",
+          "card_id": 97,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "price"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Active Listings in View"
+    },
+    {
+      "id": 95,
+      "entity_id": "XVVvtZjDaSCTLtSyyx_ll",
+      "card_id": 98,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 20,
+      "size_x": 4,
+      "size_y": 3,
+      "parameter_mappings": [
+        {
+          "parameter_id": "b9dda8c4",
+          "card_id": 98,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "room_type"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "428274ad",
+          "card_id": 98,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "price_band"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "67b646f9",
+          "card_id": 98,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "minimum_nights_band"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "abb1e0f4",
+          "card_id": 98,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "24222366",
+          "card_id": 98,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "d4d3f966",
+          "card_id": 98,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_active_last_12m"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "76c2255a",
+          "card_id": 98,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "price"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Zero-review Listings"
+    },
+    {
+      "id": 91,
+      "entity_id": "4fRqAOfc0tkTzUB96Jy7t",
+      "card_id": 94,
+      "dashboard_tab_id": null,
+      "row": 0,
+      "col": 0,
+      "size_x": 5,
+      "size_y": 3,
+      "parameter_mappings": [
+        {
+          "parameter_id": "b9dda8c4",
+          "card_id": 94,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "room_type"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "428274ad",
+          "card_id": 94,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "price_band"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "67b646f9",
+          "card_id": 94,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "minimum_nights_band"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "abb1e0f4",
+          "card_id": 94,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_superhost"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "24222366",
+          "card_id": 94,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "host_segment"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "d4d3f966",
+          "card_id": 94,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "is_active_last_12m"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        },
+        {
+          "parameter_id": "76c2255a",
+          "card_id": 94,
+          "target": [
+            "dimension",
+            [
+              "template-tag",
+              "price"
+            ],
+            {
+              "stage-number": 0
+            }
+          ]
+        }
+      ],
+      "visualization_settings": {},
+      "inline_parameters": [],
+      "card_name": "KPI - Listings in View"
+    },
+    {
       "id": 102,
-      "entity_id": "gxCjmq-Mru76R0VqRcrYu",
+      "entity_id": "-Z7dmR8MafjolJ2BGyB1L",
       "card_id": 105,
       "dashboard_tab_id": null,
       "row": 21,
@@ -1278,7 +1278,7 @@
       "size_y": 7,
       "parameter_mappings": [
         {
-          "parameter_id": "58bf2675",
+          "parameter_id": "b9dda8c4",
           "card_id": 105,
           "target": [
             "dimension",
@@ -1292,7 +1292,7 @@
           ]
         },
         {
-          "parameter_id": "d1eb1783",
+          "parameter_id": "428274ad",
           "card_id": 105,
           "target": [
             "dimension",
@@ -1306,7 +1306,7 @@
           ]
         },
         {
-          "parameter_id": "60547d59",
+          "parameter_id": "67b646f9",
           "card_id": 105,
           "target": [
             "dimension",
@@ -1320,7 +1320,7 @@
           ]
         },
         {
-          "parameter_id": "b12e3364",
+          "parameter_id": "abb1e0f4",
           "card_id": 105,
           "target": [
             "dimension",
@@ -1334,7 +1334,7 @@
           ]
         },
         {
-          "parameter_id": "ccbb9b18",
+          "parameter_id": "24222366",
           "card_id": 105,
           "target": [
             "dimension",
@@ -1348,7 +1348,7 @@
           ]
         },
         {
-          "parameter_id": "ddb7550b",
+          "parameter_id": "d4d3f966",
           "card_id": 105,
           "target": [
             "dimension",
@@ -1362,7 +1362,7 @@
           ]
         },
         {
-          "parameter_id": "6522c1a8",
+          "parameter_id": "76c2255a",
           "card_id": 105,
           "target": [
             "dimension",

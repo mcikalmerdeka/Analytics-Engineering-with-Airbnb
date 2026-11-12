@@ -1,6 +1,6 @@
 {
   "id": 89,
-  "entity_id": "QWAM3--tnb9f2cdMpEyL-",
+  "entity_id": "5QmbuReoUzM6ToXFCgV71",
   "name": "Chart - New Hosts per Month",
   "description": "Host profiles created per month from 2015 onward. One row per host; this is new hosts, not cumulative hosts.",
   "collection_id": 9,
@@ -12,22 +12,23 @@
     "database": 2,
     "stages": [
       {
-        "native": "SELECT\n    DATE_TRUNC('month', host_created_at)::date AS month_start,\n    COUNT(*) AS new_hosts\nFROM analytics.dim_hosts\nWHERE host_created_at >= DATE '2015-01-01'\n  AND {{host_created_at}}\nGROUP BY 1\nORDER BY 1;",
+        "native": "SELECT\n    DATE_TRUNC(DATE(host_created_at), MONTH) AS month_start,\n    COUNT(*) AS new_hosts\nFROM analytics.dim_hosts AS dim_hosts\nWHERE DATE(host_created_at) >= DATE '2015-01-01'\n  AND {{host_created_at}}\nGROUP BY 1\nORDER BY 1;",
         "lib/type": "mbql.stage/native",
         "template-tags": [
           {
-            "display-name": "Host Created At",
-            "id": "b496d6f8-5fa7-421c-b6c5-b92f604f9b45",
-            "type": "dimension",
-            "widget-type": "date/all-options",
-            "name": "host_created_at",
             "dimension": [
               "field",
               {
-                "lib/uuid": "42655a9a-e2ee-4808-a128-6b96d86fb04e"
+                "lib/uuid": "745e075f-94b7-49d2-9591-665cb4d4fb74"
               },
               88
-            ]
+            ],
+            "id": "a5db7298-9307-4ee6-bef9-ca288defb0e0",
+            "type": "dimension",
+            "widget-type": "date/all-options",
+            "name": "host_created_at",
+            "display-name": "Host Created At",
+            "alias": "dim_hosts.host_created_at"
           }
         ]
       }
@@ -44,7 +45,7 @@
   },
   "parameters": [
     {
-      "id": "b496d6f8-5fa7-421c-b6c5-b92f604f9b45",
+      "id": "a5db7298-9307-4ee6-bef9-ca288defb0e0",
       "type": "date/all-options",
       "target": [
         "dimension",
