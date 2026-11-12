@@ -53,10 +53,9 @@ sources:
             tests:
               - dbt_expectations.expect_column_values_to_match_regex:
                   arguments:
-                    # regex: "^\\\\$[0-9][0-9\\\\.]+$"
-                    regex: "^\\$?[0-9]+(\\.[0-9]+)?$" # Double backslashes
-                    # OR:
-                    # regex: '^\$?[0-9]+(\.[0-9]+)?$'  # Single quotes
+                    # BigQuery string literals reject \$; use a character class
+                    # so the pattern needs no backslash escapes.
+                    regex: '^[$]?[0-9]+([.][0-9]+)?$'
 
           - name: created_at
             description: Timestamp indicating when the listing was created.
